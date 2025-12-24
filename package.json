@@ -16,6 +16,7 @@
     "rimraf": "^6.1.2"
   },
   "devDependencies": {
+    "@babel/types": "^7.28.5",
     "@types/express": "^5.0.6",
     "@types/rimraf": "^3.0.2",
     "ts-node": "^10.9.2",
