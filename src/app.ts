@@ -1,5 +1,7 @@
 import express from "express";
 import { chromium } from "playwright";
+import { parsePlaywrightLocatorAst } from "./ast-parser/parser";
+import { Locator } from "playwright-core";
 
 const app = express();
 app.use(express.json());
@@ -9,13 +11,18 @@ app.post("/api/verify-locator", async (req, res) => {
   const browser = await chromium.launch(); // consider pooling
   const page = await browser.newPage();
   try {
-    await page.setContent("<h1>Main title</h1>", { waitUntil: "domcontentloaded" });
+    await page.setContent("<h1>dream</h1><h1>Main title</h1>", { waitUntil: "domcontentloaded" });
 
-    const h1 = page.locator("h1");
+    const h1 = '';
+    const errors = parsePlaywrightLocatorAst(h1);
+    console.log(errors);
+    // const locator = buildLocator(page, errors);
+    const locator = await eval(h1);
 
-    const count = await h1.count(); // 1
-    const textContent = await h1.textContent(); // "Main title"
-    const isVisible = await h1.isVisible(); // true
+    console.log()
+    const count = await locator.count(); // 1
+    const textContent = await locator.textContent(); // "Main title"
+    const isVisible = await locator.isVisible(); // true
 
     // const result = await verifyLocator(page, locatorInput);
     res.status(200).json({
