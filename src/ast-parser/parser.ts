@@ -9,7 +9,12 @@ export function parsePlaywrightLocatorAst(input: string): ParsedPlan {
     sourceType: "module",
     plugins: ["typescript"],
   });
-    const rawCalls = extractCallChain(expr);
+
+  return parsePlaywrightLocatorAstFromAst(expr);
+}
+
+export function parsePlaywrightLocatorAstFromAst(node: t.Expression): ParsedPlan {
+    const rawCalls = extractCallChain(node);
   // rawCalls comes out inner->outer; we reverse to apply left->right
   const calls = rawCalls;
 
@@ -37,7 +42,7 @@ export function parsePlaywrightLocatorAst(input: string): ParsedPlan {
     }
 
     // Validate & coerce args
-    const step = spec.buildStep(receiver, call.args);
+    const step = spec.buildStep(receiver, call.args, parsePlaywrightLocatorAstFromAst);
 
     steps.push(step);
 
@@ -52,4 +57,3 @@ export function parsePlaywrightLocatorAst(input: string): ParsedPlan {
 
   return { root: "page", steps };
 }
-console.log(JSON.stringify(parsePlaywrightLocatorAst('page.locator(\'h1\', { has: page.getByRole(\'button\', { exact: true }) })'), null, 2));

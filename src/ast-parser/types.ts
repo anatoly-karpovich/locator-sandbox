@@ -3,7 +3,7 @@ import * as t from "@babel/types";
 export type ReceiverKind = "page" | "locator";
 
 export type Step =
-  | { receiver: ReceiverKind; method: "locator"; args: [string] }
+  | { receiver: ReceiverKind; method: "locator"; args: [string, LocatorOptions?] }
   | { receiver: ReceiverKind; method: "first"; args: [] }
   | { receiver: ReceiverKind; method: "last"; args: [] }
   | { receiver: ReceiverKind; method: "nth"; args: [number] }
@@ -41,8 +41,12 @@ export type RawCall = {
 export type MethodSpec = {
   allowedReceivers: ReceiverKind[];
   nextReceiver: ReceiverKind; // receiver after applying this method
-  buildStep: (receiver: ReceiverKind, args: t.Expression[]) => Step;
-};
+  buildStep: (
+    receiver: ReceiverKind,
+    args: t.Expression[],
+    parseFromAst: (node: t.Expression) => ParsedPlan
+  ) => Step;
+}
 
 export type Literal =
   | string
