@@ -1,4 +1,5 @@
 import { Locator, Page } from "playwright";
+import { throwStrictModeViolationError } from "../utils/throwStrictModeViolationError";
 
 export class LocatorService {
   constructor(private page: Page) {}
@@ -18,7 +19,8 @@ export class LocatorService {
         attached: true,
         count,
       };
-    } catch {
+    } catch (e) {
+      throwStrictModeViolationError(e);
       return {
         attached: false,
         count: null,

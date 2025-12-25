@@ -2,7 +2,13 @@ export type Expectations = {
   count?: number;
   visible?: boolean;
   text?: string;
+  hidden?: boolean;
+  enabled?: boolean;
+  editable?: boolean;
+  checked?: boolean;
 };
+
+export type ExpectationsValues = Expectations[keyof Expectations];
 
 export type ExpectationCheck = {
   key: keyof Expectations;
@@ -11,7 +17,10 @@ export type ExpectationCheck = {
   passed: boolean;
 };
 
+export type Module = "Locator" | "GetBy" | "Filters&Relations";
+
 export type Task = {
+  module: Module;
   id: number;
   title: string;
   html: string;
@@ -28,8 +37,13 @@ export type Task = {
 };
 
 export type ExecutionResult = {
-  count: number | null;
-  visible?: boolean | null;
+  count: Expectations["count"];
+  visible: Expectations["visible"];
+  text: Expectations["text"];
+  hidden: Expectations["hidden"];
+  enabled: Expectations["enabled"];
+  editable: Expectations["editable"];
+  checked: Expectations["checked"];
 };
 
 export type CompareResult = {

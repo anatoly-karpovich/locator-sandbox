@@ -1,11 +1,16 @@
-import { tasks } from "./storage";
-import { Task } from "./types";
+import { getByPlaceholderTasks } from "./getBy/getByPlaceholder";
+import { getByTextTasks } from "./getBy/getByText";
+import { Module, Task } from "./types";
 
 class TasksService {
-  private tasks: Task[] = tasks;
+  private tasks: Task[] = [...getByTextTasks, ...getByPlaceholderTasks];
 
   getById(id: number) {
     return this.tasks.find((t) => t.id === id);
+  }
+
+  getByModule(module: Module) {
+    return this.tasks.filter((t) => t.module === module);
   }
 
   getAll() {
