@@ -80,10 +80,21 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   const currentTask: Task | undefined = currentTaskId ? tasks[currentTaskId] : undefined;
 
   const moduleTasks = currentModule
-    ? (currentModule.taskIds ?? []).map((id) => tasks[id]).filter(Boolean) as Task[]
+    ? ((currentModule.taskIds ?? []).map((id) => tasks[id]).filter(Boolean) as Task[])
     : [];
   const moduleProgressTotal = moduleTasks.length;
-  const moduleProgressDone = moduleTasks.filter((t) => completedTasks.has(t.id)).length;
+  const prevTaskId = useMemo(() => {
+    if (!currentTask || moduleTasks.length === 0) return null;
+    const idx = moduleTasks.findIndex((t) => t.id === currentTask.id);
+    if (idx > 0) return moduleTasks[idx - 1].id;
+    return null;
+  }, [currentTask, moduleTasks]);
+  const nextTaskId = useMemo(() => {
+    if (!currentTask || moduleTasks.length === 0) return null;
+    const idx = moduleTasks.findIndex((t) => t.id === currentTask.id);
+    if (idx < 0 || idx + 1 >= moduleTasks.length) return null;
+    return moduleTasks[idx + 1].id;
+  }, [currentTask, moduleTasks]);
 
   useEffect(() => {
     if (!currentTask) {
@@ -157,6 +168,23 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
         };
       })
     );
+  };
+
+  const goToTask = (taskId: number) => {
+    setCurrentTaskId(taskId);
+    setSolutionResult(null);
+    setRunError(null);
+    setLocatorInput("");
+  };
+
+  const handleNextTask = () => {
+    if (!nextTaskId) return;
+    goToTask(nextTaskId);
+  };
+
+  const handlePrevTask = () => {
+    if (!prevTaskId) return;
+    goToTask(prevTaskId);
   };
 
   const renderSidebarContent = () => (
@@ -259,8 +287,6 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
         ? (solutionResult as any).explanation
         : []) || [];
 
-    if (!runError && explanations.length === 0) return null;
-
     return (
       <Box sx={{ background: "#fff", borderRadius: 2, padding: 2, border: "1px solid #e0e0e0" }}>
         <Typography variant="h6" gutterBottom>
@@ -304,16 +330,16 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
         </Box>
 
         <Box component="main" sx={{ padding: 3, overflow: "auto" }}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" marginBottom={3}>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Typography variant="subtitle1" fontWeight={600}>
-                Task {currentTask ? currentTask.id : "-"} / {moduleProgressTotal || "-"} —
-                {currentTask?.title ?? "Нет задачи"}
-              </Typography>
-            </Stack>
-            <Typography variant="body2" color="text.secondary">
-              {moduleProgressDone} / {moduleProgressTotal || 0}
+          <Stack direction="row" alignItems="center" justifyContent="space-between" marginBottom={3} spacing={2}>
+            <Button variant="outlined" onClick={handlePrevTask} disabled={!prevTaskId}>
+              ← Previous
+            </Button>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ textAlign: "center", flexGrow: 1 }}>
+              Task {currentTask ? currentTask.id : "-"} — {currentTask?.title ?? "Нет задачи"}
             </Typography>
+            <Button variant="outlined" onClick={handleNextTask} disabled={!nextTaskId}>
+              Next →
+            </Button>
           </Stack>
 
           {loading && <Typography>Загружаем задачу...</Typography>}
@@ -386,15 +412,17 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
                     value={locatorInput}
                     onChange={(e) => setLocatorInput(e.target.value)}
                   />
-                  <Button
-                    variant="contained"
-                    startIcon={isRunning ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}
-                    sx={{ alignSelf: { xs: "stretch", sm: "flex-start" }, minWidth: 140 }}
-                    onClick={handleRun}
-                    disabled={!locatorInput.trim() || isRunning}
-                  >
-                    {isRunning ? "Running..." : "Run"}
-                  </Button>
+                  <Stack spacing={1}>
+                    <Button
+                      variant="contained"
+                      startIcon={isRunning ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}
+                      sx={{ minWidth: 140 }}
+                      onClick={handleRun}
+                      disabled={!locatorInput.trim() || isRunning}
+                    >
+                      {isRunning ? "Running..." : "Run"}
+                    </Button>
+                  </Stack>
                 </Stack>
               </Stack>
 
