@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { chromium } from "playwright";
 import { LocatorService } from "../locator/locator.service";
-import { TasksService } from "../tasks/tasks.service";
+import taskService from "../tasks/tasks.service";
 import { SolutionsHandler } from "../tasks/solutionsHandler";
 
 export type SubmitSolutionDTO = { payload: string; taskId: number };
@@ -11,7 +11,6 @@ export class SolutionController {
     const { payload, taskId } = req.body;
 
     const solutionHandler = new SolutionsHandler();
-    const taskService = new TasksService();
 
     const task = taskService.getById(taskId);
 
