@@ -2,7 +2,7 @@ import { Locator } from "playwright";
 import { CompareResult, ExecutionResult, ExpectationCheck, Expectations, Task } from "./types";
 import { LocatorStateService } from "../locator/expect.service";
 
-export class TaskHandler {
+export class SolutionsHandler {
   constructor(private stateService: LocatorStateService = new LocatorStateService()) {}
 
   async runTask(task: Task, locator: Locator) {
