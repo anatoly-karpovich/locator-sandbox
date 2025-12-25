@@ -6,6 +6,7 @@ import {
   AccordionSummary,
   Box,
   Button,
+  CircularProgress,
   Divider,
   List,
   ListItem,
@@ -58,6 +59,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   const [runError, setRunError] = useState<string | null>(null);
   const [completedTasks, setCompletedTasks] = useState<Set<number>>(new Set());
   const [checksState, setChecksState] = useState<CheckState[]>([]);
+  const [isRunning, setIsRunning] = useState(false);
 
   const tasksAvailable = useMemo(() => Object.values(tasks).length > 0, [tasks]);
 
@@ -108,6 +110,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     if (!currentTask) return;
     setRunError(null);
     setSolutionResult(null);
+    setIsRunning(true);
     try {
       const result = await submitSolution({ taskId: currentTask.id, payload: locatorInput });
       setSolutionResult(result);
@@ -121,6 +124,8 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     } catch (e: any) {
       setRunError(e.message ?? "Failed to run locator");
       markAllChecksFailed();
+    } finally {
+      setIsRunning(false);
     }
   };
 
@@ -211,17 +216,6 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     </Box>
   );
 
-  const renderPresence = (presence: any) => {
-    if (!presence) return null;
-    return (
-      <Stack spacing={1} marginBottom={2}>
-        <Typography variant="subtitle2">Presence</Typography>
-        <Typography variant="body2">attached: {String(presence.attached)}</Typography>
-        <Typography variant="body2">count: {presence.count}</Typography>
-      </Stack>
-    );
-  };
-
   const renderChecksPanel = () => (
     <Box sx={{ background: "#fff", borderRadius: 2, padding: 2, border: "1px solid #e0e0e0" }}>
       <Typography variant="h6" gutterBottom>
@@ -259,32 +253,24 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     </Box>
   );
 
-  const renderResultPanel = () => {
-    if (!solutionResult && !runError) return null;
-
+  const renderExplanationPanel = () => {
     const explanations =
       (solutionResult && "explanation" in solutionResult && Array.isArray((solutionResult as any).explanation)
         ? (solutionResult as any).explanation
         : []) || [];
 
-    const presenceBlock =
-      solutionResult && "presence" in solutionResult ? renderPresence((solutionResult as any).presence) : null;
+    if (!runError && explanations.length === 0) return null;
 
     return (
       <Box sx={{ background: "#fff", borderRadius: 2, padding: 2, border: "1px solid #e0e0e0" }}>
         <Typography variant="h6" gutterBottom>
-          Result
+          Explanation
         </Typography>
         {runError && (
           <Typography variant="body2" color="error" gutterBottom>
             {runError}
           </Typography>
         )}
-        {presenceBlock}
-        <Divider sx={{ marginY: 2 }} />
-        <Typography variant="subtitle2" gutterBottom>
-          Explanation
-        </Typography>
         {explanations.length > 0 ? (
           <Stack spacing={0.5}>
             {explanations.map((line: string, idx: number) => (
@@ -402,18 +388,18 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
                   />
                   <Button
                     variant="contained"
-                    startIcon={<PlayArrowIcon />}
+                    startIcon={isRunning ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}
                     sx={{ alignSelf: { xs: "stretch", sm: "flex-start" }, minWidth: 140 }}
                     onClick={handleRun}
-                    disabled={!locatorInput.trim()}
+                    disabled={!locatorInput.trim() || isRunning}
                   >
-                    Run
+                    {isRunning ? "Running..." : "Run"}
                   </Button>
                 </Stack>
               </Stack>
 
               {renderChecksPanel()}
-              {renderResultPanel()}
+              {renderExplanationPanel()}
             </Stack>
           )}
 
