@@ -7,8 +7,6 @@ import {
   Box,
   Button,
   Divider,
-  Drawer,
-  IconButton,
   List,
   ListItem,
   ListItemIcon,
@@ -16,13 +14,10 @@ import {
   Stack,
   TextField,
   Typography,
-  useMediaQuery,
-  useTheme,
   Chip,
   Paper,
 } from "@mui/material";
 import ListItemButton from "@mui/material/ListItemButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
@@ -45,15 +40,12 @@ type LocationState = {
 
 export default function SessionPage({ modules, tasks, loading, error }: SessionPageProps) {
   const { id } = useParams();
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state as LocationState | null) ?? {};
 
   const [currentModuleId, setCurrentModuleId] = useState<string | null>(state.moduleId ?? null);
   const [currentTaskId, setCurrentTaskId] = useState<number | null>(state.taskId ?? null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [locatorInput, setLocatorInput] = useState("");
   const [solutionResult, setSolutionResult] = useState<SolutionResponse | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
@@ -88,7 +80,6 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     setCurrentTaskId(taskId);
     setSolutionResult(null);
     setRunError(null);
-    if (!isDesktop) setSidebarOpen(false);
   };
 
   const handleRun = async () => {
@@ -249,30 +240,24 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
 
   return (
     <Box minHeight="100vh" bgcolor="#f5f5f5">
-      <HeaderBar />
+      <HeaderBar
+        rightSlot={
+          <Button variant="text" color="inherit" onClick={() => navigate("/")}>
+            Home
+          </Button>
+        }
+      />
 
-      <Box display="grid" gridTemplateColumns={isDesktop ? "280px 1fr" : "1fr"} height="calc(100vh - 64px)">
-        {isDesktop ? (
-          <Box component="aside" sx={{ borderRight: "1px solid #e0e0e0", background: "#fff", overflow: "auto" }}>
-            {renderSidebarContent()}
-          </Box>
-        ) : (
-          <Drawer anchor="left" open={sidebarOpen} onClose={() => setSidebarOpen(false)}>
-            {renderSidebarContent()}
-          </Drawer>
-        )}
+      <Box display="grid" gridTemplateColumns="280px 1fr" height="calc(100vh - 64px)">
+        <Box component="aside" sx={{ borderRight: "1px solid #e0e0e0", background: "#fff", overflow: "auto" }}>
+          {renderSidebarContent()}
+        </Box>
 
         <Box component="main" sx={{ padding: 3, overflow: "auto" }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" marginBottom={3}>
             <Stack direction="row" spacing={2} alignItems="center">
-              <Button variant="text" onClick={() => navigate("/")}>
-                Home
-              </Button>
-              <IconButton onClick={() => setSidebarOpen(true)}>
-                <MenuIcon />
-              </IconButton>
               <Typography variant="subtitle1" fontWeight={600}>
-                Task {currentTask ? currentTask.id : "-"} / {moduleProgressTotal || "-"} —{" "}
+                Task {currentTask ? currentTask.id : "-"} / {moduleProgressTotal || "-"} —
                 {currentTask?.title ?? "Нет задачи"}
               </Typography>
             </Stack>
