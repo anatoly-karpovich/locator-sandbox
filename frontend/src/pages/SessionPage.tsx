@@ -25,7 +25,7 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../components/HeaderBar";
 import type { ModuleConfig, SolutionResponse, Task, TaskMap, TaskResultPayload } from "../types";
-import { submitSolution } from "../api";
+import { submitSolution, fetchTask } from "../api";
 
 type SessionPageProps = {
   modules: ModuleConfig[];
@@ -60,55 +60,89 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   const [completedTasks, setCompletedTasks] = useState<Set<number>>(new Set());
   const [checksState, setChecksState] = useState<CheckState[]>([]);
   const [isRunning, setIsRunning] = useState(false);
+  const [taskLoading, setTaskLoading] = useState(false);
+  const [taskLoadError, setTaskLoadError] = useState<string | null>(null);
+  const [currentTaskData, setCurrentTaskData] = useState<Task | null>(null);
 
   const tasksAvailable = useMemo(() => Object.values(tasks).length > 0, [tasks]);
 
   useEffect(() => {
     if (!tasksAvailable || modules.length === 0) return;
-    const preferredModuleId = state.moduleId ?? currentModuleId;
-    const selectedModule =
-      modules.find((m) => m.id === preferredModuleId && m.taskIds.length > 0) ||
-      modules.find((m) => m.taskIds.length > 0) ||
-      modules[0];
-    setCurrentModuleId(selectedModule.id);
 
-    const firstTask = selectedModule.taskIds.find((taskId) => tasks[taskId]) ?? Object.values(tasks)[0]?.id ?? null;
-    setCurrentTaskId(state.taskId ?? currentTaskId ?? firstTask ?? null);
+    const fallbackModule = modules.find((m) => m.taskIds.length > 0) || modules[0];
+    const targetModuleId = currentModuleId ?? state.moduleId ?? fallbackModule.id;
+    if (!currentModuleId) {
+      setCurrentModuleId(targetModuleId);
+    }
+
+    if (!currentTaskId) {
+      const targetModule = modules.find((m) => m.id === targetModuleId) ?? fallbackModule;
+      const firstTask = targetModule.taskIds.find((taskId) => tasks[taskId]) ?? Object.values(tasks)[0]?.id ?? null;
+      setCurrentTaskId(state.taskId ?? firstTask ?? null);
+    }
   }, [tasksAvailable, modules, tasks, state.moduleId, state.taskId, currentModuleId, currentTaskId]);
 
   const currentModule = modules.find((m) => m.id === currentModuleId) ?? (modules.length ? modules[0] : null);
-  const currentTask: Task | undefined = currentTaskId ? tasks[currentTaskId] : undefined;
+  const currentTaskMeta: Task | undefined = currentTaskId ? tasks[currentTaskId] : undefined;
 
   const moduleTasks = currentModule
     ? ((currentModule.taskIds ?? []).map((id) => tasks[id]).filter(Boolean) as Task[])
     : [];
   const moduleProgressTotal = moduleTasks.length;
   const prevTaskId = useMemo(() => {
-    if (!currentTask || moduleTasks.length === 0) return null;
-    const idx = moduleTasks.findIndex((t) => t.id === currentTask.id);
+    if (!currentTaskMeta || moduleTasks.length === 0) return null;
+    const idx = moduleTasks.findIndex((t) => t.id === currentTaskMeta.id);
     if (idx > 0) return moduleTasks[idx - 1].id;
     return null;
-  }, [currentTask, moduleTasks]);
+  }, [currentTaskMeta, moduleTasks]);
   const nextTaskId = useMemo(() => {
-    if (!currentTask || moduleTasks.length === 0) return null;
-    const idx = moduleTasks.findIndex((t) => t.id === currentTask.id);
+    if (!currentTaskMeta || moduleTasks.length === 0) return null;
+    const idx = moduleTasks.findIndex((t) => t.id === currentTaskMeta.id);
     if (idx < 0 || idx + 1 >= moduleTasks.length) return null;
     return moduleTasks[idx + 1].id;
-  }, [currentTask, moduleTasks]);
+  }, [currentTaskMeta, moduleTasks]);
 
   useEffect(() => {
-    if (!currentTask) {
+    if (!currentTaskId) {
+      setCurrentTaskData(null);
       setChecksState([]);
       return;
     }
-    const baseChecks: CheckState[] = Object.entries(currentTask.expectations).map(([key, expected]) => ({
+    let mounted = true;
+    setTaskLoading(true);
+    setTaskLoadError(null);
+    fetchTask(currentTaskId)
+      .then((task) => {
+        if (!mounted) return;
+        setCurrentTaskData(task);
+      })
+      .catch((err: any) => {
+        if (!mounted) return;
+        setTaskLoadError(err?.message ?? "Failed to load task");
+        setCurrentTaskData(null);
+      })
+      .finally(() => {
+        if (!mounted) return;
+        setTaskLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, [currentTaskId]);
+
+  useEffect(() => {
+    if (!currentTaskData) {
+      setChecksState([]);
+      return;
+    }
+    const baseChecks: CheckState[] = Object.entries(currentTaskData.expectations).map(([key, expected]) => ({
       key,
       expected,
       actual: null,
       status: "pending",
     }));
     setChecksState(baseChecks);
-  }, [currentTask]);
+  }, [currentTaskData]);
 
   const handleSelectTask = (taskId: number, moduleId: string) => {
     setCurrentModuleId(moduleId);
@@ -118,19 +152,19 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   };
 
   const handleRun = async () => {
-    if (!currentTask) return;
+    if (!currentTaskId || taskLoading || taskLoadError) return;
     setRunError(null);
     setSolutionResult(null);
     setIsRunning(true);
     try {
-      const result = await submitSolution({ taskId: currentTask.id, payload: locatorInput });
+      const result = await submitSolution({ taskId: currentTaskId, payload: locatorInput });
       setSolutionResult(result);
       updateChecksFromResult(result);
 
       const passed =
         ("taskResult" in result && result.taskResult?.passed) || ("result" in result && result.result?.passed) || false;
       if (passed) {
-        setCompletedTasks((prev) => new Set([...prev, currentTask.id]));
+        setCompletedTasks((prev) => new Set([...prev, currentTaskId]));
       }
     } catch (e: any) {
       setRunError(e.message ?? "Failed to run locator");
@@ -145,9 +179,8 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   };
 
   const updateChecksFromResult = (result: SolutionResponse) => {
-    if (!currentTask) return;
+    if (!currentTaskData) return;
 
-    // If no checks info, mark fail
     let checksPayload: TaskResultPayload["checks"] | undefined;
     if ("taskResult" in result && result.taskResult) checksPayload = result.taskResult.checks;
     if ("result" in result && result.result) checksPayload = result.result.checks;
@@ -335,21 +368,22 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
               ← Previous
             </Button>
             <Typography variant="subtitle1" fontWeight={600} sx={{ textAlign: "center", flexGrow: 1 }}>
-              Task {currentTask ? currentTask.id : "-"} — {currentTask?.title ?? "Нет задачи"}
+              Task {currentTaskData?.id ?? currentTaskId ?? "-"} / {moduleProgressTotal || "-"} —{" "}
+              {currentTaskData?.title ?? currentTaskMeta?.title ?? "Нет задачи"}
             </Typography>
             <Button variant="outlined" onClick={handleNextTask} disabled={!nextTaskId}>
               Next →
             </Button>
           </Stack>
 
-          {loading && <Typography>Загружаем задачу...</Typography>}
-          {error && (
+          {(loading || taskLoading) && <Typography>Загружаем задачу...</Typography>}
+          {(error || taskLoadError) && (
             <Typography color="error" marginBottom={2}>
-              {error}
+              {error || taskLoadError}
             </Typography>
           )}
 
-          {currentTask && (
+          {currentTaskData && !taskLoading && (
             <Stack spacing={3}>
               <Box
                 sx={{
@@ -373,7 +407,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
                       border: "1px dashed #e0e0e0",
                       minHeight: 160,
                     }}
-                    dangerouslySetInnerHTML={{ __html: currentTask.html }}
+                    dangerouslySetInnerHTML={{ __html: currentTaskData.html }}
                   />
                 </Box>
                 <Box
@@ -396,7 +430,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
                       overflow: "auto",
                     }}
                   >
-                    {currentTask.html}
+                    {currentTaskData.html}
                   </Box>
                 </Box>
               </Box>
@@ -418,7 +452,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
                       startIcon={isRunning ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}
                       sx={{ minWidth: 140 }}
                       onClick={handleRun}
-                      disabled={!locatorInput.trim() || isRunning}
+                      disabled={!locatorInput.trim() || isRunning || taskLoading || !currentTaskId}
                     >
                       {isRunning ? "Running..." : "Run"}
                     </Button>
@@ -431,7 +465,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
             </Stack>
           )}
 
-          {!loading && !currentTask && (
+          {!loading && !currentTaskData && !taskLoading && (
             <Typography color="text.secondary">Нет задач для отображения. Проверьте настройки модулей.</Typography>
           )}
         </Box>
