@@ -38,6 +38,13 @@ type LocationState = {
   taskId?: number;
 };
 
+type CheckState = {
+  key: string;
+  expected: unknown;
+  actual: unknown;
+  status: "pending" | "pass" | "fail";
+};
+
 export default function SessionPage({ modules, tasks, loading, error }: SessionPageProps) {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -50,6 +57,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   const [solutionResult, setSolutionResult] = useState<SolutionResponse | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
   const [completedTasks, setCompletedTasks] = useState<Set<number>>(new Set());
+  const [checksState, setChecksState] = useState<CheckState[]>([]);
 
   const tasksAvailable = useMemo(() => Object.values(tasks).length > 0, [tasks]);
 
@@ -75,6 +83,20 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   const moduleProgressTotal = moduleTasks.length;
   const moduleProgressDone = moduleTasks.filter((t) => completedTasks.has(t.id)).length;
 
+  useEffect(() => {
+    if (!currentTask) {
+      setChecksState([]);
+      return;
+    }
+    const baseChecks: CheckState[] = Object.entries(currentTask.expectations).map(([key, expected]) => ({
+      key,
+      expected,
+      actual: null,
+      status: "pending",
+    }));
+    setChecksState(baseChecks);
+  }, [currentTask]);
+
   const handleSelectTask = (taskId: number, moduleId: string) => {
     setCurrentModuleId(moduleId);
     setCurrentTaskId(taskId);
@@ -89,6 +111,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     try {
       const result = await submitSolution({ taskId: currentTask.id, payload: locatorInput });
       setSolutionResult(result);
+      updateChecksFromResult(result);
 
       const passed =
         ("taskResult" in result && result.taskResult?.passed) || ("result" in result && result.result?.passed) || false;
@@ -97,7 +120,38 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
       }
     } catch (e: any) {
       setRunError(e.message ?? "Failed to run locator");
+      markAllChecksFailed();
     }
+  };
+
+  const markAllChecksFailed = () => {
+    setChecksState((prev) => prev.map((c) => ({ ...c, status: "fail" })));
+  };
+
+  const updateChecksFromResult = (result: SolutionResponse) => {
+    if (!currentTask) return;
+
+    // If no checks info, mark fail
+    let checksPayload: TaskResultPayload["checks"] | undefined;
+    if ("taskResult" in result && result.taskResult) checksPayload = result.taskResult.checks;
+    if ("result" in result && result.result) checksPayload = result.result.checks;
+
+    if (!checksPayload || checksPayload.length === 0) {
+      markAllChecksFailed();
+      return;
+    }
+
+    setChecksState((prev) =>
+      prev.map((check) => {
+        const found = checksPayload?.find((c) => c.key === check.key);
+        if (!found) return { ...check, status: "fail" };
+        return {
+          ...check,
+          actual: found.actual,
+          status: found.passed ? "pass" : "fail",
+        };
+      })
+    );
   };
 
   const renderSidebarContent = () => (
@@ -168,17 +222,23 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     );
   };
 
-  const renderChecks = (checks: TaskResultPayload["checks"]) => {
-    if (!checks?.length) return null;
-    return (
+  const renderChecksPanel = () => (
+    <Box sx={{ background: "#fff", borderRadius: 2, padding: 2, border: "1px solid #e0e0e0" }}>
+      <Typography variant="h6" gutterBottom>
+        Checks
+      </Typography>
       <Stack spacing={1}>
-        {checks.map((check, idx) => (
+        {checksState.map((check, idx) => (
           <Paper
             variant="outlined"
             key={`${check.key}-${idx}`}
-            sx={{ padding: 1.5, display: "flex", alignItems: "center", gap: 1 }}
+            sx={{ padding: 1.5, display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}
           >
-            <Chip label={check.passed ? "pass" : "fail"} color={check.passed ? "success" : "error"} size="small" />
+            <Chip
+              label={check.status === "pass" ? "pass" : check.status === "fail" ? "fail" : "pending"}
+              color={check.status === "pass" ? "success" : check.status === "fail" ? "error" : "default"}
+              size="small"
+            />
             <Typography variant="body2" sx={{ minWidth: 100 }}>
               {check.key}
             </Typography>
@@ -186,31 +246,29 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
               expected: {String(check.expected)}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              actual: {String(check.actual)}
+              actual: {check.actual === null || check.actual === undefined ? "-" : String(check.actual)}
             </Typography>
           </Paper>
         ))}
+        {checksState.length === 0 && (
+          <Typography variant="body2" color="text.secondary">
+            Нет проверок для этой задачи.
+          </Typography>
+        )}
       </Stack>
-    );
-  };
+    </Box>
+  );
 
   const renderResultPanel = () => {
     if (!solutionResult && !runError) return null;
 
-    let presenceBlock = null;
-    let checksBlock = null;
+    const explanations =
+      (solutionResult && "explanation" in solutionResult && Array.isArray((solutionResult as any).explanation)
+        ? (solutionResult as any).explanation
+        : []) || [];
 
-    if (solutionResult) {
-      if ("presence" in solutionResult) {
-        presenceBlock = renderPresence(solutionResult.presence);
-      }
-
-      if ("taskResult" in solutionResult && solutionResult.taskResult) {
-        checksBlock = renderChecks(solutionResult.taskResult.checks);
-      } else if ("result" in solutionResult && solutionResult.result) {
-        checksBlock = renderChecks(solutionResult.result.checks);
-      }
-    }
+    const presenceBlock =
+      solutionResult && "presence" in solutionResult ? renderPresence((solutionResult as any).presence) : null;
 
     return (
       <Box sx={{ background: "#fff", borderRadius: 2, padding: 2, border: "1px solid #e0e0e0" }}>
@@ -223,17 +281,23 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
           </Typography>
         )}
         {presenceBlock}
-        {checksBlock}
         <Divider sx={{ marginY: 2 }} />
         <Typography variant="subtitle2" gutterBottom>
-          Raw response
+          Explanation
         </Typography>
-        <Box
-          component="pre"
-          sx={{ background: "#f5f5f5", padding: 2, borderRadius: 1, overflow: "auto", fontSize: 13, maxHeight: 240 }}
-        >
-          {solutionResult ? JSON.stringify(solutionResult, null, 2) : "No data"}
-        </Box>
+        {explanations.length > 0 ? (
+          <Stack spacing={0.5}>
+            {explanations.map((line: string, idx: number) => (
+              <Typography key={idx} variant="body2">
+                {line}
+              </Typography>
+            ))}
+          </Stack>
+        ) : (
+          <Typography variant="body2" color="text.secondary">
+            Пока нет объяснений.
+          </Typography>
+        )}
       </Box>
     );
   };
@@ -348,6 +412,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
                 </Stack>
               </Stack>
 
+              {renderChecksPanel()}
               {renderResultPanel()}
             </Stack>
           )}

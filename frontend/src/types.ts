@@ -54,15 +54,18 @@ export type SolutionResponse =
   | {
       stage: "presence";
       presence: PresenceInfo;
+      explanation?: string[];
     }
   | {
       stage: "task";
       presence: PresenceInfo;
       taskResult: TaskResultPayload;
+      explanation?: string[];
     }
   | {
       isSuccess: boolean;
       result?: TaskResultPayload;
       ErrorMessage?: string;
       presence?: PresenceInfo;
+      explanation?: string[];
     };
