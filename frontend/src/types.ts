@@ -1,14 +1,17 @@
 export type Expectations = {
   count?: number;
   visible?: boolean;
+  enabled?: boolean;
   text?: string | null;
 };
 
 export type Task = {
+  module: string;
   id: number;
   title: string;
   html: string;
   expectations: Expectations;
+  heuristics?: string[];
 };
 
 export type TaskMap = Record<number, Task>;

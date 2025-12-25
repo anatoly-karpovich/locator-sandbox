@@ -30,11 +30,19 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
 
-  const modules: ModuleConfig[] = useMemo(() => modulesConfig, []);
-  const taskList: TaskSummary[] = useMemo(
-    () => Object.values(tasks).map((t) => ({ id: t.id, title: t.title })),
-    [tasks]
-  );
+  const modules: ModuleConfig[] = useMemo(() => {
+    // attach task ids from backend to predefined modules list
+    const grouped = modulesConfig.map((module) => ({
+      ...module,
+      taskIds: Object.values(tasks)
+        .filter((t) => t.module === module.id)
+        .map((t) => t.id)
+        .sort((a, b) => a - b),
+    }));
+    return grouped;
+  }, [tasks]);
+
+  const taskList: TaskSummary[] = useMemo(() => Object.values(tasks).map((t) => ({ id: t.id, title: t.title })), [tasks]);
 
   return (
     <ThemeProvider theme={theme}>

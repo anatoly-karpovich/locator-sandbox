@@ -67,7 +67,11 @@ export default function HomePage({ modules, tasks, loading, error }: HomePagePro
                     </Typography>
                   </CardContent>
                   <CardActions sx={{ paddingX: 2, paddingBottom: 2 }}>
-                    <Button variant="contained" disabled={!tasks.length} onClick={() => handleChoose(module)}>
+                    <Button
+                      variant="contained"
+                      disabled={!tasks.length || module.taskIds.length === 0}
+                      onClick={() => handleChoose(module)}
+                    >
                       Choose module
                     </Button>
                   </CardActions>

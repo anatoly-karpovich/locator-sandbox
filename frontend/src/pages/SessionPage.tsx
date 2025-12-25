@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Accordion,
   AccordionDetails,
@@ -47,6 +47,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   const { id } = useParams();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state as LocationState | null) ?? {};
 
@@ -61,18 +62,24 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   const tasksAvailable = useMemo(() => Object.values(tasks).length > 0, [tasks]);
 
   useEffect(() => {
-    if (!tasksAvailable) return;
-    const selectedModule = modules.find((m) => m.id === (state.moduleId ?? currentModuleId)) ?? modules[0];
+    if (!tasksAvailable || modules.length === 0) return;
+    const preferredModuleId = state.moduleId ?? currentModuleId;
+    const selectedModule =
+      modules.find((m) => m.id === preferredModuleId && m.taskIds.length > 0) ||
+      modules.find((m) => m.taskIds.length > 0) ||
+      modules[0];
     setCurrentModuleId(selectedModule.id);
 
     const firstTask = selectedModule.taskIds.find((taskId) => tasks[taskId]) ?? Object.values(tasks)[0]?.id ?? null;
     setCurrentTaskId(state.taskId ?? currentTaskId ?? firstTask ?? null);
   }, [tasksAvailable, modules, tasks, state.moduleId, state.taskId, currentModuleId, currentTaskId]);
 
-  const currentModule = modules.find((m) => m.id === currentModuleId) ?? modules[0];
+  const currentModule = modules.find((m) => m.id === currentModuleId) ?? (modules.length ? modules[0] : null);
   const currentTask: Task | undefined = currentTaskId ? tasks[currentTaskId] : undefined;
 
-  const moduleTasks = (currentModule?.taskIds ?? []).map((id) => tasks[id]).filter(Boolean) as Task[];
+  const moduleTasks = currentModule
+    ? (currentModule.taskIds ?? []).map((id) => tasks[id]).filter(Boolean) as Task[]
+    : [];
   const moduleProgressTotal = moduleTasks.length;
   const moduleProgressDone = moduleTasks.filter((t) => completedTasks.has(t.id)).length;
 
@@ -258,6 +265,9 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
         <Box component="main" sx={{ padding: 3, overflow: "auto" }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" marginBottom={3}>
             <Stack direction="row" spacing={2} alignItems="center">
+              <Button variant="text" onClick={() => navigate("/")}>
+                Home
+              </Button>
               <IconButton onClick={() => setSidebarOpen(true)}>
                 <MenuIcon />
               </IconButton>
