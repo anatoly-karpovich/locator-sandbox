@@ -4,8 +4,10 @@ import { LocatorService } from "../locator/locator.service";
 import { tasks } from "../tasks/storage";
 import { TaskHandler } from "../tasks/taskHandler";
 
+export type SubmitSolutionDTO = { payload: string; taskId: number };
+
 export class SolutionController {
-  async submit(req: Request<{}, { payload: string; taskId: number }>, res: Response) {
+  async submit(req: Request<{}, SubmitSolutionDTO>, res: Response) {
     const { payload, taskId } = req.body;
 
     const task = tasks.find((t) => t.id === taskId);
