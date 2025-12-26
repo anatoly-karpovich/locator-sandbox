@@ -4,19 +4,19 @@ export const modulesConfig: ModuleConfig[] = [
   {
     id: "GetBy",
     name: "getBy*",
-    description: "Работа с getByText / getByRole и их опциями.",
+    description: "Practice getByText / getByRole and their options.",
     taskIds: [],
   },
   {
     id: "locator",
     name: "locator()",
-    description: "Базовые селекторы через locator() и фильтры.",
+    description: "Core selectors via locator() and basic filters.",
     taskIds: [],
   },
   {
     id: "filters",
     name: "Filters & relations",
-    description: "has / hasText, nth, first/last и композиции.",
+    description: "has / hasText, nth, first/last, and compositions.",
     taskIds: [],
   },
 ];

@@ -39,12 +39,11 @@ export default function HomePage({ modules, tasks, loading, error }: HomePagePro
                 Playwright Locator Sandbox
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Тренажер для практики Playwright Locator API. Отрабатывайте селекторы на подготовленных HTML примерах и
-                смотрите, почему локаторы работают или нет.
+                Practice Playwright Locator API. Try selectors on prepared HTML samples and see why locators pass or fail.
               </Typography>
               {loading && (
                 <Typography variant="body2" color="text.secondary">
-                  Загружаем задачи...
+                  Loading tasks...
                 </Typography>
               )}
               {error && (

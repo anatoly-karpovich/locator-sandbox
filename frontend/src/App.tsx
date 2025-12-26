@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import HomePage from "./pages/HomePage";
 import SessionPage from "./pages/SessionPage";
@@ -16,11 +16,27 @@ const theme = createTheme({
 });
 
 function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </ThemeProvider>
+  );
+}
+
+function AppRoutes() {
+  const location = useLocation();
   const [tasks, setTasks] = useState<TaskMap>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const tasksEmpty = Object.keys(tasks).length === 0;
+    if (location.pathname !== "/" && !tasksEmpty) return;
+
+    setLoading(true);
     fetchTasks()
       .then((data) => {
         setTasks(data);
@@ -28,7 +44,7 @@ function App() {
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [location.pathname]);
 
   const modules: ModuleConfig[] = useMemo(() => {
     // attach task ids from backend to predefined modules list
@@ -42,19 +58,20 @@ function App() {
     return grouped;
   }, [tasks]);
 
-  const taskList: TaskSummary[] = useMemo(() => Object.values(tasks).map((t) => ({ id: t.id, title: t.title })), [tasks]);
+  const taskList: TaskSummary[] = useMemo(
+    () => Object.values(tasks).map((t) => ({ id: t.id, title: t.title })),
+    [tasks]
+  );
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage modules={modules} tasks={taskList} loading={loading} error={error} />} />
-          <Route path="/session/:id" element={<SessionPage modules={modules} tasks={tasks} loading={loading} error={error} />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+    <Routes>
+      <Route path="/" element={<HomePage modules={modules} tasks={taskList} loading={loading} error={error} />} />
+      <Route
+        path="/session/:id"
+        element={<SessionPage modules={modules} tasks={tasks} loading={loading} error={error} />}
+      />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
 }
 

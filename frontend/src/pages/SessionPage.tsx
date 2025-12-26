@@ -106,9 +106,10 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   const currentModule = modules.find((m) => m.id === currentModuleId) ?? (modules.length ? modules[0] : null);
   const currentTaskMeta: Task | undefined = currentTaskId ? tasks[currentTaskId] : undefined;
 
-  const moduleTasks = currentModule
-    ? ((currentModule.taskIds ?? []).map((id) => tasks[id]).filter(Boolean) as Task[])
-    : [];
+  const moduleTasks = useMemo(() => {
+    if (!currentModule) return [];
+    return ((currentModule.taskIds ?? []).map((id) => tasks[id]).filter(Boolean) as Task[]);
+  }, [currentModule, tasks]);
   const moduleProgressTotal = moduleTasks.length;
   const prevTaskId = useMemo(() => {
     if (!currentTaskMeta || moduleTasks.length === 0) return null;
@@ -129,6 +130,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
       setChecksState([]);
       return;
     }
+
     let mounted = true;
     setTaskLoading(true);
     setTaskLoadError(null);
