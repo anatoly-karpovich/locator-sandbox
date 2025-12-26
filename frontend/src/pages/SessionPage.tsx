@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Accordion,
   AccordionDetails,
@@ -39,15 +39,36 @@ type LocationState = {
   taskId?: number;
 };
 
+const CHECK_STATUS = {
+  Pending: "Pending",
+  Pass: "Passed",
+  Fail: "Failed",
+} as const;
+
+type CheckStatus = (typeof CHECK_STATUS)[keyof typeof CHECK_STATUS];
+
+const getErrorMessage = (err: string | null) => {
+  if (!err) return null;
+  let msg = err;
+  if (err.includes("ErrorMessage")) {
+    try {
+      const parsed = JSON.parse(err);
+      if (parsed?.ErrorMessage) msg = parsed.ErrorMessage;
+    } catch {
+      // ignore parse errors
+    }
+  }
+  return msg;
+};
+
 type CheckState = {
   key: string;
   expected: unknown;
   actual: unknown;
-  status: "pending" | "pass" | "fail";
+  status: CheckStatus;
 };
 
 export default function SessionPage({ modules, tasks, loading, error }: SessionPageProps) {
-  const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state as LocationState | null) ?? {};
@@ -139,7 +160,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
       key,
       expected,
       actual: null,
-      status: "pending",
+      status: CHECK_STATUS.Pending,
     }));
     setChecksState(baseChecks);
   }, [currentTaskData]);
@@ -149,6 +170,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     setCurrentTaskId(taskId);
     setSolutionResult(null);
     setRunError(null);
+    setLocatorInput("");
   };
 
   const handleRun = async () => {
@@ -175,7 +197,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   };
 
   const markAllChecksFailed = () => {
-    setChecksState((prev) => prev.map((c) => ({ ...c, status: "fail" })));
+    setChecksState((prev) => prev.map((c) => ({ ...c, status: CHECK_STATUS.Fail, actual: null })));
   };
 
   const updateChecksFromResult = (result: SolutionResponse) => {
@@ -193,11 +215,11 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     setChecksState((prev) =>
       prev.map((check) => {
         const found = checksPayload?.find((c) => c.key === check.key);
-        if (!found) return { ...check, status: "fail" };
+        if (!found) return { ...check, status: CHECK_STATUS.Fail, actual: null };
         return {
           ...check,
-          actual: found.actual,
-          status: found.passed ? "pass" : "fail",
+          actual: found.actual ?? null,
+          status: found.passed ? CHECK_STATUS.Pass : CHECK_STATUS.Fail,
         };
       })
     );
@@ -222,9 +244,6 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
 
   const renderSidebarContent = () => (
     <Box sx={{ width: 280, padding: 2 }}>
-      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-        Session {id}
-      </Typography>
       {modules.map((module) => {
         const moduleTaskList = module.taskIds.map((tid) => tasks[tid]).filter(Boolean) as Task[];
         const total = moduleTaskList.length;
@@ -266,7 +285,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
                 })}
                 {moduleTaskList.length === 0 && (
                   <ListItem>
-                    <ListItemText primary="Нет задач в этом модуле" primaryTypographyProps={{ variant: "body2" }} />
+                    <ListItemText primary="No tasks in this module" primaryTypographyProps={{ variant: "body2" }} />
                   </ListItem>
                 )}
               </List>
@@ -279,9 +298,14 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
 
   const renderChecksPanel = () => (
     <Box sx={{ background: "#fff", borderRadius: 2, padding: 2, border: "1px solid #e0e0e0" }}>
-      <Typography variant="h6" gutterBottom>
-        Checks
-      </Typography>
+      <Stack direction="row" alignItems="center" spacing={2} marginBottom={1}>
+        <Typography variant="h6">Checks</Typography>
+        {getErrorMessage(runError) && (
+          <Typography variant="body2" color="error" fontWeight={600}>
+            {getErrorMessage(runError)}
+          </Typography>
+        )}
+      </Stack>
       <Stack spacing={1}>
         {checksState.map((check, idx) => (
           <Paper
@@ -290,8 +314,20 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
             sx={{ padding: 1.5, display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}
           >
             <Chip
-              label={check.status === "pass" ? "pass" : check.status === "fail" ? "fail" : "pending"}
-              color={check.status === "pass" ? "success" : check.status === "fail" ? "error" : "default"}
+              label={
+                check.status === CHECK_STATUS.Pass
+                  ? CHECK_STATUS.Pass
+                  : check.status === CHECK_STATUS.Fail
+                  ? CHECK_STATUS.Fail
+                  : CHECK_STATUS.Pending
+              }
+              color={
+                check.status === CHECK_STATUS.Pass
+                  ? "success"
+                  : check.status === CHECK_STATUS.Fail
+                  ? "error"
+                  : "default"
+              }
               size="small"
             />
             <Typography variant="body2" sx={{ minWidth: 100 }}>
@@ -307,7 +343,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
         ))}
         {checksState.length === 0 && (
           <Typography variant="body2" color="text.secondary">
-            Нет проверок для этой задачи.
+            No checks for current task.
           </Typography>
         )}
       </Stack>
@@ -325,11 +361,6 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
         <Typography variant="h6" gutterBottom>
           Explanation
         </Typography>
-        {runError && (
-          <Typography variant="body2" color="error" gutterBottom>
-            {runError}
-          </Typography>
-        )}
         {explanations.length > 0 ? (
           <Stack spacing={0.5}>
             {explanations.map((line: string, idx: number) => (
@@ -340,7 +371,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
           </Stack>
         ) : (
           <Typography variant="body2" color="text.secondary">
-            Пока нет объяснений.
+            No explanations yet.
           </Typography>
         )}
       </Box>
@@ -369,14 +400,14 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
             </Button>
             <Typography variant="subtitle1" fontWeight={600} sx={{ textAlign: "center", flexGrow: 1 }}>
               Task {currentTaskData?.id ?? currentTaskId ?? "-"} / {moduleProgressTotal || "-"} —{" "}
-              {currentTaskData?.title ?? currentTaskMeta?.title ?? "Нет задачи"}
+              {currentTaskData?.title ?? currentTaskMeta?.title ?? "No task"}
             </Typography>
             <Button variant="outlined" onClick={handleNextTask} disabled={!nextTaskId}>
               Next →
             </Button>
           </Stack>
 
-          {(loading || taskLoading) && <Typography>Загружаем задачу...</Typography>}
+          {(loading || taskLoading) && <Typography>Loading task...</Typography>}
           {(error || taskLoadError) && (
             <Typography color="error" marginBottom={2}>
               {error || taskLoadError}
@@ -466,7 +497,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
           )}
 
           {!loading && !currentTaskData && !taskLoading && (
-            <Typography color="text.secondary">Нет задач для отображения. Проверьте настройки модулей.</Typography>
+            <Typography color="text.secondary">No tasks to display. Check your module setup.</Typography>
           )}
         </Box>
       </Box>
