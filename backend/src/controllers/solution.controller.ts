@@ -37,7 +37,7 @@ export class SolutionController {
       result = await solutionHandler.runTask(task, locator);
 
       res.status(200).json({
-        isSuccess: true,
+        IsSuccess: true,
         result,
       });
     } catch (e: any) {
