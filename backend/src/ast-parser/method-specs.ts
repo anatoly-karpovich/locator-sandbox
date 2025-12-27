@@ -7,18 +7,18 @@ export const METHOD_SPECS: Record<string, MethodSpec> = {
   locator: {
     allowedReceivers: ["page", "locator"],
     nextReceiver: "locator",
-  buildStep: (receiver, args, parseFromAst): Step => {
-    if (args.length < 1 || args.length > 2) {
-      throw new Error("locator(selector, options?) expects 1 or 2 args");
-    }
+    buildStep: (receiver, args, parseFromAst): Step => {
+      if (args.length < 1 || args.length > 2) {
+        throw new Error("locator(selector, options?) expects 1 or 2 args");
+      }
 
-    const selector = readString(args[0], "locator(selector)");
-    const options = args[1]
-      ? readLocatorOptions(args[1], parseFromAst, "locator(options)")
-      : undefined;
+      const selector = readString(args[0], "locator(selector)");
+      const options = args[1]
+        ? readLocatorOptions(args[1], parseFromAst, "locator(options)")
+        : undefined;
 
-    return { receiver, method: "locator", args: [selector, options] };
-  },
+      return { receiver, method: "locator", args: [selector, options] };
+    },
   },
 
   first: {

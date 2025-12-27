@@ -5,7 +5,7 @@ import taskService from "../tasks/tasks.service";
 import { SolutionsHandler } from "../tasks/solutionsHandler";
 import { HTTP_CODES } from "../data/httpCodes";
 import { parsePlaywrightLocatorAst } from "../ast-parser/parser";
-import { usageSpecification } from "../usageSpec/usageSpecification";
+import UsageSpecification from "../usageSpec/usageSpecification";
 
 export type SubmitSolutionDTO = { payload: string; taskId: number };
 
@@ -23,6 +23,7 @@ export class SolutionController {
     const page = await browser.newPage();
 
     const locatorService = new LocatorService(page);
+    const usageSpecification = new UsageSpecification();
 
     let result: any = {
       text: "",
@@ -34,14 +35,14 @@ export class SolutionController {
       const parsed = parsePlaywrightLocatorAst(payload);
       const steps = parsed.steps;
 
-      const usageResult = usageSpecification.validate(steps, task.usageSpec);
-      const usageExplanation = usageSpecification.buildExplanation(usageResult);
       const locator = locatorService.createLocator(payload);
 
       const isPresented = await locatorService.checkPresence(locator);
       if (!isPresented.attached) throw new Error("Element not found");
 
       result = await solutionHandler.runTask(task, locator);
+      const usageResult = usageSpecification.validate(steps, task.usageSpec);
+      const usageExplanation = usageSpecification.buildExplanation(usageResult);
 
       res.status(HTTP_CODES.OK).json({
         IsSuccess: true,

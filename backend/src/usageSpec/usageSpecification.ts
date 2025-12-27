@@ -1,9 +1,8 @@
 import { Step } from "../ast-parser/types";
 import { UsageCheckResult, UsageSpec } from "../tasks/types";
 import { getArgumentType } from "../utils/getArgumentType";
-import { isValidRegexSimple } from "../utils/isValidRegExp";
 
-class UsageSpecification {
+export default class UsageSpecification {
     private messages: Set<string> = new Set();
 
     public validate(steps: Step[], specs: UsageSpec): UsageCheckResult {
@@ -11,10 +10,7 @@ class UsageSpecification {
 
         const step = steps.find((step) => step.method === specs.method);
         if (!step) {
-            details.method = {
-                passed: false,
-                expected: specs.method,
-            }
+            details.method = { passed: false, expected: specs.method };
             return { passed: false, details };
         }
 
@@ -24,45 +20,24 @@ class UsageSpecification {
             actual: step.method,
         };
 
-        const actualArg = step.args[0];
-        const actualArgType = getArgumentType(actualArg);
-        const argTypePassed = actualArgType === specs.argument.type;
+        const [inputArg, inputOptions] = step.args!;
+        const actualArgType = getArgumentType(inputArg);
 
         details.argument = {
-            passed: argTypePassed,
+            passed: actualArgType === specs.argument.type,
             expected: specs.argument.type,
             actual: actualArgType,
         };
 
-        // if (specs.argument.match) {
-        //     const isExactMatch = actualArg === true;
-
-        //     if (specs.argument.match === "exact") {
-        //         details.match = {
-        //             passed: isExactMatch,
-        //             expected: "exact",
-        //             actual: options?.exact,
-        //         };
-        //     } else if (specs.argument.match === "partial") {
-        //         details.match = {
-        //             passed: !isExactMatch,
-        //             expected: "partial",
-        //             actual: isExactMatch ? "exact" : "partial",
-        //         };
-        //     }
-        // }
-
-        if (specs.options) {
-            const actualOptions = step.args[1] as Record<string, unknown> | undefined;
-            const optionsPassed = Object.entries(specs.options).every(([key, value]) => actualOptions?.[key] === value);
-            details.options = {
-                passed: optionsPassed,
-                expected: specs.options,
-                actual: actualOptions,
-            };
+        if (specs.argument.match && specs.argument.value) {
+            details.match = this.checkArgumentMatch(inputArg, specs.argument);
         }
 
-        const passed = Object.values(details).every((detail) => !!detail?.passed );
+        if (specs.options) {
+            details.options = this.checkOptions(inputOptions, specs.options);
+        }
+
+        const passed = Object.values(details).every((detail) => detail?.passed);
 
         return { passed, details };
     }
@@ -72,14 +47,71 @@ class UsageSpecification {
             this.messages.add(`Expected method "${result.details.method?.expected}"`);
         }
         if (result.details.argument && !result.details.argument?.passed) {
-            this.messages.add(`Expected argument type "${result.details.argument?.expected}", got "${result.details.argument?.actual}"`);
+            this.messages.add(`Expected argument type "${result.details.argument?.expected}", got "${result.details.argument?.actual}" argument.`);
         }
         if (result.details.options && !result.details.options?.passed) {
-            this.messages.add(`Expected options "${result.details.options?.expected}", got "${result.details.options?.actual}"`);
+            this.messages.add(`Expected options "${result.details.options?.expected}", got "${result.details.options?.actual}" options.`);
+        }
+        if (result.details.match && !result.details.match?.passed) {
+            this.messages.add(`Expected value by "${result.details.match?.expected}" match, got "${result.details.match?.actual}" match.`);
         }
 
-        return Array.from(this.messages);
+        const messages = Array.from(this.messages);
+        this.clearMessages();
+
+        return messages;
+    }
+
+    private checkArgumentMatch(
+        actualArg: unknown,
+        specArg: UsageSpec["argument"]
+    ): UsageCheckResult["details"]["match"] {
+        const matchType = specArg.match!;
+        const expectedValue = specArg.value;
+
+        const passed = matchType === "exact"
+            ? this.isExactMatch(actualArg, expectedValue)
+            : this.isPartialMatch(actualArg, expectedValue);
+
+        const actualMatch = !passed && matchType === "exact" ? "partial" : "exact";
+
+        return { passed, expected: matchType, actual: actualMatch };
+    }
+
+    private isExactMatch(actual: unknown, expected: unknown): boolean {
+        if (typeof actual === "string") return actual === expected;
+        if (actual instanceof RegExp) return this.isRegexEqual(actual, expected);
+        return false;
+    }
+
+    private isPartialMatch(actual: unknown, expected: unknown): boolean {
+        if (typeof actual === "string" && typeof expected === "string") {
+            return actual !== expected && expected.includes(actual);
+        }
+        if (actual instanceof RegExp) return this.isRegexEqual(actual, expected);
+        return false;
+    }
+
+    private isRegexEqual(actual: RegExp, expected: unknown): boolean {
+        return new RegExp(expected as string).toString() === actual.toString();
+    }
+
+    private checkOptions(
+        actualOptions: unknown,
+        expectedOptions: Record<string, unknown>
+    ): UsageCheckResult["details"]["options"] {
+        const opts = actualOptions as Record<string, unknown> | undefined;
+        const passed = Object.entries(expectedOptions).every(
+            ([key, value]) => opts?.[key] === value
+        );
+        return {
+            passed,
+            expected: `{ ${Object.entries(expectedOptions).map(([key, value]) => `${key}: ${value}`).join(", ")} }`,
+            actual: `{ ${Object.entries(opts ?? {}).map(([key, value]) => `${key}: ${value}`).join(", ")} }`,
+        };
+    }
+
+    private clearMessages() {
+        this.messages.clear();
     }
 }
-
-export const usageSpecification = new UsageSpecification();

@@ -23,9 +23,12 @@ export const getByTextTasks: Task[] = [
       method: "getByText",
       argument: {
         type: "string",
+        match: "partial",
+        value: "Welcome to the application",
       },
     },
   },
+
   // {
   //   module: "GetBy",
   //   id: 3,
@@ -52,29 +55,35 @@ export const getByTextTasks: Task[] = [
   // // ============================================
   // // EXACT MATCHING
   // // ============================================
-  // {
-  //   module: "GetBy",
-  //   id: 4,
-  //   title: "Use exact match to find specific element",
-  //   html: `
-  //     <ul class="menu">
-  //       <li>Hello</li>
-  //       <li>Hello World</li>
-  //       <li>Hello Universe</li>
-  //     </ul>
-  //   `,
-  //   expectations: {
-  //     count: 1,
-  //     text: "Hello",
-  //     visible: true,
-  //   },
-  //   context: {
-  //     goal: "single",
-  //     allowNth: false,
-  //     preferRole: false,
-  //   },
-  //   heuristics: ["getByText('Hello', { exact: true }) matches only the first li"],
-  // },
+  {
+    module: "GetBy",
+    id: 4,
+    title: "Find element by exact text match",
+    description: "We use getByText to find element by exact text match with option 'exact'",
+    html: `
+      <ul class="menu">
+        <li>Hello</li>
+        <li>Hello World</li>
+        <li>Hello Universe</li>
+      </ul>
+    `,
+    expectations: {
+      count: 1,
+      text: "Hello",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByText",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByText],
+    level: "beginner",
+  },
   // {
   //   module: "GetBy",
   //   id: 5,
