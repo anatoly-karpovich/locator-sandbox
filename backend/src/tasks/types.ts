@@ -40,6 +40,7 @@ export type UsageSpec = {
   argument: {
     type: "string" | "regex";
     match?: "exact" | "partial";
+    value?: string | RegExp;
   };
   options?: Record<string, unknown>;
 };
