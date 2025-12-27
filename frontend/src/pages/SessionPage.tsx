@@ -24,6 +24,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../components/HeaderBar";
+import { TaskInfoBar } from "../components/tasks/TaskInfoBar";
 import type { SolutionResponse, Task, TaskResultPayload, TopicNode } from "../types";
 import { submitSolution, fetchTask, fetchCurriculum } from "../api";
 
@@ -441,8 +442,12 @@ export default function SessionPage() {
                 </Box>
               </Box>
 
+              <TaskInfoBar
+                description={currentTaskData.description}
+                studyMaterials={currentTaskData.studyMaterials}
+              />
+
               <Stack spacing={2}>
-                <Typography variant="h6">Locator</Typography>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                   <TextField
                     fullWidth

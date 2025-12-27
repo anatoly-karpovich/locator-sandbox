@@ -1,3 +1,4 @@
+import { studyMaterials } from "../studyMaterials/data";
 import { Task } from "../types";
 
 export const getByTextTasks: Task[] = [
@@ -15,9 +16,9 @@ export const getByTextTasks: Task[] = [
       text: "Welcome to the application",
       visible: true,
     },
-    studyMaterials: [],
+    studyMaterials: [studyMaterials.locatorMethods.getByText],
     level: "beginner",
-    description: "Find element by partial text match",
+    description: "We use getByText to find elements by partial text match.",
     usageSpec: {
       method: "getByText",
       argument: {

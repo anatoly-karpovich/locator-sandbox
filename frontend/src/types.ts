@@ -9,6 +9,11 @@ export type Task = {
   module: string;
   id: number;
   title: string;
+  description: string;
+  studyMaterials: {
+    title: string;
+    url: string;
+  }[];
   html: string;
   expectations: Expectations;
   heuristics?: string[];
