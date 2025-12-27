@@ -93,4 +93,5 @@ export type TopicNode = {
   title: string;
   level: "beginner" | "intermediate" | "advanced";
   tasksCount: number;
+  tasks?: { id: number; title: string }[];
 };

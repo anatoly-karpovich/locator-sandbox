@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Accordion,
   AccordionDetails,
@@ -24,20 +24,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../components/HeaderBar";
-import type { ModuleConfig, SolutionResponse, Task, TaskMap, TaskResultPayload } from "../types";
-import { submitSolution, fetchTask } from "../api";
-
-type SessionPageProps = {
-  modules: ModuleConfig[];
-  tasks: TaskMap;
-  loading: boolean;
-  error: string | null;
-};
-
-type LocationState = {
-  moduleId?: string;
-  taskId?: number;
-};
+import type { SolutionResponse, Task, TaskResultPayload, TopicNode } from "../types";
+import { submitSolution, fetchTask, fetchCurriculum } from "../api";
 
 const CHECK_STATUS = {
   Pending: "Pending",
@@ -68,13 +56,13 @@ type CheckState = {
   status: CheckStatus;
 };
 
-export default function SessionPage({ modules, tasks, loading, error }: SessionPageProps) {
+export default function SessionPage() {
+  const { moduleId, sectionId } = useParams<{ moduleId: string; sectionId: string; sessionId: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
-  const state = (location.state as LocationState | null) ?? {};
 
-  const [currentModuleId, setCurrentModuleId] = useState<string | null>(state.moduleId ?? null);
-  const [currentTaskId, setCurrentTaskId] = useState<number | null>(state.taskId ?? null);
+  const [topics, setTopics] = useState<TopicNode[]>([]);
+  const [flatTaskIds, setFlatTaskIds] = useState<number[]>([]);
+  const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
   const [locatorInput, setLocatorInput] = useState("");
   const [solutionResult, setSolutionResult] = useState<SolutionResponse | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
@@ -84,53 +72,52 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
   const [taskLoading, setTaskLoading] = useState(false);
   const [taskLoadError, setTaskLoadError] = useState<string | null>(null);
   const [currentTaskData, setCurrentTaskData] = useState<Task | null>(null);
+  const [curriculumError, setCurriculumError] = useState<string | null>(null);
+  const [curriculumLoading, setCurriculumLoading] = useState(true);
 
-  const tasksAvailable = useMemo(() => Object.values(tasks).length > 0, [tasks]);
-
+  // Fetch curriculum for current module/section with tasks
   useEffect(() => {
-    if (!tasksAvailable || modules.length === 0) return;
+    if (!moduleId || !sectionId) return;
+    setCurriculumLoading(true);
+    fetchCurriculum({ module: moduleId, section: sectionId, includeTasks: true })
+      .then((data) => {
+        const module = data.modules[0];
+        const section = module?.sections?.[0];
+        const sectionTopics = section?.topics ?? [];
+        setTopics(sectionTopics);
+        const orderedTaskIds = sectionTopics.flatMap((topic) => (topic.tasks || []).map((t) => t.id));
+        setFlatTaskIds(orderedTaskIds);
+        if (orderedTaskIds.length > 0) {
+          setCurrentTaskId(orderedTaskIds[0]);
+        } else {
+          setCurrentTaskId(null);
+        }
+        setCurriculumError(null);
+      })
+      .catch((err: any) => {
+        setCurriculumError(err?.message ?? "Failed to load curriculum");
+        setTopics([]);
+        setFlatTaskIds([]);
+        setCurrentTaskId(null);
+      })
+      .finally(() => setCurriculumLoading(false));
+  }, [moduleId, sectionId]);
 
-    const fallbackModule = modules.find((m) => m.taskIds.length > 0) || modules[0];
-    const targetModuleId = currentModuleId ?? state.moduleId ?? fallbackModule.id;
-    if (!currentModuleId) {
-      setCurrentModuleId(targetModuleId);
-    }
+  const currentTaskIndex = useMemo(() => {
+    if (!currentTaskId) return -1;
+    return flatTaskIds.indexOf(currentTaskId);
+  }, [flatTaskIds, currentTaskId]);
 
-    if (!currentTaskId) {
-      const targetModule = modules.find((m) => m.id === targetModuleId) ?? fallbackModule;
-      const firstTask = targetModule.taskIds.find((taskId) => tasks[taskId]) ?? Object.values(tasks)[0]?.id ?? null;
-      setCurrentTaskId(state.taskId ?? firstTask ?? null);
-    }
-  }, [tasksAvailable, modules, tasks, state.moduleId, state.taskId, currentModuleId, currentTaskId]);
+  const prevTaskId = currentTaskIndex > 0 ? flatTaskIds[currentTaskIndex - 1] : null;
+  const nextTaskId = currentTaskIndex >= 0 && currentTaskIndex + 1 < flatTaskIds.length ? flatTaskIds[currentTaskIndex + 1] : null;
 
-  const currentModule = modules.find((m) => m.id === currentModuleId) ?? (modules.length ? modules[0] : null);
-  const currentTaskMeta: Task | undefined = currentTaskId ? tasks[currentTaskId] : undefined;
-
-  const moduleTasks = useMemo(() => {
-    if (!currentModule) return [];
-    return ((currentModule.taskIds ?? []).map((id) => tasks[id]).filter(Boolean) as Task[]);
-  }, [currentModule, tasks]);
-  const moduleProgressTotal = moduleTasks.length;
-  const prevTaskId = useMemo(() => {
-    if (!currentTaskMeta || moduleTasks.length === 0) return null;
-    const idx = moduleTasks.findIndex((t) => t.id === currentTaskMeta.id);
-    if (idx > 0) return moduleTasks[idx - 1].id;
-    return null;
-  }, [currentTaskMeta, moduleTasks]);
-  const nextTaskId = useMemo(() => {
-    if (!currentTaskMeta || moduleTasks.length === 0) return null;
-    const idx = moduleTasks.findIndex((t) => t.id === currentTaskMeta.id);
-    if (idx < 0 || idx + 1 >= moduleTasks.length) return null;
-    return moduleTasks[idx + 1].id;
-  }, [currentTaskMeta, moduleTasks]);
-
+  // Load task lazily
   useEffect(() => {
     if (!currentTaskId) {
       setCurrentTaskData(null);
       setChecksState([]);
       return;
     }
-
     let mounted = true;
     setTaskLoading(true);
     setTaskLoadError(null);
@@ -153,6 +140,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     };
   }, [currentTaskId]);
 
+  // Initialize checks from expectations
   useEffect(() => {
     if (!currentTaskData) {
       setChecksState([]);
@@ -167,8 +155,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     setChecksState(baseChecks);
   }, [currentTaskData]);
 
-  const handleSelectTask = (taskId: number, moduleId: string) => {
-    setCurrentModuleId(moduleId);
+  const handleSelectTask = (taskId: number) => {
     setCurrentTaskId(taskId);
     setSolutionResult(null);
     setRunError(null);
@@ -227,52 +214,33 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     );
   };
 
-  const goToTask = (taskId: number) => {
-    setCurrentTaskId(taskId);
-    setSolutionResult(null);
-    setRunError(null);
-    setLocatorInput("");
-  };
-
   const handleNextTask = () => {
     if (!nextTaskId) return;
-    goToTask(nextTaskId);
+    handleSelectTask(nextTaskId);
   };
 
   const handlePrevTask = () => {
     if (!prevTaskId) return;
-    goToTask(prevTaskId);
+    handleSelectTask(prevTaskId);
   };
 
   const renderSidebarContent = () => (
     <Box sx={{ width: 280, padding: 2 }}>
-      {modules.map((module) => {
-        const moduleTaskList = module.taskIds.map((tid) => tasks[tid]).filter(Boolean) as Task[];
-        const total = moduleTaskList.length;
-        const done = moduleTaskList.filter((t) => completedTasks.has(t.id)).length;
-
+      {topics.map((topic, topicIdx) => {
+        const isCurrentTopic = (topic.tasks || []).some((t) => t.id === currentTaskId);
         return (
-          <Accordion key={module.id} defaultExpanded>
+          <Accordion key={topic.id} defaultExpanded={topicIdx === 0 || isCurrentTopic}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box display="flex" flexDirection="column" width="100%">
-                <Typography fontWeight={600}>{module.name}</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {done} / {total || 0}
-                </Typography>
-              </Box>
+              <Typography fontWeight={600}>{topic.title}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <List dense>
-                {moduleTaskList.map((task) => {
+                {(topic.tasks || []).map((task) => {
                   const isDone = completedTasks.has(task.id);
                   const isActive = task.id === currentTaskId;
                   return (
                     <ListItem key={task.id} disablePadding>
-                      <ListItemButton
-                        selected={isActive}
-                        onClick={() => handleSelectTask(task.id, module.id)}
-                        sx={{ borderRadius: 1 }}
-                      >
+                      <ListItemButton selected={isActive} onClick={() => handleSelectTask(task.id)} sx={{ borderRadius: 1 }}>
                         <ListItemIcon sx={{ minWidth: 32 }}>
                           {isDone ? (
                             <CheckCircleIcon color="success" fontSize="small" />
@@ -285,9 +253,9 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
                     </ListItem>
                   );
                 })}
-                {moduleTaskList.length === 0 && (
+                {(topic.tasks || []).length === 0 && (
                   <ListItem>
-                    <ListItemText primary="No tasks in this module" primaryTypographyProps={{ variant: "body2" }} />
+                    <ListItemText primary="No tasks in this topic" primaryTypographyProps={{ variant: "body2" }} />
                   </ListItem>
                 )}
               </List>
@@ -380,6 +348,9 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
     );
   };
 
+  const totalTasks = flatTaskIds.length;
+  const currentTaskLabel = currentTaskData?.title ?? "No task";
+
   return (
     <Box minHeight="100vh" bgcolor="#f5f5f5">
       <HeaderBar
@@ -401,18 +372,17 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
               ← Previous
             </Button>
             <Typography variant="subtitle1" fontWeight={600} sx={{ textAlign: "center", flexGrow: 1 }}>
-              Task {currentTaskData?.id ?? currentTaskId ?? "-"} / {moduleProgressTotal || "-"} —{" "}
-              {currentTaskData?.title ?? currentTaskMeta?.title ?? "No task"}
+              Task {currentTaskIndex >= 0 ? currentTaskIndex + 1 : "-"} / {totalTasks || "-"} — {currentTaskLabel}
             </Typography>
             <Button variant="outlined" onClick={handleNextTask} disabled={!nextTaskId}>
               Next →
             </Button>
           </Stack>
 
-          {(loading || taskLoading) && <Typography>Loading task...</Typography>}
-          {(error || taskLoadError) && (
+          {(curriculumLoading || taskLoading) && <Typography>Loading task...</Typography>}
+          {(taskLoadError || curriculumError) && (
             <Typography color="error" marginBottom={2}>
-              {error || taskLoadError}
+              {taskLoadError || curriculumError}
             </Typography>
           )}
 
@@ -498,7 +468,7 @@ export default function SessionPage({ modules, tasks, loading, error }: SessionP
             </Stack>
           )}
 
-          {!loading && !currentTaskData && !taskLoading && (
+          {!curriculumLoading && !currentTaskData && !taskLoading && (
             <Typography color="text.secondary">No tasks to display. Check your module setup.</Typography>
           )}
         </Box>

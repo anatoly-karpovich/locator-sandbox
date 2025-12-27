@@ -105,7 +105,7 @@ export default function HomePage() {
                             tasksTotal={tasksTotal}
                             onStart={(moduleId, sectionId) => {
                               const sessionId = generateSessionId();
-                              navigate(`/session/${sessionId}`, { state: { moduleId, sectionId } });
+                              navigate(`/training/${moduleId}/${sectionId}/${sessionId}`);
                             }}
                           />
                         );
