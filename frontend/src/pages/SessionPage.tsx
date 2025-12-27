@@ -84,6 +84,7 @@ export default function SessionPage() {
         const module = data.modules[0];
         const section = module?.sections?.[0];
         const sectionTopics = section?.topics ?? [];
+        console.log(JSON.stringify(sectionTopics, null, 2));
         setTopics(sectionTopics);
         const orderedTaskIds = sectionTopics.flatMap((topic) => (topic.tasks || []).map((t) => t.id));
         setFlatTaskIds(orderedTaskIds);
@@ -303,12 +304,14 @@ export default function SessionPage() {
             <Typography variant="body2" sx={{ minWidth: 100 }}>
               {check.key}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              expected: {String(check.expected)}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              actual: {check.actual === null || check.actual === undefined ? "-" : String(check.actual)}
-            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography variant="body2" color="text.secondary">
+                expected: {String(check.expected)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                actual: {check.actual === null || check.actual === undefined ? "-" : String(check.actual)}
+              </Typography>
+            </Box>
           </Paper>
         ))}
         {checksState.length === 0 && (

@@ -19,20 +19,42 @@ export type ExpectationCheck = {
 
 export type Module = "Locator" | "GetBy" | "Filters&Relations";
 
+export type UsageCheckResult = {
+  passed: boolean;
+  details: {
+    method?: CheckDetail;
+    argument?: CheckDetail;
+    match?: CheckDetail;
+    options?: CheckDetail;
+  };
+};
+  
+export type CheckDetail = {
+  passed: boolean;
+  expected: unknown;
+  actual?: unknown;
+};
+
+export type UsageSpec = {
+  method: "getByText" | "getByRole" | "locator";
+  argument: {
+    type: "string" | "regex";
+    match?: "exact" | "partial";
+  };
+  options?: Record<string, unknown>;
+};
+
 export type Task = {
   module: Module;
   id: number;
   title: string;
+  description: string;
+  studyMaterials: string[];
+  level: "beginner" | "intermediate" | "advanced";
   html: string;
 
   expectations: Expectations;
-
-  context: {
-    goal: "single" | "collection" | "nth";
-    allowNth: boolean;
-    preferRole: boolean;
-  };
-
+  usageSpec: UsageSpec;
   heuristics?: string[];
 };
 

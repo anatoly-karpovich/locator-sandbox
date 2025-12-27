@@ -17,6 +17,10 @@ class TasksService {
     return this.tasks;
   }
 
+  getByLevel(level: "beginner" | "intermediate" | "advanced") {
+    return this.tasks.filter((t) => t.level === level);
+  }
+
   getByIds(ids: number[]): Task[] {
     return ids.map((id) => this.getById(id)).filter(Boolean) as Task[];
   }

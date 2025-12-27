@@ -7,7 +7,7 @@ export type Step =
   | { receiver: ReceiverKind; method: "first"; args: [] }
   | { receiver: ReceiverKind; method: "last"; args: [] }
   | { receiver: ReceiverKind; method: "nth"; args: [number] }
-  | { receiver: ReceiverKind; method: "getByText"; args: [string, GetByTextOptions?] }
+  | { receiver: ReceiverKind; method: "getByText"; args: [string | RegExp, GetByTextOptions?] }
   | { receiver: ReceiverKind; method: "getByRole"; args: [string, GetByRoleOptions?] };
 
 export type ParsedPlan = {
