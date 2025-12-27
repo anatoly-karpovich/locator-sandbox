@@ -49,7 +49,10 @@ export type Task = {
   id: number;
   title: string;
   description: string;
-  studyMaterials: string[];
+  studyMaterials: {
+    title: string;
+    url: string;
+  }[];
   level: "beginner" | "intermediate" | "advanced";
   html: string;
 
