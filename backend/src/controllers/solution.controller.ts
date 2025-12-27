@@ -3,6 +3,7 @@ import { chromium } from "playwright";
 import { LocatorService } from "../locator/locator.service";
 import taskService from "../tasks/tasks.service";
 import { SolutionsHandler } from "../tasks/solutionsHandler";
+import { HTTP_CODES } from "../data/httpCodes";
 
 export type SubmitSolutionDTO = { payload: string; taskId: number };
 
@@ -14,7 +15,7 @@ export class SolutionController {
 
     const task = taskService.getById(taskId);
 
-    if (!task) return res.status(404).json({ error: "Task not found" });
+    if (!task) return res.status(HTTP_CODES.NOT_FOUND).json({ error: "Task not found" });
 
     const browser = await chromium.launch(); // consider pooling
     const page = await browser.newPage();
@@ -36,7 +37,7 @@ export class SolutionController {
 
       result = await solutionHandler.runTask(task, locator);
 
-      res.status(200).json({
+      res.status(HTTP_CODES.OK).json({
         IsSuccess: true,
         result,
       });
@@ -47,7 +48,7 @@ export class SolutionController {
       } else {
         error = e.message ?? "Unknown error";
       }
-      res.status(400).json({ IsSuccess: false, ErrorMessage: error });
+      res.status(HTTP_CODES.BAD_REQUEST).json({ IsSuccess: false, ErrorMessage: error });
     } finally {
       await page.close().catch(() => {});
       await browser.close().catch(() => {});

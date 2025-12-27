@@ -17,6 +17,10 @@ class TasksService {
     return this.tasks;
   }
 
+  getByIds(ids: number[]): Task[] {
+    return ids.map((id) => this.getById(id)).filter(Boolean) as Task[];
+  }
+
   getAllStructured() {
     const result = this.tasks.reduce((res, task) => {
       res[task.id] = task;

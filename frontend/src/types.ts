@@ -69,3 +69,29 @@ export type SolutionResponse =
       presence?: PresenceInfo;
       explanation?: string[];
     };
+
+// Curriculum
+export type CurriculumResponse = {
+  version: string;
+  modules: ModuleNode[];
+};
+
+export type ModuleNode = {
+  id: string;
+  title: string;
+  sections: SectionNode[];
+};
+
+export type SectionNode = {
+  id: string;
+  title: string;
+  topics: TopicNode[];
+};
+
+export type TopicNode = {
+  id: string;
+  title: string;
+  level: "beginner" | "intermediate" | "advanced";
+  tasksCount: number;
+  tasks?: { id: number; title: string }[];
+};
