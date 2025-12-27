@@ -2,16 +2,16 @@
 
 export type Curriculum = {
   version: string;
-  sections: SectionNode[];
-};
-
-export type SectionNode = {
-  id: string; // "locators"
-  title: string; // "Locators"
   modules: ModuleNode[];
 };
 
 export type ModuleNode = {
+  id: string; // "locators"
+  title: string; // "Locators"
+  sections: SectionNode[];
+};
+
+export type SectionNode = {
   id: string; // "getBy"
   title: string; // "getBy"
   topics: TopicNode[];

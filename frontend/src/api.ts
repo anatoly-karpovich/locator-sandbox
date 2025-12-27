@@ -1,4 +1,4 @@
-import type { Task, TaskMap, SubmitSolutionBody, SolutionResponse } from "./types";
+import type { Task, TaskMap, SubmitSolutionBody, SolutionResponse, CurriculumResponse } from "./types";
 
 async function handleJson<T>(res: Response): Promise<T> {
   if (!res.ok) {
@@ -33,4 +33,13 @@ export async function submitSolution(body: SubmitSolutionBody): Promise<Solution
   }
 
   return res.json() as Promise<SolutionResponse>;
+}
+
+export async function fetchCurriculum(): Promise<CurriculumResponse> {
+  const res = await fetch("/api/curriculum");
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `Request failed with status ${res.status}`);
+  }
+  return res.json() as Promise<CurriculumResponse>;
 }

@@ -1,16 +1,16 @@
 // curriculum/curriculum.controller.ts
 
 import { Request, Response } from "express";
-import curriculumService from "../services/curriculum/curriculum.service";
 import { HTTP_CODES } from "../data/httpCodes";
+import curriculumService from "../services/curriculum/curriculum.service";
 
 export class CurriculumController {
   get(req: Request, res: Response) {
     const { section, module, topic, level, includeTasks } = req.query;
 
     const data = curriculumService.getCurriculum({
-      section: section as string | undefined,
       module: module as string | undefined,
+      section: section as string | undefined,
       topic: topic as string | undefined,
       level: level as string | undefined,
       includeTasks: includeTasks === "true",

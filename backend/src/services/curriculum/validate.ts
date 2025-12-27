@@ -6,9 +6,9 @@ import { curriculum } from "./curriculum.config";
 export function validateCurriculum(): void {
   const missing: number[] = [];
 
-  for (const section of curriculum.sections) {
-    for (const module of section.modules) {
-      for (const topic of module.topics) {
+  for (const module of curriculum.modules) {
+    for (const section of module.sections) {
+      for (const topic of section.topics) {
         for (const taskId of topic.taskIds) {
           if (!tasksService.getById(taskId)) {
             missing.push(taskId);

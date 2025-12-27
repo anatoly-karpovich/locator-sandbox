@@ -4,11 +4,11 @@ import { Curriculum } from "./types";
 
 export const curriculum: Curriculum = {
   version: "2025-12-25",
-  sections: [
+  modules: [
     {
       id: "locators",
       title: "Locators",
-      modules: [
+      sections: [
         {
           id: "getBy",
           title: "getBy",

@@ -4,7 +4,7 @@ import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import HomePage from "./pages/HomePage";
 import SessionPage from "./pages/SessionPage";
 import { fetchTasks } from "./api";
-import type { ModuleConfig, TaskMap, TaskSummary } from "./types";
+import type { ModuleConfig, TaskMap } from "./types";
 import { modulesConfig } from "./modules";
 
 const theme = createTheme({
@@ -58,14 +58,9 @@ function AppRoutes() {
     return grouped;
   }, [tasks]);
 
-  const taskList: TaskSummary[] = useMemo(
-    () => Object.values(tasks).map((t) => ({ id: t.id, title: t.title })),
-    [tasks]
-  );
-
   return (
     <Routes>
-      <Route path="/" element={<HomePage modules={modules} tasks={taskList} loading={loading} error={error} />} />
+      <Route path="/" element={<HomePage />} />
       <Route
         path="/session/:id"
         element={<SessionPage modules={modules} tasks={tasks} loading={loading} error={error} />}

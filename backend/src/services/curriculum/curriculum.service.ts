@@ -1,39 +1,43 @@
 // curriculum/curriculum.service.ts
 
-import tasksService from "../../tasks/tasks.service";
 import { curriculum } from "./curriculum.config";
-import { SectionNode, TopicNode } from "./types";
+import tasksService from "../../tasks/tasks.service";
+import { ModuleNode, SectionNode, TopicNode } from "./types";
 
 type CurriculumQuery = {
-  section?: string;
-  module?: string;
-  topic?: string;
+  module?: string; // locators
+  section?: string; // getBy
+  topic?: string; // getByText
   level?: string;
   includeTasks?: boolean;
 };
 
 class CurriculumService {
   getCurriculum(query: CurriculumQuery) {
-    let sections = curriculum.sections;
+    let modules = curriculum.modules;
 
-    if (query.section) {
-      sections = sections.filter((s) => s.id === query.section);
+    // фильтрация по module (верхний уровень)
+    if (query.module) {
+      modules = modules.filter((m) => m.id === query.module);
     }
 
-    const resultSections = sections.map((section) => {
-      let modules = section.modules;
+    const mappedModules = modules.map((module) => {
+      let sections = module.sections;
 
-      if (query.module) {
-        modules = modules.filter((m) => m.id === query.module);
+      // фильтрация по section
+      if (query.section) {
+        sections = sections.filter((s) => s.id === query.section);
       }
 
-      const mappedModules = modules.map((module) => {
-        let topics = module.topics;
+      const mappedSections = sections.map((section) => {
+        let topics = section.topics;
 
+        // фильтрация по topic
         if (query.topic) {
           topics = topics.filter((t) => t.id === query.topic);
         }
 
+        // фильтрация по level
         if (query.level) {
           topics = topics.filter((t) => t.level === query.level);
         }
@@ -43,22 +47,22 @@ class CurriculumService {
         );
 
         return {
-          id: module.id,
-          title: module.title,
+          id: section.id,
+          title: section.title,
           topics: mappedTopics,
         };
       });
 
       return {
-        id: section.id,
-        title: section.title,
-        modules: mappedModules,
+        id: module.id,
+        title: module.title,
+        sections: mappedSections,
       };
     });
 
     return {
       version: curriculum.version,
-      sections: resultSections,
+      modules: mappedModules,
     };
   }
 

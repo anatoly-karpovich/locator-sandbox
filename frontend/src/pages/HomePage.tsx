@@ -1,25 +1,54 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Card, CardActions, CardContent, Container, Stack, Typography } from "@mui/material";
 import { HeaderBar } from "../components/HeaderBar";
-import type { ModuleConfig, TaskSummary } from "../types";
-
-type HomePageProps = {
-  modules: ModuleConfig[];
-  tasks: TaskSummary[];
-  loading: boolean;
-  error: string | null;
-};
+import { fetchCurriculum } from "../api";
+import type { CurriculumResponse, ModuleNode } from "../types";
 
 const generateSessionId = () => crypto.randomUUID();
 
-export default function HomePage({ modules, tasks, loading, error }: HomePageProps) {
-  const navigate = useNavigate();
+type SectionCardProps = {
+  moduleId: string;
+  sectionId: string;
+  title: string;
+  topicsCount: number;
+  tasksTotal: number;
+  onStart: (moduleId: string, sectionId: string) => void;
+};
 
-  const handleChoose = (module: ModuleConfig) => {
-    const firstTaskId = module.taskIds.find((id) => tasks.some((t) => t.id === id)) ?? tasks[0]?.id;
-    const sessionId = generateSessionId();
-    navigate(`/session/${sessionId}`, { state: { moduleId: module.id, taskId: firstTaskId } });
-  };
+const SectionCard = ({ moduleId, sectionId, title, topicsCount, tasksTotal, onStart }: SectionCardProps) => (
+  <Card variant="outlined" sx={{ borderRadius: 2, height: "100%", display: "flex", flexDirection: "column" }}>
+    <CardContent sx={{ flexGrow: 1 }}>
+      <Typography variant="h6" fontWeight={700}>
+        {title}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        Includes {topicsCount} topics, {tasksTotal} total tasks
+      </Typography>
+    </CardContent>
+    <CardActions sx={{ paddingX: 2, paddingBottom: 2 }}>
+      <Button variant="contained" onClick={() => onStart(moduleId, sectionId)}>
+        Start section
+      </Button>
+    </CardActions>
+  </Card>
+);
+
+export default function HomePage() {
+  const navigate = useNavigate();
+  const [data, setData] = useState<CurriculumResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchCurriculum()
+      .then((res) => {
+        setData(res);
+        setError(null);
+      })
+      .catch((err: Error) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <Box minHeight="100vh" bgcolor="#f5f5f5">
@@ -43,7 +72,7 @@ export default function HomePage({ modules, tasks, loading, error }: HomePagePro
               </Typography>
               {loading && (
                 <Typography variant="body2" color="text.secondary">
-                  Loading tasks...
+                  Loading curriculum...
                 </Typography>
               )}
               {error && (
@@ -54,28 +83,36 @@ export default function HomePage({ modules, tasks, loading, error }: HomePagePro
             </Stack>
           </Box>
           <Box>
-            <Stack spacing={2}>
-              {modules.map((module) => (
-                <Card key={module.id} variant="outlined" sx={{ borderRadius: 2 }}>
-                  <CardContent>
-                    <Typography variant="h6" fontWeight={700}>
-                      {module.name}
+            <Stack spacing={3}>
+              {!loading &&
+                !error &&
+                data?.modules.map((module: ModuleNode) => (
+                  <Box key={module.id}>
+                    <Typography variant="h6" fontWeight={700} sx={{ marginBottom: 1 }}>
+                      {module.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {module.description}
-                    </Typography>
-                  </CardContent>
-                  <CardActions sx={{ paddingX: 2, paddingBottom: 2 }}>
-                    <Button
-                      variant="contained"
-                      disabled={!tasks.length || module.taskIds.length === 0}
-                      onClick={() => handleChoose(module)}
-                    >
-                      Choose module
-                    </Button>
-                  </CardActions>
-                </Card>
-              ))}
+                    <Stack spacing={2}>
+                      {module.sections.map((section) => {
+                        const topicsCount = section.topics.length;
+                        const tasksTotal = section.topics.reduce((sum, t) => sum + t.tasksCount, 0);
+                        return (
+                          <SectionCard
+                            key={section.id}
+                            moduleId={module.id}
+                            sectionId={section.id}
+                            title={section.title}
+                            topicsCount={topicsCount}
+                            tasksTotal={tasksTotal}
+                            onStart={(moduleId, sectionId) => {
+                              const sessionId = generateSessionId();
+                              navigate(`/session/${sessionId}`, { state: { moduleId, sectionId } });
+                            }}
+                          />
+                        );
+                      })}
+                    </Stack>
+                  </Box>
+                ))}
             </Stack>
           </Box>
         </Box>
