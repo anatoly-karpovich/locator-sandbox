@@ -12,6 +12,17 @@ export function readString(node: t.Expression, ctx: string): string {
   throw new Error(`${ctx} must be a string literal`);
 }
 
+export function readRegExp(node: t.Expression, ctx: string): RegExp {
+  if (t.isRegExpLiteral(node)) return new RegExp(node.pattern, node.flags);
+  throw new Error(`${ctx} must be a RegExp literal`);
+}
+
+export function readStringOrRegExp(node: t.Expression, ctx: string): string | RegExp {
+  if (t.isStringLiteral(node)) return node.value;
+  if (t.isRegExpLiteral(node)) return new RegExp(node.pattern, node.flags);
+  throw new Error(`${ctx} must be a string literal or RegExp literal`);
+}
+
 export function readNonNegativeInt(node: t.Expression, ctx: string): number {
   if (t.isNumericLiteral(node) && Number.isInteger(node.value) && node.value >= 0) {
     return node.value;

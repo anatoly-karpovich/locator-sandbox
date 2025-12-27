@@ -1,14 +1,8 @@
 import { GET_BY_TEXT_KEYS, GET_BY_ROLE_KEYS } from "./options";
 import { readLocatorOptions } from "./readLocatorOptions";
 import { MethodSpec, Step, GetByTextOptions, GetByRoleOptions } from "./types";
-import { assertArgCount, readString, readNonNegativeInt, readObjectLiteral } from "./validators";
+import { assertArgCount, readString, readNonNegativeInt, readObjectLiteral, readRegExp, readStringOrRegExp } from "./validators";
 
-/**
- * -------------------------
- * Extensibility Layer
- * -------------------------
- * Add methods by extending METHOD_SPECS.
- */
 export const METHOD_SPECS: Record<string, MethodSpec> = {
   locator: {
     allowedReceivers: ["page", "locator"],
@@ -62,9 +56,9 @@ export const METHOD_SPECS: Record<string, MethodSpec> = {
       if (args.length < 1 || args.length > 2) {
         throw new Error("getByText(text, options?) expects 1 or 2 args");
       }
-      const text = readString(args[0], "getByText(text)");
+      const text = readStringOrRegExp(args[0], "getByText(text)");
       const options = args[1] ? readObjectLiteral(args[1], GET_BY_TEXT_KEYS, "getByText(options)") : undefined;
-      return { receiver, method: "getByText", args: [text, options as GetByTextOptions] };
+      return { receiver, method: "getByText", args: [text as string | RegExp, options as GetByTextOptions] };
     },
   },
 

@@ -24,6 +24,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../components/HeaderBar";
+import { TaskInfoBar } from "../components/tasks/TaskInfoBar";
 import type { SolutionResponse, Task, TaskResultPayload, TopicNode } from "../types";
 import { submitSolution, fetchTask, fetchCurriculum } from "../api";
 
@@ -84,6 +85,7 @@ export default function SessionPage() {
         const module = data.modules[0];
         const section = module?.sections?.[0];
         const sectionTopics = section?.topics ?? [];
+        console.log(JSON.stringify(sectionTopics, null, 2));
         setTopics(sectionTopics);
         const orderedTaskIds = sectionTopics.flatMap((topic) => (topic.tasks || []).map((t) => t.id));
         setFlatTaskIds(orderedTaskIds);
@@ -303,12 +305,14 @@ export default function SessionPage() {
             <Typography variant="body2" sx={{ minWidth: 100 }}>
               {check.key}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              expected: {String(check.expected)}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              actual: {check.actual === null || check.actual === undefined ? "-" : String(check.actual)}
-            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography variant="body2" color="text.secondary">
+                expected: {String(check.expected)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                actual: {check.actual === null || check.actual === undefined ? "-" : String(check.actual)}
+              </Typography>
+            </Box>
           </Paper>
         ))}
         {checksState.length === 0 && (
@@ -438,8 +442,12 @@ export default function SessionPage() {
                 </Box>
               </Box>
 
+              <TaskInfoBar
+                description={currentTaskData.description}
+                studyMaterials={currentTaskData.studyMaterials}
+              />
+
               <Stack spacing={2}>
-                <Typography variant="h6">Locator</Typography>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                   <TextField
                     fullWidth

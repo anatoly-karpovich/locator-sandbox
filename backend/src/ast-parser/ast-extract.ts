@@ -9,8 +9,6 @@ import { RawCall } from "./types";
  * into a chain of RawCall nodes.
  */
 export function extractCallChain(node: t.Expression): RawCall[] {
-  // We accept only a chain of CallExpressions where callee is MemberExpression with identifier property.
-  // Example: (page.locator("h1")).nth(0)
   if (!t.isCallExpression(node)) {
     throw new Error("Expected a call expression like page.locator('h1')");
   }
@@ -26,7 +24,6 @@ export function extractCallChain(node: t.Expression): RawCall[] {
 
   const method = callee.property.name;
 
-  // Only allow normal args (no spread)
   const args: t.Expression[] = node.arguments.map((a) => {
     if (t.isSpreadElement(a)) throw new Error("Spread arguments are not allowed");
     if (!t.isExpression(a)) throw new Error("Unsupported argument type");
@@ -36,9 +33,7 @@ export function extractCallChain(node: t.Expression): RawCall[] {
   const base = callee.object;
   if (!t.isExpression(base)) throw new Error("Unsupported callee base");
 
-  // If base is another call, keep extracting
   const prev = t.isCallExpression(base) ? extractCallChain(base) : [];
 
-  // Each link includes the base expression it’s called on
   return [...prev, { base, method, args }];
 }

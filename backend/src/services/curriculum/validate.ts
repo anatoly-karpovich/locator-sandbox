@@ -9,11 +9,8 @@ export function validateCurriculum(): void {
   for (const module of curriculum.modules) {
     for (const section of module.sections) {
       for (const topic of section.topics) {
-        for (const taskId of topic.taskIds) {
-          if (!tasksService.getById(taskId)) {
-            missing.push(taskId);
-          }
-        }
+        const tasks = tasksService.getByLevel(topic.level);
+        missing.push(...tasks.map((t) => t.id));
       }
     }
   }
