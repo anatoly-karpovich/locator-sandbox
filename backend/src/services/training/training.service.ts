@@ -40,7 +40,7 @@ class TrainingService {
 
     return {
       id: String(Date.now()), // позже UUID
-      source: "fixed",
+      type: "template",
       templateId: template.id,
       topics,
       createdAt: new Date().toISOString(),
