@@ -1,4 +1,4 @@
-import { Difficulty, ModuleId, SectionId, TaskId } from "../tasks/types";
+import { Difficulty, ModuleId, SectionId, TaskId, TopicId } from "../tasks/types";
 
 export interface StartFixedTrainingRequest {
   trainingTemplateId: TrainingTemplateId;
@@ -48,13 +48,24 @@ export type TrainingSetId = string; // UUID
 
 export interface ITrainingSet {
   id: TrainingSetId;
-  source: "fixed" | "custom";
+  type: "template" | "custom";
+
   // Откуда получен
   templateId?: TrainingTemplateId;
-  // Конкретный набор задач
-  tasks: { id: TaskId; title: string }[];
+
+  // UI-ready навигация
+  topics: Array<{
+    id: TopicId;
+    title: string;
+    tasks: Array<{
+      id: TaskId;
+      title: string;
+    }>;
+  }>;
+
   // Runtime-мета
   createdAt: string;
+
   // На будущее
   userId?: string;
 }
