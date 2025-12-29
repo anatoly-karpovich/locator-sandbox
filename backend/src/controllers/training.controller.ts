@@ -8,6 +8,7 @@ import locatorExecutionService from "../services/locator/execute.service";
 import taskService from "../services/task/task.service";
 import trainingService from "../services/training/training.service";
 import { HTTP_CODES } from "../data/httpCodes";
+import trainingTemplateService from "../services/training/trainingTemplate.service";
 
 export class TrainingController {
   startTraining(req: Request<{}, {}, StartFixedTrainingRequest | StartCustomTrainingRequest>, res: Response) {
@@ -34,6 +35,11 @@ export class TrainingController {
     const execution = await locatorExecutionService.execute(task, dto.payload);
 
     return res.status(HTTP_CODES.OK).json(execution);
+  }
+
+  getCatalog(req: Request, res: Response) {
+    const catalog = trainingTemplateService.getCatalogView();
+    return res.status(HTTP_CODES.OK).json(catalog);
   }
 
   private isFixedTrainingDTO(

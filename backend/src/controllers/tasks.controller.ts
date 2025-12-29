@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import tasksService from "../core/tasks/tasks.service";
 import { Module } from "../core/tasks/types";
 import { HTTP_CODES } from "../data/httpCodes";
+import taskAggregatedService from "../services/task/taskAggregated.service";
 
 export class TasksController {
   getById(req: Request, res: Response) {
@@ -16,13 +17,13 @@ export class TasksController {
 
   getByModule(req: Request, res: Response) {
     const module = req.params.module as Module;
-    const tasks = tasksService.getByModule(module);
+    const tasks = taskAggregatedService.getByModule(module);
 
     return res.status(HTTP_CODES.OK).json({ tasks });
   }
 
   getAll(req: Request, res: Response) {
-    const tasks = tasksService.getAllStructured();
-    return res.status(HTTP_CODES.OK).json({ tasks });
+    const tasks = taskAggregatedService.getCatalog();
+    return res.status(HTTP_CODES.OK).json(tasks);
   }
 }

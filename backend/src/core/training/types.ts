@@ -1,4 +1,4 @@
-import { Difficulty, TaskId } from "../tasks/types";
+import { Difficulty, ModuleId, SectionId, TaskId } from "../tasks/types";
 
 export interface StartFixedTrainingRequest {
   trainingTemplateId: TrainingTemplateId;
@@ -66,16 +66,17 @@ export interface ITrainingTemplate {
 
   title: string;
   description?: string;
-
+  moduleId: ModuleId;
+  sectionId: SectionId;
   // Главное — порядок и состав
   taskIds: TaskId[];
 
   // Классификация (для каталога / home page)
-  scope: {
-    module: string;
-    section?: string;
-    topic?: string;
-  };
+  // scope: {
+  //   module: string;
+  //   section?: string;
+  //   topic?: string;
+  // };
 
   difficulty: Difficulty;
 
@@ -90,7 +91,7 @@ export interface ITrainingTemplate {
   updatedAt: string;
 }
 
-interface ITaskCatalogItem {
+export interface ITaskCatalogItem {
   id: string;
   title: string;
 
@@ -106,35 +107,36 @@ interface ITaskCatalogItem {
 }
 
 export interface ITaskCatalogResponse {
-  modules: Array<{
-    name: string;
-    sections: Array<{
-      name: string;
-      topics: Array<{
-        name: string;
-        tasks: ITaskCatalogItem[];
-      }>;
-    }>;
-  }>;
+  modules: {
+    id: string;
+    title: string;
+    sections: {
+      id: string;
+      title: string;
+      topics: {
+        id: string;
+        title: string;
+        taskCount: number;
+        difficulties: string[];
+        hasUsageSpec: boolean;
+      }[];
+    }[];
+  }[];
 }
 
 export interface TrainingCatalogItem {
   id: TrainingTemplateId;
   title: string;
   description?: string;
-  difficulty: string;
-  scope: {
-    module: string;
-    section?: string;
-  };
+  difficulty: Difficulty;
   taskCount: number;
 }
 
 export interface TrainingCatalogResponse {
   modules: Array<{
-    name: string;
+    title: string;
     sections: Array<{
-      name: string;
+      title: string;
       trainings: TrainingCatalogItem[];
     }>;
   }>;

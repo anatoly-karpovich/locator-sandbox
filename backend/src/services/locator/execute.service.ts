@@ -42,6 +42,9 @@ class LocatorExecutionService {
       };
     } catch {
       throw new Error("Parse locator error");
+    } finally {
+      await page.close();
+      await browser.close();
     }
   }
   // async execute(task: Task, payload: string) {

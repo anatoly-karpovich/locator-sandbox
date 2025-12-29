@@ -6,5 +6,6 @@ const trainingController = new TrainingController();
 
 trainingRouter.post("/training/start", trainingController.startTraining.bind(trainingController));
 trainingRouter.post("/training/submit", trainingController.submitSolution.bind(trainingController));
+trainingRouter.get("/training/catalog", trainingController.getCatalog.bind(trainingController));
 
 export default trainingRouter;

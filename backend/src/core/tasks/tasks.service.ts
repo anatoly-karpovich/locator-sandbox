@@ -9,10 +9,6 @@ class TasksService {
     return this.tasks.find((t) => t.id === id);
   }
 
-  getByModule(module: Module) {
-    return this.tasks.filter((t) => t.scope.module === module);
-  }
-
   getAll() {
     return this.tasks;
   }

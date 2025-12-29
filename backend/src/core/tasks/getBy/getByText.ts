@@ -5,11 +5,7 @@ export const getByTextTasks: Task[] = [
   {
     id: "a5d6f5de-385f-4b50-abca-52370d3fb58a",
     title: "Find element by partial text match",
-    scope: {
-      module: "locators",
-      section: "getBy",
-      topic: "getByText",
-    },
+    topicId: "3516b765-b3b9-42c1-bc6c-d67324b0d08c",
     difficulty: "beginner",
     html: `
       <div class="container">
@@ -61,11 +57,7 @@ export const getByTextTasks: Task[] = [
   // // ============================================
   {
     // module: "GetBy",
-    scope: {
-      module: "locators",
-      section: "getBy",
-      topic: "getByText",
-    },
+    topicId: "3516b765-b3b9-42c1-bc6c-d67324b0d08c",
     difficulty: "beginner",
     id: "6cf7c8b5-0d3e-4238-9db6-ec981976acba",
     title: "Find element by exact text match",
