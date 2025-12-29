@@ -1,5 +1,7 @@
 // curriculum/types.ts
 
+import { Difficulty } from "../../core/tasks/types";
+
 export type Curriculum = {
   version: string;
   modules: ModuleNode[];
@@ -20,6 +22,6 @@ export type SectionNode = {
 export type TopicNode = {
   id: string; // "getByText"
   title: string; // "getByText"
-  level: "beginner" | "intermediate" | "advanced";
-  taskIds: number[];
+  level: Difficulty;
+  taskIds: string[];
 };

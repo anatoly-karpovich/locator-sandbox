@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { chromium } from "playwright";
-import { LocatorService } from "../locator/locator.service";
-import taskService from "../tasks/tasks.service";
-import { SolutionsHandler } from "../tasks/solutionsHandler";
+import { LocatorService } from "../services/locator/locator.service";
+import taskService from "../core/tasks/tasks.service";
+import { SolutionsHandler } from "../core/tasks/solutionsHandler";
 import { HTTP_CODES } from "../data/httpCodes";
-import { parsePlaywrightLocatorAst } from "../ast-parser/parser";
-import UsageSpecification from "../usageSpec/usageSpecification";
+import { parsePlaywrightLocatorAst } from "../core/ast-parser/parser";
+import UsageSpecification from "../services/usageSpec/usageSpecification";
 
 export type SubmitSolutionDTO = { payload: string; taskId: number };
 

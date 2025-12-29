@@ -28,7 +28,7 @@ export type UsageCheckResult = {
     options?: CheckDetail;
   };
 };
-  
+
 export type CheckDetail = {
   passed: boolean;
   expected: unknown;
@@ -45,20 +45,28 @@ export type UsageSpec = {
   options?: Record<string, unknown>;
 };
 
+export type TaskId = string; // UUID
+
+export type Difficulty = "beginner" | "intermediate" | "advanced";
+
 export type Task = {
-  module: Module;
-  id: number;
+  id: TaskId;
   title: string;
   description: string;
+  scope: {
+    module: string; // e.g. "locators"
+    section: string; // e.g. "getBy"
+    topic?: string; // e.g. "exact-match"
+  };
+  difficulty: Difficulty;
   studyMaterials: {
     title: string;
     url: string;
   }[];
-  level: "beginner" | "intermediate" | "advanced";
   html: string;
 
   expectations: Expectations;
-  usageSpec: UsageSpec;
+  usageSpec?: UsageSpec;
   heuristics?: string[];
 };
 

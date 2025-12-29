@@ -3,9 +3,14 @@ import { Task } from "../types";
 
 export const getByTextTasks: Task[] = [
   {
-    module: "GetBy",
-    id: 1,
+    id: "a5d6f5de-385f-4b50-abca-52370d3fb58a",
     title: "Find element by partial text match",
+    scope: {
+      module: "locators",
+      section: "getBy",
+      topic: "getByText",
+    },
+    difficulty: "beginner",
     html: `
       <div class="container">
         <p>Welcome to the application</p>
@@ -17,7 +22,6 @@ export const getByTextTasks: Task[] = [
       visible: true,
     },
     studyMaterials: [studyMaterials.locatorMethods.getByText],
-    level: "beginner",
     description: "We use getByText to find elements by partial text match.",
     usageSpec: {
       method: "getByText",
@@ -31,7 +35,7 @@ export const getByTextTasks: Task[] = [
 
   // {
   //   module: "GetBy",
-  //   id: 3,
+  //   id: '2c07a1f2-33c1-4d9f-8059-6567cbe3657b',
   //   title: "Match text in a button",
   //   html: `
   //     <div class="actions">
@@ -42,7 +46,7 @@ export const getByTextTasks: Task[] = [
   //     count: 1,
   //     text: "Click me to continue",
   //     visible: true,
-      
+
   //   },
   //   context: {
   //     goal: "single",
@@ -56,8 +60,14 @@ export const getByTextTasks: Task[] = [
   // // EXACT MATCHING
   // // ============================================
   {
-    module: "GetBy",
-    id: 4,
+    // module: "GetBy",
+    scope: {
+      module: "locators",
+      section: "getBy",
+      topic: "getByText",
+    },
+    difficulty: "beginner",
+    id: "6cf7c8b5-0d3e-4238-9db6-ec981976acba",
     title: "Find element by exact text match",
     description: "We use getByText to find element by exact text match with option 'exact'",
     html: `
@@ -82,11 +92,10 @@ export const getByTextTasks: Task[] = [
       },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByText],
-    level: "beginner",
   },
   // {
   //   module: "GetBy",
-  //   id: 5,
+  //   id: '1afc9b1c-4962-413b-a544-d8ce4ee01bf8',
   //   title: "Exact match is case-sensitive",
   //   html: `
   //     <div class="labels">
@@ -109,7 +118,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 6,
+  //   id: 'e748617c-069c-4ec1-aed1-3bb0b0675ef2',
   //   title: "Exact match with full string required",
   //   html: `
   //     <nav>
@@ -134,7 +143,7 @@ export const getByTextTasks: Task[] = [
   // // ============================================
   // {
   //   module: "GetBy",
-  //   id: 9,
+  //   id: '95a0765f-4156-483f-8ef2-85054f0e529a',
   //   title: "Use regex to match pattern, match elements with numbers in text",
   //   html: `
   //     <div class="notifications">
@@ -155,7 +164,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 10,
+  //   id: '8dfc3b96-0f68-4183-af6a-43ee998f6f20',
   //   title: "Regex with start anchor for exact beginning, match element with text starting with 'Warning'",
   //   html: `
   //     <div class="alerts">
@@ -177,7 +186,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 11,
+  //   id: '8ddc5619-a6e8-49b8-abad-69cd9647ef8b',
   //   title: "Regex with end anchor",
   //   html: `
   //     <ul class="statuses">
@@ -198,7 +207,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 12,
+  //   id: 'fec815c9-4958-4768-bfdf-ec5442509baf',
   //   title: "Regex with case-insensitive flag",
   //   html: `
   //     <div class="headings">
@@ -219,7 +228,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 13,
+  //   id: 'b1ad265a-86ba-474c-a604-167d6ddc8545',
   //   title: "Regex for exact full match",
   //   html: `
   //     <div class="buttons">
@@ -245,7 +254,7 @@ export const getByTextTasks: Task[] = [
   // // ============================================
   // {
   //   module: "GetBy",
-  //   id: 14,
+  //   id: 'd62c4f90-1063-474c-bcc3-674b98cf1b32',
   //   title: "Whitespace is trimmed in matching",
   //   html: `
   //     <div class="cards">
@@ -265,7 +274,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 15,
+  //   id: '06cf69af-6f18-4c20-9d43-33bd49751b0d',
   //   title: "Normalized whitespace matching",
   //   html: `
   //     <div class="content">
@@ -288,7 +297,7 @@ export const getByTextTasks: Task[] = [
   // // ============================================
   // {
   //   module: "GetBy",
-  //   id: 16,
+  //   id: '3a8904e5-3b19-4d18-92f8-5d3bb023f8f3',
   //   title: "Find parent with nested text content",
   //   html: `
   //     <div class="card">
@@ -309,7 +318,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 17,
+  //   id: 'a2fb05da-93f3-4283-9961-3364059e8f96',
   //   title: "Text split across nested elements",
   //   html: `
   //     <p class="message">
@@ -332,7 +341,7 @@ export const getByTextTasks: Task[] = [
   // // ============================================
   // {
   //   module: "GetBy",
-  //   id: 18,
+  //   id: '2111d49d-3a72-4575-83ec-55985c610ed8',
   //   title: "Find all items in a list",
   //   html: `
   //     <ul class="todo-list">
@@ -353,7 +362,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 19,
+  //   id: '271d43e8-61ad-414c-b5db-d207d4f234b9',
   //   title: "Use nth to select from multiple matches",
   //   html: `
   //     <div class="steps">
@@ -375,7 +384,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 20,
+  //   id: '05969c33-968e-43fb-8244-5864dcd4f98f',
   //   title: "First match selection",
   //   html: `
   //     <div class="items">
@@ -401,7 +410,7 @@ export const getByTextTasks: Task[] = [
   // // ============================================
   // {
   //   module: "GetBy",
-  //   id: 21,
+  //   id: '36a43f83-2e60-4340-8e76-65920c3c989e',
   //   title: "Match text with special characters",
   //   html: `
   //     <div class="prices">
@@ -422,7 +431,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 22,
+  //   id: '477c3e2a-9e87-4339-a6ab-79d1db5daa8b',
   //   title: "Regex with escaped special characters",
   //   html: `
   //     <div class="expressions">
@@ -443,7 +452,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 23,
+  //   id: 'e4f5f616-000a-43de-9df8-de429f902df2',
   //   title: "Match text with quotes",
   //   html: `
   //     <div class="quotes">
@@ -468,7 +477,7 @@ export const getByTextTasks: Task[] = [
   // // ============================================
   // {
   //   module: "GetBy",
-  //   id: 24,
+  //   id: 'e8dc3442-6ef2-4031-a3f7-e856c9b764f5',
   //   title: "Find visible text element",
   //   html: `
   //     <div class="panel">
@@ -490,7 +499,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 25,
+  //   id: '4b5556f9-1874-42ad-a74f-74887d874ccd',
   //   title: "Locate text in disabled element",
   //   html: `
   //     <div class="form-group">
@@ -516,7 +525,7 @@ export const getByTextTasks: Task[] = [
   // // ============================================
   // {
   //   module: "GetBy",
-  //   id: 26,
+  //   id: '3a003bda-720d-4eb9-ad2b-657603881a9e',
   //   title: "Find text in heading",
   //   html: `
   //     <article>
@@ -537,7 +546,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 27,
+  //   id: '89fe868d-f1a3-4d10-ac85-ec4c36313c01',
   //   title: "Find text in link",
   //   html: `
   //     <nav class="footer-nav">
@@ -559,7 +568,7 @@ export const getByTextTasks: Task[] = [
   // },
   // {
   //   module: "GetBy",
-  //   id: 28,
+  //   id: 'f731f6b9-5e17-4d6c-91ca-ac77014872b1',
   //   title: "Find text in table cell",
   //   html: `
   //     <table class="data-table">
@@ -584,6 +593,4 @@ export const getByTextTasks: Task[] = [
   //   },
   //   heuristics: ["getByText('Product A') finds the table cell"],
   // },
-
 ];
-

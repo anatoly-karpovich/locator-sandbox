@@ -16,6 +16,6 @@ export class CurriculumController {
       includeTasks: includeTasks === "true",
     });
 
-    res.status(HTTP_CODES.OK).json(data);
+    return res.status(HTTP_CODES.OK).json(data);
   }
 }

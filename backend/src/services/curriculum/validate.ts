@@ -1,15 +1,15 @@
 // curriculum/validateCurriculum.ts
 
-import tasksService from "../../tasks/tasks.service";
+import tasksService from "../../core/tasks/tasks.service";
 import { curriculum } from "./curriculum.config";
 
 export function validateCurriculum(): void {
-  const missing: number[] = [];
+  const missing: string[] = [];
 
   for (const module of curriculum.modules) {
     for (const section of module.sections) {
       for (const topic of section.topics) {
-        const tasks = tasksService.getByLevel(topic.level);
+        const tasks = tasksService.getByDifficulty(topic.level);
         missing.push(...tasks.map((t) => t.id));
       }
     }

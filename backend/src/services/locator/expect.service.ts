@@ -1,9 +1,14 @@
 import { Locator } from "playwright";
-import { Expectations, ExpectationsValues } from "../tasks/types";
+import { Expectations, ExpectationsValues } from "../../core/tasks/types";
 
-interface LocatorState extends Record<keyof Required<Expectations>, (locator: Locator) => Promise<ExpectationsValues>> {}
+interface LocatorState
+  extends Record<keyof Required<Expectations>, (locator: Locator) => Promise<ExpectationsValues>> {}
+
 export class LocatorStateService implements LocatorState {
-  async getActual(locator: Locator, expectations: Expectations): Promise<Record<keyof Expectations, ExpectationsValues>> {
+  async getActual(
+    locator: Locator,
+    expectations: Expectations
+  ): Promise<Record<keyof Expectations, ExpectationsValues>> {
     const keys = Object.keys(expectations) as (keyof Expectations)[];
     const state = await Promise.all(keys.map((key) => this[key](locator)));
     const result = keys.reduce((acc, key, i) => {

@@ -1,6 +1,6 @@
 import { Locator } from "playwright";
 import { CompareResult, ExecutionResult, ExpectationCheck, Expectations, ExpectationsValues, Task } from "./types";
-import { LocatorStateService } from "../locator/expect.service";
+import { LocatorStateService } from "../../services/locator/expect.service";
 
 export class SolutionsHandler {
   constructor(private stateService: LocatorStateService = new LocatorStateService()) {}
@@ -11,7 +11,10 @@ export class SolutionsHandler {
     return this.compareWithExpectations(state, task.expectations);
   }
 
-  compareWithExpectations(actual: Record<keyof Expectations, ExpectationsValues>, expected: Expectations): CompareResult {
+  compareWithExpectations(
+    actual: Record<keyof Expectations, ExpectationsValues>,
+    expected: Expectations
+  ): CompareResult {
     const checks: ExpectationCheck[] = [];
 
     for (const key of Object.keys(expected) as (keyof Expectations)[]) {

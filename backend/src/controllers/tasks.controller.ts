@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import tasksService from "../tasks/tasks.service";
-import { Module } from "../tasks/types";
+import tasksService from "../core/tasks/tasks.service";
+import { Module } from "../core/tasks/types";
 import { HTTP_CODES } from "../data/httpCodes";
 
 export class TasksController {
   getById(req: Request, res: Response) {
-    const id = +req.params.id;
+    const id = req.params.id;
 
     const task = tasksService.getById(id);
 
