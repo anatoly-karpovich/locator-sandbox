@@ -1,12 +1,13 @@
 import { chromium } from "playwright";
-import { CompareResult, Task } from "../../core/tasks/types";
-import { SolutionsHandler } from "../../core/tasks/solutionsHandler";
+import { CompareResult, Task } from "../tasks/types";
+import { SolutionsHandler } from "../tasks/solutionsHandler";
 import UsageSpecification from "../usageSpec/usageSpecification";
 import { LocatorService } from "./locator.service";
-import { parsePlaywrightLocatorAst } from "../../core/ast-parser/parser";
+import { parsePlaywrightLocatorAst } from "../ast-parser/parser";
+import { ITrainingsRunSubmitSolutionResponseDTO } from "../../dto/trainingRuns.dto";
 
 class LocatorExecutionService {
-  async execute(task: Task, payload: string): Promise<{ result: CompareResult; explanation?: string[] }> {
+  async execute(task: Task, payload: string): Promise<ITrainingsRunSubmitSolutionResponseDTO> {
     const solutionHandler = new SolutionsHandler();
 
     const browser = await chromium.launch(); // consider pooling

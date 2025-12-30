@@ -1,7 +1,8 @@
-import { ITrainingTemplate, TrainingCatalogResponse } from "../../core/training/types";
+import { ITrainingTemplate } from "../../core/training/types";
 import taskService from "../task/task.service";
 import trainingTemplatesRepository from "../../repositories/trainingTemplates.repo";
 import { modulesRepository, sectionsRepository } from "../../repositories";
+import { TrainingCatalogResponseDTO } from "../../dto/trainings.dto";
 
 class TrainingTemplateService {
   getById(id: string): ITrainingTemplate {
@@ -22,7 +23,7 @@ class TrainingTemplateService {
     }
   }
 
-  getCatalogView(): TrainingCatalogResponse {
+  getCatalogView(): TrainingCatalogResponseDTO {
     const modules = modulesRepository.getAll();
     const templates = trainingTemplatesRepository.getAll();
 

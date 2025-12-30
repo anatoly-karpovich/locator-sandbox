@@ -1,11 +1,12 @@
 import { Task, TopicId } from "../../core/tasks/types";
-import { ITrainingRun, ITrainingSubmitSolutionRequest, TrainingRunId } from "../../core/training/types";
+import { ITrainingRun, TrainingRunId } from "../../core/training/types";
 import { topicsRepository } from "../../repositories";
 import trainingRunsRepository from "../../repositories/trainingRuns.repo";
 import taskService from "../task/task.service";
 import trainingTemplateService from "./trainingTemplate.service";
-import locatorExecutionService from "../locator/execute.service";
+import locatorExecutionService from "../../core/locator/execute.service";
 import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "../../core/training/enums";
+import { ITrainingSubmitSolutionRequestDTO } from "../../dto/trainingRuns.dto";
 
 class TrainingsRunService {
   startFixedTraining(templateId: string): ITrainingRun {
@@ -76,7 +77,7 @@ class TrainingsRunService {
   //   };
   // }
 
-  async handleSolution(trainingRunIn: TrainingRunId, dto: ITrainingSubmitSolutionRequest) {
+  async handleSolution(trainingRunIn: TrainingRunId, dto: ITrainingSubmitSolutionRequestDTO) {
     const run = trainingRunsRepository.getById(trainingRunIn);
     if (!run) throw new Error(`Training run "${trainingRunIn}" not found`);
 

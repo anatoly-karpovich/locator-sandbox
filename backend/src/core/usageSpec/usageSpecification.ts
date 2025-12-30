@@ -1,5 +1,5 @@
-import { Step } from "../../core/ast-parser/types";
-import { UsageCheckResult, UsageSpec } from "../../core/tasks/types";
+import { Step } from "../ast-parser/types";
+import { UsageCheckResult, UsageSpec } from "../tasks/types";
 import { getArgumentType } from "../../utils/getArgumentType";
 
 export default class UsageSpecification {

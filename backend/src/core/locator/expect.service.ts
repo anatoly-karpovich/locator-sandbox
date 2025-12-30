@@ -1,5 +1,5 @@
 import { Locator } from "playwright";
-import { Expectations, ExpectationsValues } from "../../core/tasks/types";
+import { Expectations, ExpectationsValues } from "../tasks/types";
 
 interface LocatorState
   extends Record<keyof Required<Expectations>, (locator: Locator) => Promise<ExpectationsValues>> {}

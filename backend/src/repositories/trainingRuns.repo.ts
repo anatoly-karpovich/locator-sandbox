@@ -7,8 +7,8 @@ export class TrainingRunsRepository {
 
   create(run: Omit<ITrainingRun, "id">): ITrainingRun {
     const newRun: ITrainingRun = {
-      ...run,
       id: Date.now().toString(),
+      ...run,
     };
 
     this.saveOne(newRun);

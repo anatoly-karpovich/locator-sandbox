@@ -1,33 +1,42 @@
 import { Request, Response } from "express";
-import {
-  ITrainingSubmitSolutionRequest,
-  StartCustomTrainingRequest,
-  StartFixedTrainingRequest,
-} from "../core/training/types";
-import locatorExecutionService from "../services/locator/execute.service";
-import taskService from "../services/task/task.service";
+
 import trainingsRunService from "../services/training/trainingsRun.service";
 import { HTTP_CODES } from "../data/httpCodes";
 import trainingTemplateService from "../services/training/trainingTemplate.service";
+import {
+  StartFixedTrainingRequest,
+  ITrainingSubmitSolutionRequestDTO,
+  StartTrainingRequestDTO,
+  StartTrainingResponseDTO,
+  ITrainingsRunSubmitSolutionResponseDTO,
+} from "../dto/trainingRuns.dto";
+import { ErrorResponseDTO } from "../dto/common.dto";
+import { TrainingCatalogResponseDTO } from "../dto/trainings.dto";
 
 export class TrainingRunsController {
-  startTraining(req: Request<{}, {}, StartFixedTrainingRequest | StartCustomTrainingRequest>, res: Response) {
+  startTraining(
+    req: Request<{}, {}, StartTrainingRequestDTO>,
+    res: Response<StartTrainingResponseDTO | ErrorResponseDTO>
+  ) {
     const dto = req.body;
     try {
       if (this.isFixedTrainingDTO(dto)) {
         const result = trainingsRunService.startFixedTraining(dto.trainingTemplateId);
         return res.status(HTTP_CODES.OK).json(result);
       } else {
-        return res.status(HTTP_CODES.OK).json({});
+        return res.status(HTTP_CODES.BAD_REQUEST).json({ error: "Not implemented" });
       }
 
       // return this.trainingService.startCustomTraining(dto);
     } catch (err) {
-      return res.status(HTTP_CODES.BAD_REQUEST).json({ err });
+      return res.status(HTTP_CODES.BAD_REQUEST).json({ error: (err as Error).message });
     }
   }
 
-  async submitSolution(req: Request<{ trainingRunId: string }, {}, ITrainingSubmitSolutionRequest>, res: Response) {
+  async submitSolution(
+    req: Request<{ trainingRunId: string }, {}, ITrainingSubmitSolutionRequestDTO>,
+    res: Response<ITrainingsRunSubmitSolutionResponseDTO | ErrorResponseDTO>
+  ) {
     const dto = req.body;
     const trainingRunId = req.params.trainingRunId;
     try {
@@ -48,14 +57,12 @@ export class TrainingRunsController {
     }
   }
 
-  getCatalog(req: Request, res: Response) {
+  getCatalog(req: Request, res: Response<TrainingCatalogResponseDTO>) {
     const catalog = trainingTemplateService.getCatalogView();
     return res.status(HTTP_CODES.OK).json(catalog);
   }
 
-  private isFixedTrainingDTO(
-    dto: StartFixedTrainingRequest | StartCustomTrainingRequest
-  ): dto is StartFixedTrainingRequest {
+  private isFixedTrainingDTO(dto: StartTrainingRequestDTO): dto is StartFixedTrainingRequest {
     return "trainingTemplateId" in dto;
   }
 }

@@ -1,6 +1,6 @@
 import { Locator } from "playwright";
 import { CompareResult, ExecutionResult, ExpectationCheck, Expectations, ExpectationsValues, Task } from "./types";
-import { LocatorStateService } from "../../services/locator/expect.service";
+import { LocatorStateService } from "../locator/expect.service";
 
 export class SolutionsHandler {
   constructor(private stateService: LocatorStateService = new LocatorStateService()) {}
