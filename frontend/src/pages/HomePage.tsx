@@ -2,32 +2,30 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Card, CardActions, CardContent, Container, Stack, Typography } from "@mui/material";
 import { HeaderBar } from "../components/HeaderBar";
-import { fetchCurriculum } from "../api";
-import type { CurriculumResponse, ModuleNode } from "../types";
-
-const generateSessionId = () => crypto.randomUUID();
+import { fetchTrainingsCatalog, startTrainingRun } from "../api";
+import type { TrainingCatalogResponse, TrainingCatalogSection, TrainingCatalogModule } from "../types";
 
 type SectionCardProps = {
-  moduleId: string;
-  sectionId: string;
   title: string;
-  topicsCount: number;
+  trainingsCount: number;
   tasksTotal: number;
-  onStart: (moduleId: string, sectionId: string) => void;
+  trainingTemplateId?: string;
+  onStart: (trainingTemplateId: string) => void;
+  disabled?: boolean;
 };
 
-const SectionCard = ({ moduleId, sectionId, title, topicsCount, tasksTotal, onStart }: SectionCardProps) => (
+const SectionCard = ({ title, trainingsCount, tasksTotal, trainingTemplateId, onStart, disabled }: SectionCardProps) => (
   <Card variant="outlined" sx={{ borderRadius: 2, height: "100%", display: "flex", flexDirection: "column" }}>
     <CardContent sx={{ flexGrow: 1 }}>
       <Typography variant="h6" fontWeight={700}>
         {title}
       </Typography>
       <Typography variant="body2" color="text.secondary">
-        Includes {topicsCount} topics, {tasksTotal} total tasks
+        Includes {trainingsCount} trainings, {tasksTotal} total tasks
       </Typography>
     </CardContent>
     <CardActions sx={{ paddingX: 2, paddingBottom: 2 }}>
-      <Button variant="contained" onClick={() => onStart(moduleId, sectionId)}>
+      <Button variant="contained" onClick={() => trainingTemplateId && onStart(trainingTemplateId)} disabled={!trainingTemplateId || disabled}>
         Start section
       </Button>
     </CardActions>
@@ -36,12 +34,13 @@ const SectionCard = ({ moduleId, sectionId, title, topicsCount, tasksTotal, onSt
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [data, setData] = useState<CurriculumResponse | null>(null);
+  const [data, setData] = useState<TrainingCatalogResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [startingId, setStartingId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchCurriculum()
+    fetchTrainingsCatalog()
       .then((res) => {
         setData(res);
         setError(null);
@@ -86,26 +85,34 @@ export default function HomePage() {
             <Stack spacing={3}>
               {!loading &&
                 !error &&
-                data?.modules.map((module: ModuleNode) => (
+                data?.modules.map((module: TrainingCatalogModule) => (
                   <Box key={module.id}>
                     <Typography variant="h6" fontWeight={700} sx={{ marginBottom: 1 }}>
                       {module.title}
                     </Typography>
                     <Stack spacing={2}>
-                      {module.sections.map((section) => {
-                        const topicsCount = section.topics.length;
-                        const tasksTotal = section.topics.reduce((sum, t) => sum + t.tasksCount, 0);
+                      {module.sections.map((section: TrainingCatalogSection) => {
+                        const trainingsCount = section.trainings.length;
+                        const tasksTotal = section.trainings.reduce((sum, t) => sum + t.taskCount, 0);
+                        const primaryTraining = section.trainings[0];
                         return (
                           <SectionCard
                             key={section.id}
-                            moduleId={module.id}
-                            sectionId={section.id}
                             title={section.title}
-                            topicsCount={topicsCount}
+                            trainingsCount={trainingsCount}
                             tasksTotal={tasksTotal}
-                            onStart={(moduleId, sectionId) => {
-                              const sessionId = generateSessionId();
-                              navigate(`/training/${moduleId}/${sectionId}/${sessionId}`);
+                            trainingTemplateId={primaryTraining?.id}
+                            disabled={!!startingId}
+                            onStart={async (trainingTemplateId) => {
+                              try {
+                                setStartingId(trainingTemplateId);
+                                const run = await startTrainingRun(trainingTemplateId);
+                                navigate(`/training-run/${run.id}`);
+                              } catch (e: any) {
+                                setError(e?.message ?? "Failed to start training");
+                              } finally {
+                                setStartingId(null);
+                              }
                             }}
                           />
                         );

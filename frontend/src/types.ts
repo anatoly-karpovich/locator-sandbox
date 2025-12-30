@@ -7,7 +7,7 @@ export type Expectations = {
 
 export type Task = {
   module: string;
-  id: number;
+  id: string;
   title: string;
   description: string;
   studyMaterials: {
@@ -19,10 +19,10 @@ export type Task = {
   heuristics?: string[];
 };
 
-export type TaskMap = Record<number, Task>;
+export type TaskMap = Record<string, Task>;
 
 export type TaskSummary = {
-  id: number;
+  id: string;
   title: string;
 };
 
@@ -34,7 +34,7 @@ export type ModuleConfig = {
 };
 
 export type SubmitSolutionBody = {
-  taskId: number;
+  taskId: string;
   payload: string;
 };
 
@@ -99,4 +99,57 @@ export type TopicNode = {
   level: "beginner" | "intermediate" | "advanced";
   tasksCount: number;
   tasks?: { id: number; title: string }[];
+};
+
+// Trainings catalog (templates grouped by module/section)
+export type TrainingCatalogResponse = {
+  modules: TrainingCatalogModule[];
+};
+
+export type TrainingCatalogModule = {
+  id: string;
+  title: string;
+  sections: TrainingCatalogSection[];
+};
+
+export type TrainingCatalogSection = {
+  id: string;
+  title: string;
+  trainings: TrainingCatalogItem[];
+};
+
+export type TrainingCatalogItem = {
+  id: string;
+  title: string;
+  description?: string;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  taskCount: number;
+};
+
+export type TrainingRunStatus = "not_started" | "in_progress" | "completed";
+export type TrainingRunTaskStatus = "not_started" | "in_progress" | "passed" | "failed";
+
+export type TrainingRunTask = {
+  id: string;
+  title: string;
+  result: {
+    status: TrainingRunTaskStatus;
+    attempts: number;
+  };
+};
+
+export type TrainingRunTopic = {
+  id: string;
+  title: string;
+  tasks: TrainingRunTask[];
+};
+
+export type TrainingRun = {
+  id: string;
+  type: "template" | "custom";
+  status: TrainingRunStatus;
+  title?: string;
+  templateId?: string;
+  topics: TrainingRunTopic[];
+  createdAt: string;
 };

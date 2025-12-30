@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import HomePage from "./pages/HomePage";
-import SessionPage from "./pages/SessionPage";
+import TrainingRunPage from "./pages/TrainingRunPage";
 
 const theme = createTheme({
   palette: {
@@ -18,7 +18,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/training/:moduleId/:sectionId/:sessionId" element={<SessionPage />} />
+          <Route path="/training-run/:trainingRunId" element={<TrainingRunPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>

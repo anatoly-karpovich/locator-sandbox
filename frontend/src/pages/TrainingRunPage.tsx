@@ -25,8 +25,8 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../components/HeaderBar";
 import { TaskInfoBar } from "../components/tasks/TaskInfoBar";
-import type { SolutionResponse, Task, TaskResultPayload, TopicNode } from "../types";
-import { submitSolution, fetchTask, fetchCurriculum } from "../api";
+import type { SolutionResponse, Task, TaskResultPayload, TrainingRun, TrainingRunTopic } from "../types";
+import { submitTrainingRunSolution, fetchTask, fetchTrainingRun } from "../api";
 
 const CHECK_STATUS = {
   Pending: "Pending",
@@ -57,53 +57,54 @@ type CheckState = {
   status: CheckStatus;
 };
 
-export default function SessionPage() {
-  const { moduleId, sectionId } = useParams<{ moduleId: string; sectionId: string; sessionId: string }>();
+export default function TrainingRunPage() {
+  const { trainingRunId } = useParams<{ trainingRunId: string }>();
   const navigate = useNavigate();
 
-  const [topics, setTopics] = useState<TopicNode[]>([]);
-  const [flatTaskIds, setFlatTaskIds] = useState<number[]>([]);
-  const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
+  const [run, setRun] = useState<TrainingRun | null>(null);
+  const [topics, setTopics] = useState<TrainingRunTopic[]>([]);
+  const [flatTaskIds, setFlatTaskIds] = useState<string[]>([]);
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [locatorInput, setLocatorInput] = useState("");
   const [solutionResult, setSolutionResult] = useState<SolutionResponse | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
-  const [completedTasks, setCompletedTasks] = useState<Set<number>>(new Set());
+  const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
   const [checksState, setChecksState] = useState<CheckState[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [taskLoading, setTaskLoading] = useState(false);
   const [taskLoadError, setTaskLoadError] = useState<string | null>(null);
   const [currentTaskData, setCurrentTaskData] = useState<Task | null>(null);
-  const [curriculumError, setCurriculumError] = useState<string | null>(null);
-  const [curriculumLoading, setCurriculumLoading] = useState(true);
+  const [runLoading, setRunLoading] = useState(true);
+  const [runLoadError, setRunLoadError] = useState<string | null>(null);
 
-  // Fetch curriculum for current module/section with tasks
+  // Fetch training run data
   useEffect(() => {
-    if (!moduleId || !sectionId) return;
-    setCurriculumLoading(true);
-    fetchCurriculum({ module: moduleId, section: sectionId, includeTasks: true })
+    if (!trainingRunId) return;
+    setRunLoading(true);
+    fetchTrainingRun(trainingRunId)
       .then((data) => {
-        const module = data.modules[0];
-        const section = module?.sections?.[0];
-        const sectionTopics = section?.topics ?? [];
-        console.log(JSON.stringify(sectionTopics, null, 2));
-        setTopics(sectionTopics);
-        const orderedTaskIds = sectionTopics.flatMap((topic) => (topic.tasks || []).map((t) => t.id));
+        setRun(data);
+        setTopics(data.topics);
+        const orderedTaskIds = data.topics.flatMap((topic) => topic.tasks.map((t) => t.id));
         setFlatTaskIds(orderedTaskIds);
         if (orderedTaskIds.length > 0) {
           setCurrentTaskId(orderedTaskIds[0]);
         } else {
           setCurrentTaskId(null);
         }
-        setCurriculumError(null);
+        const passed = data.topics.flatMap((t) => t.tasks).filter((t) => t.result.status === "passed").map((t) => t.id);
+        setCompletedTasks(new Set(passed));
+        setRunLoadError(null);
       })
       .catch((err: any) => {
-        setCurriculumError(err?.message ?? "Failed to load curriculum");
+        setRunLoadError(err?.message ?? "Failed to load training run");
+        setRun(null);
         setTopics([]);
         setFlatTaskIds([]);
         setCurrentTaskId(null);
       })
-      .finally(() => setCurriculumLoading(false));
-  }, [moduleId, sectionId]);
+      .finally(() => setRunLoading(false));
+  }, [trainingRunId]);
 
   const currentTaskIndex = useMemo(() => {
     if (!currentTaskId) return -1;
@@ -157,20 +158,33 @@ export default function SessionPage() {
     setChecksState(baseChecks);
   }, [currentTaskData]);
 
-  const handleSelectTask = (taskId: number) => {
+  const handleSelectTask = (taskId: string) => {
     setCurrentTaskId(taskId);
     setSolutionResult(null);
     setRunError(null);
     setLocatorInput("");
   };
 
+  const refreshRun = async () => {
+    if (!trainingRunId) return;
+    try {
+      const updated = await fetchTrainingRun(trainingRunId);
+      setRun(updated);
+      setTopics(updated.topics);
+      const passed = updated.topics.flatMap((t) => t.tasks).filter((t) => t.result.status === "passed").map((t) => t.id);
+      setCompletedTasks(new Set(passed));
+    } catch {
+      // silently ignore refresh errors
+    }
+  };
+
   const handleRun = async () => {
-    if (!currentTaskId || taskLoading || taskLoadError) return;
+    if (!currentTaskId || taskLoading || taskLoadError || !trainingRunId) return;
     setRunError(null);
     setSolutionResult(null);
     setIsRunning(true);
     try {
-      const result = await submitSolution({ taskId: currentTaskId, payload: locatorInput });
+      const result = await submitTrainingRunSolution(trainingRunId, { taskId: currentTaskId, payload: locatorInput });
       setSolutionResult(result);
       updateChecksFromResult(result);
 
@@ -178,6 +192,7 @@ export default function SessionPage() {
         ("taskResult" in result && result.taskResult?.passed) || ("result" in result && result.result?.passed) || false;
       if (passed) {
         setCompletedTasks((prev) => new Set([...prev, currentTaskId]));
+        refreshRun();
       }
     } catch (e: any) {
       setRunError(e.message ?? "Failed to run locator");
@@ -305,7 +320,7 @@ export default function SessionPage() {
             <Typography variant="body2" sx={{ minWidth: 100 }}>
               {check.key}
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography variant="body2" color="text.secondary">
                 expected: {String(check.expected)}
               </Typography>
@@ -383,10 +398,10 @@ export default function SessionPage() {
             </Button>
           </Stack>
 
-          {(curriculumLoading || taskLoading) && <Typography>Loading task...</Typography>}
-          {(taskLoadError || curriculumError) && (
+          {(runLoading || taskLoading) && <Typography>Loading task...</Typography>}
+          {(taskLoadError || runLoadError) && (
             <Typography color="error" marginBottom={2}>
-              {taskLoadError || curriculumError}
+              {taskLoadError || runLoadError}
             </Typography>
           )}
 
@@ -476,8 +491,8 @@ export default function SessionPage() {
             </Stack>
           )}
 
-          {!curriculumLoading && !currentTaskData && !taskLoading && (
-            <Typography color="text.secondary">No tasks to display. Check your module setup.</Typography>
+          {!runLoading && !currentTaskData && !taskLoading && (
+            <Typography color="text.secondary">No tasks to display. Check your training setup.</Typography>
           )}
         </Box>
       </Box>
