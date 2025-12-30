@@ -28,7 +28,7 @@ export type UsageCheckResult = {
     options?: CheckDetail;
   };
 };
-  
+
 export type CheckDetail = {
   passed: boolean;
   expected: unknown;
@@ -45,20 +45,32 @@ export type UsageSpec = {
   options?: Record<string, unknown>;
 };
 
+export type TaskId = string; // UUID
+export type TopicId = string;
+export type ModuleId = string;
+export type SectionId = string;
+
+export type Difficulty = "beginner" | "intermediate" | "advanced";
+
 export type Task = {
-  module: Module;
-  id: number;
+  id: TaskId;
   title: string;
   description: string;
+  // scope: {
+  //   module: string; // e.g. "locators"
+  //   section: string; // e.g. "getBy"
+  //   topic?: string; // e.g. "exact-match"
+  // };
+  topicId: TopicId;
+  difficulty: Difficulty;
   studyMaterials: {
     title: string;
     url: string;
   }[];
-  level: "beginner" | "intermediate" | "advanced";
   html: string;
 
   expectations: Expectations;
-  usageSpec: UsageSpec;
+  usageSpec?: UsageSpec;
   heuristics?: string[];
 };
 
@@ -76,3 +88,20 @@ export type CompareResult = {
   passed: boolean;
   checks: ExpectationCheck[];
 };
+
+export interface ITopic {
+  id: TopicId;
+  title: string;
+  sectionId: string;
+}
+
+export interface ISection {
+  id: string;
+  title: string;
+  moduleId: string;
+}
+
+export interface IModule {
+  id: string;
+  title: string;
+}

@@ -1,27 +1,23 @@
 import { getByPlaceholderTasks } from "./getBy/getByPlaceholder";
 import { getByTextTasks } from "./getBy/getByText";
-import { Module, Task } from "./types";
+import { Difficulty, Module, Task, TaskId } from "./types";
 
 class TasksService {
   private tasks: Task[] = [...getByTextTasks, ...getByPlaceholderTasks];
 
-  getById(id: number) {
+  getById(id: TaskId) {
     return this.tasks.find((t) => t.id === id);
-  }
-
-  getByModule(module: Module) {
-    return this.tasks.filter((t) => t.module === module);
   }
 
   getAll() {
     return this.tasks;
   }
 
-  getByLevel(level: "beginner" | "intermediate" | "advanced") {
-    return this.tasks.filter((t) => t.level === level);
+  getByDifficulty(difficulty: Difficulty) {
+    return this.tasks.filter((t) => t.difficulty === difficulty);
   }
 
-  getByIds(ids: number[]): Task[] {
+  getByIds(ids: TaskId[]): Task[] {
     return ids.map((id) => this.getById(id)).filter(Boolean) as Task[];
   }
 

@@ -1,7 +1,7 @@
 // curriculum/curriculum.service.ts
 
 import { curriculum } from "./curriculum.config";
-import tasksService from "../../tasks/tasks.service";
+import tasksService from "../../core/tasks/tasks.service";
 import { ModuleNode, SectionNode, TopicNode } from "./types";
 
 type CurriculumQuery = {

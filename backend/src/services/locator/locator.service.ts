@@ -1,5 +1,5 @@
 import { Locator, Page } from "playwright";
-import { throwStrictModeViolationError } from "../utils/throwStrictModeViolationError";
+import { throwStrictModeViolationError } from "../../utils/throwStrictModeViolationError";
 
 export class LocatorService {
   constructor(private page: Page) {}
