@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSnackbar } from "notistack";
 import {
   Accordion,
   AccordionDetails,
@@ -25,8 +26,8 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../components/HeaderBar";
 import { TaskInfoBar } from "../components/tasks/TaskInfoBar";
-import type { SolutionResponse, Task, TaskResultPayload, TopicNode } from "../types";
-import { submitSolution, fetchTask, fetchCurriculum } from "../api";
+import type { SolutionResponse, Task, TaskResultPayload, TrainingRun, TrainingRunTopic } from "../types";
+import { submitTrainingRunSolution, fetchTask, fetchTrainingRun, HttpError } from "../api";
 
 const CHECK_STATUS = {
   Pending: "Pending",
@@ -36,20 +37,6 @@ const CHECK_STATUS = {
 
 type CheckStatus = (typeof CHECK_STATUS)[keyof typeof CHECK_STATUS];
 
-const getErrorMessage = (err: string | null) => {
-  if (!err) return null;
-  let msg = err;
-  if (err.includes("ErrorMessage")) {
-    try {
-      const parsed = JSON.parse(err);
-      if (parsed?.ErrorMessage) msg = parsed.ErrorMessage;
-    } catch {
-      // ignore parse errors
-    }
-  }
-  return msg;
-};
-
 type CheckState = {
   key: string;
   expected: unknown;
@@ -57,53 +44,78 @@ type CheckState = {
   status: CheckStatus;
 };
 
-export default function SessionPage() {
-  const { moduleId, sectionId } = useParams<{ moduleId: string; sectionId: string; sessionId: string }>();
+export default function TrainingRunPage() {
+  const { trainingRunId } = useParams<{ trainingRunId: string }>();
   const navigate = useNavigate();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const [topics, setTopics] = useState<TopicNode[]>([]);
-  const [flatTaskIds, setFlatTaskIds] = useState<number[]>([]);
-  const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
+  const [run, setRun] = useState<TrainingRun | null>(null);
+  const [topics, setTopics] = useState<TrainingRunTopic[]>([]);
+  const [flatTaskIds, setFlatTaskIds] = useState<string[]>([]);
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [locatorInput, setLocatorInput] = useState("");
   const [solutionResult, setSolutionResult] = useState<SolutionResponse | null>(null);
-  const [runError, setRunError] = useState<string | null>(null);
-  const [completedTasks, setCompletedTasks] = useState<Set<number>>(new Set());
+  const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
   const [checksState, setChecksState] = useState<CheckState[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [taskLoading, setTaskLoading] = useState(false);
   const [taskLoadError, setTaskLoadError] = useState<string | null>(null);
   const [currentTaskData, setCurrentTaskData] = useState<Task | null>(null);
-  const [curriculumError, setCurriculumError] = useState<string | null>(null);
-  const [curriculumLoading, setCurriculumLoading] = useState(true);
+  const [runLoading, setRunLoading] = useState(true);
+  const [runLoadError, setRunLoadError] = useState<string | null>(null);
 
-  // Fetch curriculum for current module/section with tasks
+  const showError = (err: unknown, fallback = "Something went wrong") => {
+    let message = fallback;
+    if (err instanceof HttpError) {
+      message = err.body || fallback;
+      if (err.status >= 500) {
+        message = "Server error. Please try again.";
+      }
+    } else if (err instanceof Error && err.message) {
+      message = err.message;
+    }
+    return enqueueSnackbar(message, {
+      variant: "error",
+      action: (snackbarId) => (
+        <Button color="inherit" size="small" onClick={() => closeSnackbar(snackbarId)}>
+          Close
+        </Button>
+      ),
+    });
+  };
+
+  // Fetch training run data
   useEffect(() => {
-    if (!moduleId || !sectionId) return;
-    setCurriculumLoading(true);
-    fetchCurriculum({ module: moduleId, section: sectionId, includeTasks: true })
+    if (!trainingRunId) return;
+    setRunLoading(true);
+    fetchTrainingRun(trainingRunId)
       .then((data) => {
-        const module = data.modules[0];
-        const section = module?.sections?.[0];
-        const sectionTopics = section?.topics ?? [];
-        console.log(JSON.stringify(sectionTopics, null, 2));
-        setTopics(sectionTopics);
-        const orderedTaskIds = sectionTopics.flatMap((topic) => (topic.tasks || []).map((t) => t.id));
+        setRun(data);
+        setTopics(data.topics);
+        const orderedTaskIds = data.topics.flatMap((topic) => topic.tasks.map((t) => t.id));
         setFlatTaskIds(orderedTaskIds);
         if (orderedTaskIds.length > 0) {
           setCurrentTaskId(orderedTaskIds[0]);
         } else {
           setCurrentTaskId(null);
         }
-        setCurriculumError(null);
+        const passed = data.topics
+          .flatMap((t) => t.tasks)
+          .filter((t) => t.result.status === "passed")
+          .map((t) => t.id);
+        setCompletedTasks(new Set(passed));
+        setRunLoadError(null);
       })
       .catch((err: any) => {
-        setCurriculumError(err?.message ?? "Failed to load curriculum");
+        setRunLoadError(err?.message ?? "Failed to load training run");
+        showError(err, "Failed to load training run");
+        setRun(null);
         setTopics([]);
         setFlatTaskIds([]);
         setCurrentTaskId(null);
       })
-      .finally(() => setCurriculumLoading(false));
-  }, [moduleId, sectionId]);
+      .finally(() => setRunLoading(false));
+  }, [trainingRunId]);
 
   const currentTaskIndex = useMemo(() => {
     if (!currentTaskId) return -1;
@@ -111,7 +123,8 @@ export default function SessionPage() {
   }, [flatTaskIds, currentTaskId]);
 
   const prevTaskId = currentTaskIndex > 0 ? flatTaskIds[currentTaskIndex - 1] : null;
-  const nextTaskId = currentTaskIndex >= 0 && currentTaskIndex + 1 < flatTaskIds.length ? flatTaskIds[currentTaskIndex + 1] : null;
+  const nextTaskId =
+    currentTaskIndex >= 0 && currentTaskIndex + 1 < flatTaskIds.length ? flatTaskIds[currentTaskIndex + 1] : null;
 
   // Load task lazily
   useEffect(() => {
@@ -131,6 +144,7 @@ export default function SessionPage() {
       .catch((err: any) => {
         if (!mounted) return;
         setTaskLoadError(err?.message ?? "Failed to load task");
+        showError(err, "Failed to load task");
         setCurrentTaskData(null);
       })
       .finally(() => {
@@ -157,20 +171,34 @@ export default function SessionPage() {
     setChecksState(baseChecks);
   }, [currentTaskData]);
 
-  const handleSelectTask = (taskId: number) => {
+  const handleSelectTask = (taskId: string) => {
     setCurrentTaskId(taskId);
     setSolutionResult(null);
-    setRunError(null);
     setLocatorInput("");
   };
 
+  const refreshRun = async () => {
+    if (!trainingRunId) return;
+    try {
+      const updated = await fetchTrainingRun(trainingRunId);
+      setRun(updated);
+      setTopics(updated.topics);
+      const passed = updated.topics
+        .flatMap((t) => t.tasks)
+        .filter((t) => t.result.status === "passed")
+        .map((t) => t.id);
+      setCompletedTasks(new Set(passed));
+    } catch {
+      // silently ignore refresh errors
+    }
+  };
+
   const handleRun = async () => {
-    if (!currentTaskId || taskLoading || taskLoadError) return;
-    setRunError(null);
+    if (!currentTaskId || taskLoading || taskLoadError || !trainingRunId) return;
     setSolutionResult(null);
     setIsRunning(true);
     try {
-      const result = await submitSolution({ taskId: currentTaskId, payload: locatorInput });
+      const result = await submitTrainingRunSolution(trainingRunId, { taskId: currentTaskId, payload: locatorInput });
       setSolutionResult(result);
       updateChecksFromResult(result);
 
@@ -178,9 +206,10 @@ export default function SessionPage() {
         ("taskResult" in result && result.taskResult?.passed) || ("result" in result && result.result?.passed) || false;
       if (passed) {
         setCompletedTasks((prev) => new Set([...prev, currentTaskId]));
+        refreshRun();
       }
     } catch (e: any) {
-      setRunError(e.message ?? "Failed to run locator");
+      showError(e, "Failed to run locator");
       markAllChecksFailed();
     } finally {
       setIsRunning(false);
@@ -242,7 +271,11 @@ export default function SessionPage() {
                   const isActive = task.id === currentTaskId;
                   return (
                     <ListItem key={task.id} disablePadding>
-                      <ListItemButton selected={isActive} onClick={() => handleSelectTask(task.id)} sx={{ borderRadius: 1 }}>
+                      <ListItemButton
+                        selected={isActive}
+                        onClick={() => handleSelectTask(task.id)}
+                        sx={{ borderRadius: 1 }}
+                      >
                         <ListItemIcon sx={{ minWidth: 32 }}>
                           {isDone ? (
                             <CheckCircleIcon color="success" fontSize="small" />
@@ -272,11 +305,6 @@ export default function SessionPage() {
     <Box sx={{ background: "#fff", borderRadius: 2, padding: 2, border: "1px solid #e0e0e0" }}>
       <Stack direction="row" alignItems="center" spacing={2} marginBottom={1}>
         <Typography variant="h6">Checks</Typography>
-        {getErrorMessage(runError) && (
-          <Typography variant="body2" color="error" fontWeight={600}>
-            {getErrorMessage(runError)}
-          </Typography>
-        )}
       </Stack>
       <Stack spacing={1}>
         {checksState.map((check, idx) => (
@@ -305,7 +333,7 @@ export default function SessionPage() {
             <Typography variant="body2" sx={{ minWidth: 100 }}>
               {check.key}
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography variant="body2" color="text.secondary">
                 expected: {String(check.expected)}
               </Typography>
@@ -372,21 +400,17 @@ export default function SessionPage() {
 
         <Box component="main" sx={{ padding: 3, overflow: "auto" }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" marginBottom={3} spacing={2}>
-            <Button variant="outlined" onClick={handlePrevTask} disabled={!prevTaskId}>
-              ← Previous
-            </Button>
+            <Button variant="outlined" onClick={handlePrevTask} disabled={!prevTaskId}>{`< Previous`}</Button>
             <Typography variant="subtitle1" fontWeight={600} sx={{ textAlign: "center", flexGrow: 1 }}>
-              Task {currentTaskIndex >= 0 ? currentTaskIndex + 1 : "-"} / {totalTasks || "-"} — {currentTaskLabel}
+              Task {currentTaskIndex >= 0 ? currentTaskIndex + 1 : "-"} / {totalTasks || "-"} - {currentTaskLabel}
             </Typography>
-            <Button variant="outlined" onClick={handleNextTask} disabled={!nextTaskId}>
-              Next →
-            </Button>
+            <Button variant="outlined" onClick={handleNextTask} disabled={!nextTaskId}>{`Next >`}</Button>
           </Stack>
 
-          {(curriculumLoading || taskLoading) && <Typography>Loading task...</Typography>}
-          {(taskLoadError || curriculumError) && (
+          {(runLoading || taskLoading) && <Typography>Loading task...</Typography>}
+          {(taskLoadError || runLoadError) && (
             <Typography color="error" marginBottom={2}>
-              {taskLoadError || curriculumError}
+              {taskLoadError || runLoadError}
             </Typography>
           )}
 
@@ -442,10 +466,7 @@ export default function SessionPage() {
                 </Box>
               </Box>
 
-              <TaskInfoBar
-                description={currentTaskData.description}
-                studyMaterials={currentTaskData.studyMaterials}
-              />
+              <TaskInfoBar description={currentTaskData.description} studyMaterials={currentTaskData.studyMaterials} />
 
               <Stack spacing={2}>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
@@ -476,8 +497,8 @@ export default function SessionPage() {
             </Stack>
           )}
 
-          {!curriculumLoading && !currentTaskData && !taskLoading && (
-            <Typography color="text.secondary">No tasks to display. Check your module setup.</Typography>
+          {!runLoading && !currentTaskData && !taskLoading && (
+            <Typography color="text.secondary">No tasks to display. Check your training setup.</Typography>
           )}
         </Box>
       </Box>

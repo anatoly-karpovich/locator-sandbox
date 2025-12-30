@@ -7,7 +7,7 @@ export type Expectations = {
 
 export type Task = {
   module: string;
-  id: number;
+  id: string;
   title: string;
   description: string;
   studyMaterials: {
@@ -19,10 +19,10 @@ export type Task = {
   heuristics?: string[];
 };
 
-export type TaskMap = Record<number, Task>;
+export type TaskMap = Record<string, Task>;
 
 export type TaskSummary = {
-  id: number;
+  id: string;
   title: string;
 };
 
@@ -30,11 +30,11 @@ export type ModuleConfig = {
   id: string;
   name: string;
   description: string;
-  taskIds: number[];
+  taskIds: string[];
 };
 
 export type SubmitSolutionBody = {
-  taskId: number;
+  taskId: string;
   payload: string;
 };
 
@@ -75,28 +75,55 @@ export type SolutionResponse =
       explanation?: string[];
     };
 
-// Curriculum
-export type CurriculumResponse = {
-  version: string;
-  modules: ModuleNode[];
+// Trainings catalog (templates grouped by module/section)
+export type TrainingCatalogResponse = {
+  modules: TrainingCatalogModule[];
 };
 
-export type ModuleNode = {
+export type TrainingCatalogModule = {
   id: string;
   title: string;
-  sections: SectionNode[];
+  sections: TrainingCatalogSection[];
 };
 
-export type SectionNode = {
+export type TrainingCatalogSection = {
   id: string;
   title: string;
-  topics: TopicNode[];
+  trainings: TrainingCatalogItem[];
 };
 
-export type TopicNode = {
+export type TrainingCatalogItem = {
   id: string;
   title: string;
-  level: "beginner" | "intermediate" | "advanced";
-  tasksCount: number;
-  tasks?: { id: number; title: string }[];
+  description?: string;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  taskCount: number;
+};
+
+export type TrainingRunStatus = "not_started" | "in_progress" | "completed";
+export type TrainingRunTaskStatus = "not_started" | "in_progress" | "passed" | "failed";
+
+export type TrainingRunTask = {
+  id: string;
+  title: string;
+  result: {
+    status: TrainingRunTaskStatus;
+    attempts: number;
+  };
+};
+
+export type TrainingRunTopic = {
+  id: string;
+  title: string;
+  tasks: TrainingRunTask[];
+};
+
+export type TrainingRun = {
+  id: string;
+  type: "template" | "custom";
+  status: TrainingRunStatus;
+  title?: string;
+  templateId?: string;
+  topics: TrainingRunTopic[];
+  createdAt: string;
 };
