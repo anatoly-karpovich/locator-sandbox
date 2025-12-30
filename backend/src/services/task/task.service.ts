@@ -4,7 +4,6 @@ import taskRepository from "../../repositories/tasks.repo";
 class TaskService {
   getById(taskId: TaskId): Task {
     const task = taskRepository.getById(taskId);
-    if (!task) throw new Error(`Task ${taskId} not found`);
     return task;
   }
 

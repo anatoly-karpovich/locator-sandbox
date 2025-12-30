@@ -6,16 +6,16 @@ import {
 } from "../core/training/types";
 import locatorExecutionService from "../services/locator/execute.service";
 import taskService from "../services/task/task.service";
-import trainingService from "../services/training/training.service";
+import trainingsRunService from "../services/training/trainingsRun.service";
 import { HTTP_CODES } from "../data/httpCodes";
 import trainingTemplateService from "../services/training/trainingTemplate.service";
 
-export class TrainingController {
+export class TrainingRunsController {
   startTraining(req: Request<{}, {}, StartFixedTrainingRequest | StartCustomTrainingRequest>, res: Response) {
     const dto = req.body;
     try {
       if (this.isFixedTrainingDTO(dto)) {
-        const result = trainingService.startFixedTraining(dto.trainingTemplateId);
+        const result = trainingsRunService.startFixedTraining(dto.trainingTemplateId);
         return res.status(HTTP_CODES.OK).json(result);
       } else {
         return res.status(HTTP_CODES.OK).json({});
@@ -27,14 +27,25 @@ export class TrainingController {
     }
   }
 
-  async submitSolution(req: Request<{}, {}, ITrainingSubmitSolutionRequest>, res: Response) {
+  async submitSolution(req: Request<{ trainingRunId: string }, {}, ITrainingSubmitSolutionRequest>, res: Response) {
     const dto = req.body;
-    const task = taskService.getById(dto.taskId);
-    if (!task) return res.status(HTTP_CODES.BAD_REQUEST).json({ error: "Task not found" });
+    const trainingRunId = req.params.trainingRunId;
+    try {
+      const result = await trainingsRunService.handleSolution(trainingRunId, dto);
+      return res.status(HTTP_CODES.OK).json(result);
+    } catch (err) {
+      return res.status(HTTP_CODES.BAD_REQUEST).json({ error: (err as Error).message });
+    }
+  }
 
-    const execution = await locatorExecutionService.execute(task, dto.payload);
-
-    return res.status(HTTP_CODES.OK).json(execution);
+  async getRunById(req: Request<{ trainingRunId: string }, {}, {}>, res: Response) {
+    const trainingRunId = req.params.trainingRunId;
+    try {
+      const result = await trainingsRunService.getRunById(trainingRunId);
+      return res.status(HTTP_CODES.OK).json(result);
+    } catch (err) {
+      return res.status(HTTP_CODES.BAD_REQUEST).json({ error: (err as Error).message });
+    }
   }
 
   getCatalog(req: Request, res: Response) {

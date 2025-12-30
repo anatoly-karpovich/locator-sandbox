@@ -1,4 +1,5 @@
 import { Difficulty, ModuleId, SectionId, TaskId, TopicId } from "../tasks/types";
+import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "./enums";
 
 export interface StartFixedTrainingRequest {
   trainingTemplateId: TrainingTemplateId;
@@ -16,11 +17,10 @@ export interface StartCustomTrainingRequest {
 }
 
 export interface StartTrainingResponse {
-  trainingSet: ITrainingSet;
+  trainingRun: ITrainingRun;
 }
 
 export interface ITrainingSubmitSolutionRequest {
-  trainingSetId: TrainingSetId;
   taskId: TaskId;
   payload: string; // locator code
 }
@@ -44,12 +44,30 @@ export interface ITrainingSubmitSolutionResponse {
   hints?: string[];
 }
 
-export type TrainingSetId = string; // UUID
+export type TrainingRunId = string; // UUID
 
-export interface ITrainingSet {
-  id: TrainingSetId;
-  type: "template" | "custom";
+export type TrainingRunType = "template" | "custom";
 
+// export type TrainingTaskStatus = "not_started" | "in_progress" | "passed" | "failed";
+
+export interface TrainingTaskResult {
+  status: TRAINING_RUN_TASK_STATUS;
+  attempts: number;
+  // lastSubmittedAt?: string;
+
+  // опционально, но очень полезно
+  // lastResult?: {
+  //   passed: boolean;
+  //   executionPassed: boolean;
+  //   usagePassed?: boolean;
+  // };
+}
+
+export interface ITrainingRun {
+  id: TrainingRunId;
+  type: TrainingRunType;
+  status: TRAINING_RUN_STATUS;
+  title?: string;
   // Откуда получен
   templateId?: TrainingTemplateId;
 
@@ -60,6 +78,7 @@ export interface ITrainingSet {
     tasks: Array<{
       id: TaskId;
       title: string;
+      result: TrainingTaskResult;
     }>;
   }>;
 

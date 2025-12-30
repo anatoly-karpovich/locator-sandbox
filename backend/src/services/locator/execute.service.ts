@@ -40,8 +40,8 @@ class LocatorExecutionService {
         result,
         ...(explanation && { explanation }),
       };
-    } catch {
-      throw new Error("Parse locator error");
+    } catch (err) {
+      throw err;
     } finally {
       await page.close();
       await browser.close();

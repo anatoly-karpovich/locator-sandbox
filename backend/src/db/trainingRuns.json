@@ -1,0 +1,34 @@
+[
+  {
+    "type": "template",
+    "title": "Get By",
+    "status": "completed",
+    "templateId": "31e14518-589f-4d9c-aad1-0c29b34e4580",
+    "topics": [
+      {
+        "id": "d5c21800-ac27-42cd-82aa-bf680c1bcaa9",
+        "title": "Get by text",
+        "tasks": [
+          {
+            "id": "a5d6f5de-385f-4b50-abca-52370d3fb58a",
+            "title": "Find element by partial text match",
+            "result": {
+              "status": "passed",
+              "attempts": 2
+            }
+          },
+          {
+            "id": "6cf7c8b5-0d3e-4238-9db6-ec981976acba",
+            "title": "Find element by exact text match",
+            "result": {
+              "status": "passed",
+              "attempts": 1
+            }
+          }
+        ]
+      }
+    ],
+    "createdAt": "2025-12-30T20:32:58.309Z",
+    "id": "1767126778310"
+  }
+]
