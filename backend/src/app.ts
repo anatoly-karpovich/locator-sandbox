@@ -2,7 +2,6 @@ import express from "express";
 
 import solutionsRouter from "./router/solutions.router";
 import tasksRouter from "./router/tasks.router";
-import curriculumRouter from "./router/curriculum.router";
 import trainingsRunsRouter from "./router/trainingRun.router";
 import trainingsRouter from "./router/trainings.router";
 
@@ -10,7 +9,6 @@ const app = express();
 app.use(express.json());
 app.use("/api", solutionsRouter);
 app.use("/api", tasksRouter);
-app.use("/api", curriculumRouter);
 app.use("/api", trainingsRunsRouter);
 app.use("/api", trainingsRouter);
 

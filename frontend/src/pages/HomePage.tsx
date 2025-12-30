@@ -71,7 +71,7 @@ export default function HomePage() {
               </Typography>
               {loading && (
                 <Typography variant="body2" color="text.secondary">
-                  Loading curriculum...
+                  Loading trainings...
                 </Typography>
               )}
               {error && (

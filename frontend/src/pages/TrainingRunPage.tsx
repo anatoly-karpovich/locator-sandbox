@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSnackbar } from "notistack";
 import {
   Accordion,
   AccordionDetails,
@@ -26,7 +27,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../components/HeaderBar";
 import { TaskInfoBar } from "../components/tasks/TaskInfoBar";
 import type { SolutionResponse, Task, TaskResultPayload, TrainingRun, TrainingRunTopic } from "../types";
-import { submitTrainingRunSolution, fetchTask, fetchTrainingRun } from "../api";
+import { submitTrainingRunSolution, fetchTask, fetchTrainingRun, HttpError } from "../api";
 
 const CHECK_STATUS = {
   Pending: "Pending",
@@ -35,20 +36,6 @@ const CHECK_STATUS = {
 } as const;
 
 type CheckStatus = (typeof CHECK_STATUS)[keyof typeof CHECK_STATUS];
-
-const getErrorMessage = (err: string | null) => {
-  if (!err) return null;
-  let msg = err;
-  if (err.includes("ErrorMessage")) {
-    try {
-      const parsed = JSON.parse(err);
-      if (parsed?.ErrorMessage) msg = parsed.ErrorMessage;
-    } catch {
-      // ignore parse errors
-    }
-  }
-  return msg;
-};
 
 type CheckState = {
   key: string;
@@ -60,6 +47,7 @@ type CheckState = {
 export default function TrainingRunPage() {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
   const navigate = useNavigate();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const [run, setRun] = useState<TrainingRun | null>(null);
   const [topics, setTopics] = useState<TrainingRunTopic[]>([]);
@@ -67,7 +55,6 @@ export default function TrainingRunPage() {
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [locatorInput, setLocatorInput] = useState("");
   const [solutionResult, setSolutionResult] = useState<SolutionResponse | null>(null);
-  const [runError, setRunError] = useState<string | null>(null);
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
   const [checksState, setChecksState] = useState<CheckState[]>([]);
   const [isRunning, setIsRunning] = useState(false);
@@ -76,6 +63,26 @@ export default function TrainingRunPage() {
   const [currentTaskData, setCurrentTaskData] = useState<Task | null>(null);
   const [runLoading, setRunLoading] = useState(true);
   const [runLoadError, setRunLoadError] = useState<string | null>(null);
+
+  const showError = (err: unknown, fallback = "Something went wrong") => {
+    let message = fallback;
+    if (err instanceof HttpError) {
+      message = err.body || fallback;
+      if (err.status >= 500) {
+        message = "Server error. Please try again.";
+      }
+    } else if (err instanceof Error && err.message) {
+      message = err.message;
+    }
+    return enqueueSnackbar(message, {
+      variant: "error",
+      action: (snackbarId) => (
+        <Button color="inherit" size="small" onClick={() => closeSnackbar(snackbarId)}>
+          Close
+        </Button>
+      ),
+    });
+  };
 
   // Fetch training run data
   useEffect(() => {
@@ -92,12 +99,16 @@ export default function TrainingRunPage() {
         } else {
           setCurrentTaskId(null);
         }
-        const passed = data.topics.flatMap((t) => t.tasks).filter((t) => t.result.status === "passed").map((t) => t.id);
+        const passed = data.topics
+          .flatMap((t) => t.tasks)
+          .filter((t) => t.result.status === "passed")
+          .map((t) => t.id);
         setCompletedTasks(new Set(passed));
         setRunLoadError(null);
       })
       .catch((err: any) => {
         setRunLoadError(err?.message ?? "Failed to load training run");
+        showError(err, "Failed to load training run");
         setRun(null);
         setTopics([]);
         setFlatTaskIds([]);
@@ -112,7 +123,8 @@ export default function TrainingRunPage() {
   }, [flatTaskIds, currentTaskId]);
 
   const prevTaskId = currentTaskIndex > 0 ? flatTaskIds[currentTaskIndex - 1] : null;
-  const nextTaskId = currentTaskIndex >= 0 && currentTaskIndex + 1 < flatTaskIds.length ? flatTaskIds[currentTaskIndex + 1] : null;
+  const nextTaskId =
+    currentTaskIndex >= 0 && currentTaskIndex + 1 < flatTaskIds.length ? flatTaskIds[currentTaskIndex + 1] : null;
 
   // Load task lazily
   useEffect(() => {
@@ -132,6 +144,7 @@ export default function TrainingRunPage() {
       .catch((err: any) => {
         if (!mounted) return;
         setTaskLoadError(err?.message ?? "Failed to load task");
+        showError(err, "Failed to load task");
         setCurrentTaskData(null);
       })
       .finally(() => {
@@ -161,7 +174,6 @@ export default function TrainingRunPage() {
   const handleSelectTask = (taskId: string) => {
     setCurrentTaskId(taskId);
     setSolutionResult(null);
-    setRunError(null);
     setLocatorInput("");
   };
 
@@ -171,7 +183,10 @@ export default function TrainingRunPage() {
       const updated = await fetchTrainingRun(trainingRunId);
       setRun(updated);
       setTopics(updated.topics);
-      const passed = updated.topics.flatMap((t) => t.tasks).filter((t) => t.result.status === "passed").map((t) => t.id);
+      const passed = updated.topics
+        .flatMap((t) => t.tasks)
+        .filter((t) => t.result.status === "passed")
+        .map((t) => t.id);
       setCompletedTasks(new Set(passed));
     } catch {
       // silently ignore refresh errors
@@ -180,7 +195,6 @@ export default function TrainingRunPage() {
 
   const handleRun = async () => {
     if (!currentTaskId || taskLoading || taskLoadError || !trainingRunId) return;
-    setRunError(null);
     setSolutionResult(null);
     setIsRunning(true);
     try {
@@ -195,7 +209,7 @@ export default function TrainingRunPage() {
         refreshRun();
       }
     } catch (e: any) {
-      setRunError(e.message ?? "Failed to run locator");
+      showError(e, "Failed to run locator");
       markAllChecksFailed();
     } finally {
       setIsRunning(false);
@@ -257,7 +271,11 @@ export default function TrainingRunPage() {
                   const isActive = task.id === currentTaskId;
                   return (
                     <ListItem key={task.id} disablePadding>
-                      <ListItemButton selected={isActive} onClick={() => handleSelectTask(task.id)} sx={{ borderRadius: 1 }}>
+                      <ListItemButton
+                        selected={isActive}
+                        onClick={() => handleSelectTask(task.id)}
+                        sx={{ borderRadius: 1 }}
+                      >
                         <ListItemIcon sx={{ minWidth: 32 }}>
                           {isDone ? (
                             <CheckCircleIcon color="success" fontSize="small" />
@@ -287,11 +305,6 @@ export default function TrainingRunPage() {
     <Box sx={{ background: "#fff", borderRadius: 2, padding: 2, border: "1px solid #e0e0e0" }}>
       <Stack direction="row" alignItems="center" spacing={2} marginBottom={1}>
         <Typography variant="h6">Checks</Typography>
-        {getErrorMessage(runError) && (
-          <Typography variant="body2" color="error" fontWeight={600}>
-            {getErrorMessage(runError)}
-          </Typography>
-        )}
       </Stack>
       <Stack spacing={1}>
         {checksState.map((check, idx) => (
@@ -387,15 +400,11 @@ export default function TrainingRunPage() {
 
         <Box component="main" sx={{ padding: 3, overflow: "auto" }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" marginBottom={3} spacing={2}>
-            <Button variant="outlined" onClick={handlePrevTask} disabled={!prevTaskId}>
-              ← Previous
-            </Button>
+            <Button variant="outlined" onClick={handlePrevTask} disabled={!prevTaskId}>{`< Previous`}</Button>
             <Typography variant="subtitle1" fontWeight={600} sx={{ textAlign: "center", flexGrow: 1 }}>
-              Task {currentTaskIndex >= 0 ? currentTaskIndex + 1 : "-"} / {totalTasks || "-"} — {currentTaskLabel}
+              Task {currentTaskIndex >= 0 ? currentTaskIndex + 1 : "-"} / {totalTasks || "-"} - {currentTaskLabel}
             </Typography>
-            <Button variant="outlined" onClick={handleNextTask} disabled={!nextTaskId}>
-              Next →
-            </Button>
+            <Button variant="outlined" onClick={handleNextTask} disabled={!nextTaskId}>{`Next >`}</Button>
           </Stack>
 
           {(runLoading || taskLoading) && <Typography>Loading task...</Typography>}
@@ -457,10 +466,7 @@ export default function TrainingRunPage() {
                 </Box>
               </Box>
 
-              <TaskInfoBar
-                description={currentTaskData.description}
-                studyMaterials={currentTaskData.studyMaterials}
-              />
+              <TaskInfoBar description={currentTaskData.description} studyMaterials={currentTaskData.studyMaterials} />
 
               <Stack spacing={2}>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
