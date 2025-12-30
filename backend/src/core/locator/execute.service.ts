@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { CompareResult, Task } from "../tasks/types";
+import { CompareResult, ExpectationCheck, Expectations, Task } from "../tasks/types";
 import { SolutionsHandler } from "../tasks/solutionsHandler";
 import UsageSpecification from "../usageSpec/usageSpecification";
 import { LocatorService } from "./locator.service";
@@ -26,7 +26,10 @@ class LocatorExecutionService {
       await page.setContent(task.html);
       const locator = locatorService.createLocator(payload);
       const isPresented = await locatorService.checkPresence(locator);
-      if (!isPresented.attached) throw new Error("Element not found");
+      if (!isPresented.attached) {
+        const compare = this.buildNotFoundResult(task.expectations, isPresented.count);
+        return compare;
+      }
 
       result = await solutionHandler.runTask(task, locator);
       let explanation: string[] | null = null;
@@ -47,6 +50,32 @@ class LocatorExecutionService {
       await page.close();
       await browser.close();
     }
+  }
+
+  private buildNotFoundResult(expectations: Expectations, presenceCount: number | null): ITrainingsRunSubmitSolutionResponseDTO {
+    const checks: ExpectationCheck[] = [];
+    const keys = Object.keys(expectations) as (keyof Expectations)[];
+
+    for (const key of keys) {
+      const expected = expectations[key];
+      const actual = key === "count" ? presenceCount ?? 0 : null;
+      checks.push({
+        key,
+        expected,
+        actual,
+        passed: actual === expected,
+      });
+    }
+
+    const compareResult: CompareResult = {
+      passed: false,
+      checks,
+    };
+
+    return {
+      result: compareResult,
+      explanation: ["Element not found"],
+    };
   }
   // async execute(task: Task, payload: string) {
   //   const browser = await chromium.launch();

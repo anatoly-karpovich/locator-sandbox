@@ -1,4 +1,4 @@
-import { Task, TopicId } from "../../core/tasks/types";
+import { TopicId } from "../../core/tasks/types";
 import { ITrainingRun, TrainingRunId } from "../../core/training/types";
 import { topicsRepository } from "../../repositories";
 import trainingRunsRepository from "../../repositories/trainingRuns.repo";
@@ -88,7 +88,7 @@ class TrainingsRunService {
     if (!taskEntry) throw new Error(`Task "${dto.taskId}" not found in run "${trainingRunIn}"`);
 
     const execution = await locatorExecutionService.execute(task, dto.payload);
-    const passed = execution.result.passed;
+    const passed = Boolean(execution.result?.passed);
 
     taskEntry.result.attempts += 1;
     if (passed) {
