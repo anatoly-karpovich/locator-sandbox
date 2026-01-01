@@ -1,9 +1,5 @@
 import express from "express";
-
-import solutionsRouter from "./router/solutions.router";
-import tasksRouter from "./router/tasks.router";
-import trainingsRunsRouter from "./router/trainingRun.router";
-import trainingsRouter from "./router/trainings.router";
+import { solutionsRouter, tasksRouter, trainingsRouter, trainingsRunsRouter } from "./router";
 
 const app = express();
 app.use(express.json());

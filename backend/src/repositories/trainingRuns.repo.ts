@@ -57,5 +57,3 @@ export class TrainingRunsRepository {
     this.writeAll(runs);
   }
 }
-
-export default new TrainingRunsRepository();

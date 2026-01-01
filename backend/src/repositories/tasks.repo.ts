@@ -1,7 +1,7 @@
 import { Difficulty, TaskId, TopicId } from "../core/tasks/types";
 import { tasks } from "../db/tasks";
 
-class TaskRepository {
+export class TaskRepository {
   private table = tasks;
   getAll() {
     return this.table;
@@ -19,5 +19,3 @@ class TaskRepository {
     return this.table.filter((task) => task.difficulty === difficulty);
   }
 }
-
-export default new TaskRepository();

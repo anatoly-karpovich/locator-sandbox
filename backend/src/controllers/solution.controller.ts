@@ -3,9 +3,9 @@ import { chromium } from "playwright";
 import { LocatorService } from "../core/locator/locator.service";
 import taskService from "../core/tasks/tasks.service";
 import { SolutionsHandler } from "../core/tasks/solutionsHandler";
-import { HTTP_CODES } from "../data/httpCodes";
+import { HTTP_CODES } from "../core/httpCodes";
 import { parsePlaywrightLocatorAst } from "../core/ast-parser/parser";
-import UsageSpecification from "../core/usageSpec/usageSpecification";
+import { UsageSpecification } from "../core/usageSpec/usageSpecification";
 
 export type SubmitSolutionDTO = { payload: string; taskId: number };
 

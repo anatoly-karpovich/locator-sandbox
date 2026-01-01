@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import tasksService from "../core/tasks/tasks.service";
 import { Module } from "../core/tasks/types";
-import { HTTP_CODES } from "../data/httpCodes";
-import taskAggregatedService from "../services/task/taskAggregated.service";
+import { HTTP_CODES } from "../core/httpCodes";
+import { TaskAggregatedService } from "../services";
 
 export class TasksController {
+  constructor(private taskAggregatedService: TaskAggregatedService = new TaskAggregatedService()) {}
   getById(req: Request, res: Response) {
     const id = req.params.id;
 
@@ -17,13 +18,13 @@ export class TasksController {
 
   getByModule(req: Request, res: Response) {
     const module = req.params.module as Module;
-    const tasks = taskAggregatedService.getByModule(module);
+    const tasks = this.taskAggregatedService.getByModule(module);
 
     return res.status(HTTP_CODES.OK).json({ tasks });
   }
 
   getAll(req: Request, res: Response) {
-    const tasks = taskAggregatedService.getCatalog();
+    const tasks = this.taskAggregatedService.getCatalog();
     return res.status(HTTP_CODES.OK).json(tasks);
   }
 }

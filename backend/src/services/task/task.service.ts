@@ -1,9 +1,10 @@
 import { Difficulty, Task, TaskId, TopicId } from "../../core/tasks/types";
-import taskRepository from "../../repositories/tasks.repo";
+import { TaskRepository } from "../../repositories/tasks.repo";
 
-class TaskService {
+export class TaskService {
+  constructor(private taskRepository: TaskRepository = new TaskRepository()) {}
   getById(taskId: TaskId): Task {
-    const task = taskRepository.getById(taskId);
+    const task = this.taskRepository.getById(taskId);
     return task;
   }
 
@@ -12,16 +13,14 @@ class TaskService {
   }
 
   getByDifficulty(difficulty: Difficulty): Task[] {
-    return taskRepository.getByDifficulty(difficulty);
+    return this.taskRepository.getByDifficulty(difficulty);
   }
 
   getByTopic(topicId: TopicId): Task[] {
-    return taskRepository.getByTopic(topicId);
+    return this.taskRepository.getByTopic(topicId);
   }
 
   getAll(): Task[] {
-    return taskRepository.getAll();
+    return this.taskRepository.getAll();
   }
 }
-
-export default new TaskService();

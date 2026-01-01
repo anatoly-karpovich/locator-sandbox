@@ -1,12 +1,17 @@
 import { ITrainingTemplate } from "../../core/training/types";
-import taskService from "../task/task.service";
-import trainingTemplatesRepository from "../../repositories/trainingTemplates.repo";
-import { modulesRepository, sectionsRepository } from "../../repositories";
+import { TaskService } from "../task/task.service";
+import { ModuleRepository, SectionRepository, TrainingTemplateRepository } from "../../repositories";
 import { TrainingCatalogResponseDTO } from "../../dto/trainings.dto";
 
-class TrainingTemplateService {
+export class TrainingTemplateService {
+  constructor(
+    private taskService: TaskService = new TaskService(),
+    private trainingTemplatesRepository: TrainingTemplateRepository = new TrainingTemplateRepository(),
+    private modulesRepository: ModuleRepository = new ModuleRepository(),
+    private sectionsRepository: SectionRepository = new SectionRepository()
+  ) {}
   getById(id: string): ITrainingTemplate {
-    const template = trainingTemplatesRepository.getById(id);
+    const template = this.trainingTemplatesRepository.getById(id);
     if (!template) {
       throw new Error(`TrainingTemplate ${id} not found`);
     }
@@ -14,22 +19,22 @@ class TrainingTemplateService {
   }
 
   validateTemplatesOnStartup() {
-    const templates = trainingTemplatesRepository.getAll();
+    const templates = this.trainingTemplatesRepository.getAll();
 
     for (const template of templates) {
       for (const taskId of template.taskIds) {
-        taskService.getById(taskId); // выбросит ошибку если невалидно
+        this.taskService.getById(taskId); // выбросит ошибку если невалидно
       }
     }
   }
 
   getCatalogView(): TrainingCatalogResponseDTO {
-    const modules = modulesRepository.getAll();
-    const templates = trainingTemplatesRepository.getAll();
+    const modules = this.modulesRepository.getAll();
+    const templates = this.trainingTemplatesRepository.getAll();
 
     return {
       modules: modules.map((module) => {
-        const sections = sectionsRepository.getByModuleId(module.id);
+        const sections = this.sectionsRepository.getByModuleId(module.id);
 
         return {
           id: module.id,
@@ -56,5 +61,3 @@ class TrainingTemplateService {
     };
   }
 }
-
-export default new TrainingTemplateService();

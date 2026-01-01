@@ -1,58 +1,97 @@
 import { chromium } from "playwright";
 import { CompareResult, ExpectationCheck, Expectations, Task } from "../tasks/types";
 import { SolutionsHandler } from "../tasks/solutionsHandler";
-import UsageSpecification from "../usageSpec/usageSpecification";
+import { UsageSpecification } from "../usageSpec/usageSpecification";
 import { LocatorService } from "./locator.service";
 import { parsePlaywrightLocatorAst } from "../ast-parser/parser";
 import { ITrainingsRunSubmitSolutionResponseDTO } from "../../dto/trainingRuns.dto";
+import { PlaywrightRunner } from "../playwright/playwright.service";
 
-class LocatorExecutionService {
+export class LocatorExecutionService {
+  constructor(
+    private readonly playwrightRunner: PlaywrightRunner = new PlaywrightRunner(),
+    private readonly usageSpecification: UsageSpecification = new UsageSpecification()
+  ) {}
+
   async execute(task: Task, payload: string): Promise<ITrainingsRunSubmitSolutionResponseDTO> {
     const solutionHandler = new SolutionsHandler();
 
-    const browser = await chromium.launch(); // consider pooling
-    const page = await browser.newPage();
-
-    const locatorService = new LocatorService(page);
-    const usageSpecification = new UsageSpecification();
-
-    let result: any = {
-      text: "",
-      count: 0,
-      isVisible: false,
-    };
-
-    try {
+    return this.playwrightRunner.run(async (page) => {
       await page.setContent(task.html);
+
+      const locatorService = new LocatorService(page);
       const locator = locatorService.createLocator(payload);
-      const isPresented = await locatorService.checkPresence(locator);
-      if (!isPresented.attached) {
-        const compare = this.buildNotFoundResult(task.expectations, isPresented.count);
-        return compare;
+
+      const presence = await locatorService.checkPresence(locator);
+      if (!presence.attached) {
+        return this.buildNotFoundResult(task.expectations, presence.count);
       }
 
-      result = await solutionHandler.runTask(task, locator);
+      const result = await solutionHandler.runTask(task, locator);
       let explanation: string[] | null = null;
       if (task.usageSpec) {
         const parsed = parsePlaywrightLocatorAst(payload);
         const steps = parsed.steps;
-        const usageResult = usageSpecification.validate(steps, task.usageSpec);
-        explanation = usageSpecification.buildExplanation(usageResult);
+        const usageResult = this.usageSpecification.validate(steps, task.usageSpec);
+        explanation = this.usageSpecification.buildExplanation(usageResult);
       }
 
       return {
         result,
         ...(explanation && { explanation }),
       };
-    } catch (err) {
-      throw err;
-    } finally {
-      await page.close();
-      await browser.close();
-    }
+    });
   }
 
-  private buildNotFoundResult(expectations: Expectations, presenceCount: number | null): ITrainingsRunSubmitSolutionResponseDTO {
+  // async execute(task: Task, payload: string): Promise<ITrainingsRunSubmitSolutionResponseDTO> {
+  //   const solutionHandler = new SolutionsHandler();
+
+  //   const browser = await chromium.launch(); // consider pooling
+  //   const page = await browser.newPage();
+
+  //   const locatorService = new LocatorService(page);
+  //   const usageSpecification = new UsageSpecification();
+
+  //   let result: any = {
+  //     text: "",
+  //     count: 0,
+  //     isVisible: false,
+  //   };
+
+  //   try {
+  //     await page.setContent(task.html);
+  //     const locator = locatorService.createLocator(payload);
+  //     const isPresented = await locatorService.checkPresence(locator);
+  //     if (!isPresented.attached) {
+  //       const compare = this.buildNotFoundResult(task.expectations, isPresented.count);
+  //       return compare;
+  //     }
+
+  //     result = await solutionHandler.runTask(task, locator);
+  //     let explanation: string[] | null = null;
+  //     if (task.usageSpec) {
+  //       const parsed = parsePlaywrightLocatorAst(payload);
+  //       const steps = parsed.steps;
+  //       const usageResult = usageSpecification.validate(steps, task.usageSpec);
+  //       explanation = usageSpecification.buildExplanation(usageResult);
+  //     }
+
+  //     return {
+  //       result,
+  //       ...(explanation && { explanation }),
+  //     };
+  //   } catch (err) {
+  //     throw err;
+  //   } finally {
+  //     await page.close();
+  //     await browser.close();
+  //   }
+  // }
+
+  private buildNotFoundResult(
+    expectations: Expectations,
+    presenceCount: number | null
+  ): ITrainingsRunSubmitSolutionResponseDTO {
     const checks: ExpectationCheck[] = [];
     const keys = Object.keys(expectations) as (keyof Expectations)[];
 
@@ -103,5 +142,3 @@ class LocatorExecutionService {
   //   }
   // }
 }
-
-export default new LocatorExecutionService();
