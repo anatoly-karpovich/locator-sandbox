@@ -2,13 +2,13 @@ import { ITrainingsRunSubmitSolutionResponseDTO } from "./trainingRuns.dto";
 
 export interface PlaygroundSubmitRequestDTO {
   html: string;
-  locator: string;
+  payload: string;
 }
 
 export interface IPlaygroundSubmitResponseDTO extends ITrainingsRunSubmitSolutionResponseDTO {
-  element: {
+  elements: {
     tagName: string;
     text: string | null;
     attributes: Record<string, string>;
-  } | null;
+  }[];
 }

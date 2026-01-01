@@ -4,6 +4,8 @@ import { ExpectationCheck, CompareResult } from "../core/tasks/types";
 import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "../dto/playground.dto";
 import { PlaywrightRunner } from "../core/playwright/playwright.runner";
 
+const MAX_ELEMENTS_PREVIEW = 10;
+
 export class PlaygroundService {
   constructor(private readonly playwrightRunner = new PlaywrightRunner()) {}
 
@@ -12,16 +14,18 @@ export class PlaygroundService {
       await page.setContent(dto.html);
 
       const locatorService = new LocatorService(page);
-      const locator = locatorService.createLocator(dto.locator);
+      const locator = locatorService.createLocator(dto.payload);
 
       const count = await locator.count();
 
+      // 🔴 NOT FOUND
       if (count === 0) {
         return this.buildNotFoundResult();
       }
 
+      // 🟢 FOUND
       const visible = await locator.first().isVisible();
-      const element = await this.buildElementInfo(locator);
+      const elements = await this.buildElementsInfo(locator, count);
 
       const checks: ExpectationCheck[] = [
         {
@@ -44,7 +48,7 @@ export class PlaygroundService {
       };
 
       return {
-        element,
+        elements,
         result,
       };
     });
@@ -72,30 +76,40 @@ export class PlaygroundService {
     };
 
     return {
-      element: null,
+      elements: [],
       result,
       explanation: ["Element not found"],
     };
   }
 
-  private async buildElementInfo(locator: Locator) {
-    const first = locator.first();
+  private async buildElementsInfo(
+    locator: Locator,
+    totalCount: number
+  ): Promise<IPlaygroundSubmitResponseDTO["elements"]> {
+    const limit = Math.min(totalCount, MAX_ELEMENTS_PREVIEW);
+    const elements: IPlaygroundSubmitResponseDTO["elements"] = [];
 
-    return first.evaluate((el) => {
-      const allowedAttrs = ["id", "class", "role", "data-testid", "name"];
-      const attributes: Record<string, string> = {};
+    for (let i = 0; i < limit; i++) {
+      const info = await locator.nth(i).evaluate((el) => {
+        const allowedAttrs = ["id", "class", "role", "data-testid", "name"];
+        const attributes: Record<string, string> = {};
 
-      for (const attr of el.attributes) {
-        if (allowedAttrs.includes(attr.name)) {
-          attributes[attr.name] = attr.value;
+        for (const attr of el.attributes) {
+          if (allowedAttrs.includes(attr.name)) {
+            attributes[attr.name] = attr.value;
+          }
         }
-      }
 
-      return {
-        tagName: el.tagName.toLowerCase(),
-        text: el.textContent?.trim() || null,
-        attributes,
-      };
-    });
+        return {
+          tagName: el.tagName.toLowerCase(),
+          text: el.textContent?.trim() || null,
+          attributes,
+        };
+      });
+
+      elements.push(info);
+    }
+
+    return elements;
   }
 }
