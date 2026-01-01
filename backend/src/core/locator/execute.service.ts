@@ -5,7 +5,7 @@ import { UsageSpecification } from "../usageSpec/usageSpecification";
 import { LocatorService } from "./locator.service";
 import { parsePlaywrightLocatorAst } from "../ast-parser/parser";
 import { ITrainingsRunSubmitSolutionResponseDTO } from "../../dto/trainingRuns.dto";
-import { PlaywrightRunner } from "../playwright/playwright.service";
+import { PlaywrightRunner } from "../playwright/playwright.runner";
 
 export class LocatorExecutionService {
   constructor(

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { SolutionController } from "../controllers/solution.controller";
+import { SolutionController } from "../controllers";
 import { solutionsSubmitMiddleware } from "../middlewares/solutions.middleware";
 
 const solutionsRouter = Router();

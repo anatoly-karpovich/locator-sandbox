@@ -7,7 +7,12 @@ export class LocatorService {
   createLocator(locatorExpression: string): Locator {
     const page = this.page;
     // пока eval, потом AST+builder
-    return eval(locatorExpression);
+    try {
+      const locator = eval(locatorExpression);
+      return locator;
+    } catch (err) {
+      throw new Error("Invalid locator expression");
+    }
   }
 
   async checkPresence(locator: Locator, timeout = 1000) {
