@@ -457,7 +457,7 @@ export default function TrainingRunPage() {
                       padding: 2,
                       fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
                       whiteSpace: "pre-wrap",
-                      maxHeight: 260,
+                      maxHeight: 410,
                       overflow: "auto",
                     }}
                   >
