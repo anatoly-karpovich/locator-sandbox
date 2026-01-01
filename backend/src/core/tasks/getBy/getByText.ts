@@ -8,9 +8,34 @@ export const getByTextTasks: Task[] = [
     topicId: "3516b765-b3b9-42c1-bc6c-d67324b0d08c",
     difficulty: "beginner",
     html: `
-      <div class="container">
-        <p>Welcome to the application</p>
-      </div>
+        <div class="container">
+          <header class="app-header">
+            <h1 class="app-title">My Application</h1>
+            <nav class="main-nav">
+              <ul class="nav-list">
+                <li class="nav-item"><a href="#" class="nav-link" data-testid="home-link">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" data-testid="about-link">About</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" data-testid="contact-link">Contact</a></li>
+              </ul>
+            </nav>
+          </header>
+
+          <main class="main-content">
+            <section class="hero-section">
+              <h2 class="hero-title">Welcome to the application</h2>
+              <p class="hero-description">This is a sample application with various elements for testing locator strategies.</p>
+              <button class="cta-button" type="button" aria-label="Get started">Get Started</button>
+            </section>
+          </main>
+
+          <footer class="app-footer">
+            <p class="footer-text">© 2024 My Application. All rights reserved.</p>
+            <div class="footer-links">
+              <a href="#" class="footer-link">Privacy Policy</a>
+              <a href="#" class="footer-link">Terms of Service</a>
+            </div>
+          </footer>
+        </div>
     `,
     expectations: {
       count: 1,
@@ -18,13 +43,11 @@ export const getByTextTasks: Task[] = [
       visible: true,
     },
     studyMaterials: [studyMaterials.locatorMethods.getByText],
-    description: "We use getByText to find elements by partial text match.",
+    description: "We use getByText to find elements by partial text match. In this task we expect to find 1 element with text 'Welcome to the application'.",
     usageSpec: {
       method: "getByText",
       argument: {
         type: "string",
-        match: "partial",
-        value: "Welcome to the application",
       },
     },
   },

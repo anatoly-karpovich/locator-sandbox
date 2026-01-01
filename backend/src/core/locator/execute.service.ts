@@ -3,47 +3,59 @@ import { CompareResult, ExpectationCheck, Expectations, Task } from "../tasks/ty
 import { SolutionsHandler } from "../tasks/solutionsHandler";
 import UsageSpecification from "../usageSpec/usageSpecification";
 import { LocatorService } from "./locator.service";
-import { parsePlaywrightLocatorAst } from "../ast-parser/parser";
+import { AstParser } from "../ast-parser/AstParser";
+import { AstError } from "../../error/astError";
 import { ITrainingsRunSubmitSolutionResponseDTO } from "../../dto/trainingRuns.dto";
+import { ParsedPlan } from "../ast-parser";
 
 class LocatorExecutionService {
   async execute(task: Task, payload: string): Promise<ITrainingsRunSubmitSolutionResponseDTO> {
     const solutionHandler = new SolutionsHandler();
+    const usageSpecification = new UsageSpecification();
+
+    const solution: ITrainingsRunSubmitSolutionResponseDTO = {
+      result: {
+        passed: false,
+        checks: [],
+      },
+      explanation: [],
+    };
+
+    let parsedPlan: ParsedPlan;
+    try {
+      parsedPlan = AstParser.parse(payload);
+      if (task.usageSpec) {
+        const steps = parsedPlan.steps;
+        const usageResult = usageSpecification.validate(steps, task.usageSpec);
+        solution.explanation = usageSpecification.buildExplanation(usageResult);
+      }
+    } catch (err) {
+      if (err instanceof AstError) {
+        return {
+          ...solution,
+          explanation: solution.explanation.concat([err.message]),
+        };
+      }
+      throw err;
+    }
 
     const browser = await chromium.launch(); // consider pooling
     const page = await browser.newPage();
-
     const locatorService = new LocatorService(page);
-    const usageSpecification = new UsageSpecification();
-
-    let result: any = {
-      text: "",
-      count: 0,
-      isVisible: false,
-    };
 
     try {
       await page.setContent(task.html);
       const locator = locatorService.createLocator(payload);
-      const isPresented = await locatorService.checkPresence(locator);
-      if (!isPresented.attached) {
-        const compare = this.buildNotFoundResult(task.expectations, isPresented.count);
+      const foundElement = await locatorService.checkPresence(locator, task.expectations.count);
+
+      if (!foundElement.attached) {
+        const compare = this.buildNotFoundResult(task.expectations, foundElement.count);
         return compare;
       }
 
-      result = await solutionHandler.runTask(task, locator);
-      let explanation: string[] | null = null;
-      if (task.usageSpec) {
-        const parsed = parsePlaywrightLocatorAst(payload);
-        const steps = parsed.steps;
-        const usageResult = usageSpecification.validate(steps, task.usageSpec);
-        explanation = usageSpecification.buildExplanation(usageResult);
-      }
+      solution.result = await solutionHandler.runTask(task, locator);
 
-      return {
-        result,
-        ...(explanation && { explanation }),
-      };
+      return solution;
     } catch (err) {
       throw err;
     } finally {
@@ -52,13 +64,21 @@ class LocatorExecutionService {
     }
   }
 
-  private buildNotFoundResult(expectations: Expectations, presenceCount: number | null): ITrainingsRunSubmitSolutionResponseDTO {
+  private buildNotFoundResult(expectations: Expectations, presenceCount: number): ITrainingsRunSubmitSolutionResponseDTO {
+    const explanation: string[] = [];
     const checks: ExpectationCheck[] = [];
     const keys = Object.keys(expectations) as (keyof Expectations)[];
 
     for (const key of keys) {
       const expected = expectations[key];
-      const actual = key === "count" ? presenceCount ?? 0 : null;
+      let actual: number | undefined = undefined;
+
+      if (key === "count") {
+        actual = presenceCount;
+        if (actual !== expected && actual > (expected as number)) {
+          explanation.push(`Locator resolved to ${actual} elements`);
+        }
+      }
       checks.push({
         key,
         expected,
@@ -71,6 +91,13 @@ class LocatorExecutionService {
       passed: false,
       checks,
     };
+
+    if (explanation.length > 0) {
+      return {
+        result: compareResult,
+        explanation,
+      };
+    }
 
     return {
       result: compareResult,

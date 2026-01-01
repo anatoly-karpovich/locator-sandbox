@@ -1,5 +1,5 @@
 import { Locator, Page } from "playwright";
-import { throwStrictModeViolationError } from "../../utils/throwStrictModeViolationError";
+import { getStrictModeViolationElementCount } from "../../utils/throwStrictModeViolationError";
 
 export class LocatorService {
   constructor(private page: Page) {}
@@ -10,20 +10,28 @@ export class LocatorService {
     return eval(locatorExpression);
   }
 
-  async checkPresence(locator: Locator, timeout = 1000) {
+  async checkPresence(locator: Locator, expectedCount?: number, timeout = 1000) {
+    let count: number;
     try {
       await locator.waitFor({ state: "attached", timeout });
-      const count = await locator.count();
+      count = await locator.count();
 
       return {
         attached: true,
         count,
       };
     } catch (e) {
-      throwStrictModeViolationError(e);
+      count = getStrictModeViolationElementCount(e);
+      if (expectedCount && count === expectedCount) {
+        return {
+          attached: true,
+          count,
+        };
+      }
+
       return {
         attached: false,
-        count: null,
+        count,
       };
     }
   }

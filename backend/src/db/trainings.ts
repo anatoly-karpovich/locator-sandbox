@@ -7,7 +7,7 @@ export const trainings: ITrainingTemplate[] = [
     description: "Playwright getBy locators",
     moduleId: "58ffdfb0-0c23-4288-9323-92a2e366a589",
     sectionId: "191fdd37-dcf3-4d88-bc2b-e2a5a7caf7e7",
-    taskIds: ["a5d6f5de-385f-4b50-abca-52370d3fb58a", "6cf7c8b5-0d3e-4238-9db6-ec981976acba"],
+    taskIds: ["a5d6f5de-385f-4b50-abca-52370d3fb58a", "6cf7c8b5-0d3e-4238-9db6-ec981976acba", "96ec0c8a-40ec-4d6b-8d1a-c269ad788909"],
 
     difficulty: "beginner",
     createdAt: "",
