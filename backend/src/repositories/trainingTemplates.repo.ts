@@ -1,6 +1,6 @@
 import { trainings } from "../db/trainings";
 
-class TrainingTemplateRepository {
+export class TrainingTemplateRepository {
   private table = trainings;
 
   getAll() {
@@ -11,5 +11,3 @@ class TrainingTemplateRepository {
     return this.table.find((training) => training.id === id);
   }
 }
-
-export default new TrainingTemplateRepository();

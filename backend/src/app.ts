@@ -1,9 +1,5 @@
 import express from "express";
-
-import solutionsRouter from "./router/solutions.router";
-import tasksRouter from "./router/tasks.router";
-import trainingsRunsRouter from "./router/trainingRun.router";
-import trainingsRouter from "./router/trainings.router";
+import { solutionsRouter, tasksRouter, trainingsRouter, trainingsRunsRouter, playgroundRouter } from "./router";
 
 const app = express();
 app.use(express.json());
@@ -11,6 +7,7 @@ app.use("/api", solutionsRouter);
 app.use("/api", tasksRouter);
 app.use("/api", trainingsRunsRouter);
 app.use("/api", trainingsRouter);
+app.use("/api", playgroundRouter);
 
 async function startApp() {
   const PORT = 3333;

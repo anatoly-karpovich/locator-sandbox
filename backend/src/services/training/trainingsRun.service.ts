@@ -1,18 +1,24 @@
 import { TopicId } from "../../core/tasks/types";
 import { ITrainingRun, TrainingRunId } from "../../core/training/types";
-import { topicsRepository } from "../../repositories";
-import trainingRunsRepository from "../../repositories/trainingRuns.repo";
-import taskService from "../task/task.service";
-import trainingTemplateService from "./trainingTemplate.service";
-import locatorExecutionService from "../../core/locator/execute.service";
+import { TopicRepository, TrainingRunsRepository } from "../../repositories";
+import { TaskService } from "../task/task.service";
+import { TrainingTemplateService } from "./trainingTemplate.service";
+import { LocatorExecutionService } from "../../core/locator/execute.service";
 import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "../../core/training/enums";
 import { ITrainingSubmitSolutionRequestDTO } from "../../dto/trainingRuns.dto";
 
-class TrainingsRunService {
+export class TrainingsRunService {
+  constructor(
+    private locatorExecutionService: LocatorExecutionService = new LocatorExecutionService(),
+    private trainingTemplateService: TrainingTemplateService = new TrainingTemplateService(),
+    private taskService: TaskService = new TaskService(),
+    private trainingRunsRepository: TrainingRunsRepository = new TrainingRunsRepository(),
+    private topicsRepository: TopicRepository = new TopicRepository()
+  ) {}
   startFixedTraining(templateId: string): ITrainingRun {
-    const template = trainingTemplateService.getById(templateId);
+    const template = this.trainingTemplateService.getById(templateId);
 
-    const tasks = taskService.getManyByIds(template.taskIds);
+    const tasks = this.taskService.getManyByIds(template.taskIds);
 
     // 1️⃣ группируем таски по topicId
     const tasksByTopic = new Map<TopicId, typeof tasks>();
@@ -26,7 +32,7 @@ class TrainingsRunService {
 
     // 2️⃣ собираем topics DTO
     const topics = Array.from(tasksByTopic.entries()).map(([topicId, topicTasks]) => {
-      const topic = topicsRepository.getById(topicId);
+      const topic = this.topicsRepository.getById(topicId);
 
       if (!topic) {
         throw new Error(`Topic ${topicId} not found for training`);
@@ -54,7 +60,7 @@ class TrainingsRunService {
       createdAt: new Date().toISOString(),
     };
 
-    const run = trainingRunsRepository.create(data);
+    const run = this.trainingRunsRepository.create(data);
     return run;
   }
 
@@ -78,16 +84,16 @@ class TrainingsRunService {
   // }
 
   async handleSolution(trainingRunIn: TrainingRunId, dto: ITrainingSubmitSolutionRequestDTO) {
-    const run = trainingRunsRepository.getById(trainingRunIn);
+    const run = this.trainingRunsRepository.getById(trainingRunIn);
     if (!run) throw new Error(`Training run "${trainingRunIn}" not found`);
 
-    const task = taskService.getById(dto.taskId);
+    const task = this.taskService.getById(dto.taskId);
     if (!task) throw new Error(`Task "${dto.taskId}" not found`);
 
     const taskEntry = this.findTask(run, dto.taskId);
     if (!taskEntry) throw new Error(`Task "${dto.taskId}" not found in run "${trainingRunIn}"`);
 
-    const execution = await locatorExecutionService.execute(task, dto.payload);
+    const execution = await this.locatorExecutionService.execute(task, dto.payload);
     const passed = Boolean(execution.result?.passed);
 
     taskEntry.result.attempts += 1;
@@ -98,12 +104,12 @@ class TrainingsRunService {
         taskEntry.result.attempts === 1 ? TRAINING_RUN_TASK_STATUS.IN_PROGRESS : TRAINING_RUN_TASK_STATUS.FAILED;
     }
     this.updateRunStatus(run);
-    trainingRunsRepository.update(trainingRunIn, run);
+    this.trainingRunsRepository.update(trainingRunIn, run);
     return execution;
   }
 
   async getRunById(trainingRunId: TrainingRunId) {
-    const run = trainingRunsRepository.getById(trainingRunId);
+    const run = this.trainingRunsRepository.getById(trainingRunId);
     if (!run) throw new Error(`Training run "${trainingRunId}" not found`);
     return run;
   }
@@ -169,5 +175,3 @@ class TrainingsRunService {
 }
   */
 }
-
-export default new TrainingsRunService();

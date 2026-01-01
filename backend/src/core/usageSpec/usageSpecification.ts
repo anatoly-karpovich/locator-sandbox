@@ -2,7 +2,7 @@ import { Step } from "../ast-parser/types";
 import { UsageCheckResult, UsageSpec } from "../tasks/types";
 import { getArgumentType } from "../../utils/getArgumentType";
 
-export default class UsageSpecification {
+export class UsageSpecification {
   private messages: Set<string> = new Set();
 
   public validate(steps: Step[], specs: UsageSpec): UsageCheckResult {

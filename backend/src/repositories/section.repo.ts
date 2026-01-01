@@ -1,7 +1,7 @@
 import { sections } from "../db/sections";
 import { SectionId } from "../core/tasks/types";
 
-class SectionRepository {
+export class SectionRepository {
   getById(id: SectionId) {
     return sections.find((s) => s.id === id);
   }
@@ -14,5 +14,3 @@ class SectionRepository {
     return sections;
   }
 }
-
-export default new SectionRepository();

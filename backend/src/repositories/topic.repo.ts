@@ -1,7 +1,7 @@
 import { topics } from "../db/topics";
 import { TopicId, SectionId } from "../core/tasks/types";
 
-class TopicRepository {
+export class TopicRepository {
   getById(id: TopicId) {
     return topics.find((t) => t.id === id);
   }
@@ -15,5 +15,3 @@ class TopicRepository {
     return topics;
   }
 }
-
-export default new TopicRepository();

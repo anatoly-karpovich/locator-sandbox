@@ -1,7 +1,7 @@
 import { ModuleId } from "../core/tasks/types";
 import { modules } from "../db/modules";
 
-class ModuleRepository {
+export class ModuleRepository {
   getById(id: ModuleId) {
     return modules.find((m) => m.id === id);
   }
@@ -10,5 +10,3 @@ class ModuleRepository {
     return modules;
   }
 }
-
-export default new ModuleRepository();

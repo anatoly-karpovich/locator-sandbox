@@ -1,6 +1,15 @@
-import modulesRepository from "./module.repo";
-import sectionsRepository from "./section.repo";
-import topicsRepository from "./topic.repo";
-import tasksRepository from "./tasks.repo";
+import { ModuleRepository } from "./module.repo";
+import { SectionRepository } from "./section.repo";
+import { TopicRepository } from "./topic.repo";
+import { TaskRepository } from "./tasks.repo";
+import { TrainingTemplateRepository } from "./trainingTemplates.repo";
+import { TrainingRunsRepository } from "./trainingRuns.repo";
 
-export { tasksRepository, sectionsRepository, topicsRepository, modulesRepository };
+export {
+  ModuleRepository,
+  SectionRepository,
+  TopicRepository,
+  TaskRepository,
+  TrainingTemplateRepository,
+  TrainingRunsRepository,
+};

@@ -1,7 +1,7 @@
 import { ModuleId, Task, SectionId, TopicId, Difficulty } from "../../core/tasks/types";
 import { ITaskCatalogResponse } from "../../core/training/types";
-import { topicsRepository, sectionsRepository, modulesRepository, tasksRepository } from "../../repositories";
-import taskService from "./task.service";
+import { TopicRepository, SectionRepository, ModuleRepository, TaskRepository } from "../../repositories";
+import { TaskService } from "./task.service";
 
 type TaskQueryFilter = {
   difficulty?: Difficulty;
@@ -11,25 +11,32 @@ type TaskQueryFilter = {
   limit?: number;
 };
 
-class TaskAggregatedService {
+export class TaskAggregatedService {
+  constructor(
+    private taskService: TaskService = new TaskService(),
+    private sectionRepository: SectionRepository = new SectionRepository(),
+    private moduleRepository: ModuleRepository = new ModuleRepository(),
+    private tasksRepository: TaskRepository = new TaskRepository(),
+    private topicsRepository: TopicRepository = new TopicRepository()
+  ) {}
   getCatalog(): ITaskCatalogResponse {
-    const modules = modulesRepository.getAll();
+    const modules = this.moduleRepository.getAll();
 
     return {
       modules: modules.map((module) => {
-        const sections = sectionsRepository.getByModuleId(module.id);
+        const sections = this.sectionRepository.getByModuleId(module.id);
 
         return {
           id: module.id,
           title: module.title,
           sections: sections.map((section) => {
-            const topics = topicsRepository.getBySectionId(section.id);
+            const topics = this.topicsRepository.getBySectionId(section.id);
 
             return {
               id: section.id,
               title: section.title,
               topics: topics.map((topic) => {
-                const tasks = tasksRepository.getByTopic(topic.id);
+                const tasks = this.tasksRepository.getByTopic(topic.id);
 
                 return {
                   id: topic.id,
@@ -47,7 +54,7 @@ class TaskAggregatedService {
   }
 
   query(filter: TaskQueryFilter): Task[] {
-    let tasks = tasksRepository.getAll();
+    let tasks = this.tasksRepository.getAll();
 
     if (filter.difficulty) {
       tasks = tasks.filter((t) => t.difficulty === filter.difficulty);
@@ -58,15 +65,15 @@ class TaskAggregatedService {
     }
 
     if (filter.sectionId) {
-      const topicIds = topicsRepository.getBySectionId(filter.sectionId).map((t) => t.id);
+      const topicIds = this.topicsRepository.getBySectionId(filter.sectionId).map((t) => t.id);
 
       tasks = tasks.filter((t) => topicIds.includes(t.topicId));
     }
 
     if (filter.moduleId) {
-      const sectionIds = sectionsRepository.getByModuleId(filter.moduleId).map((s) => s.id);
+      const sectionIds = this.sectionRepository.getByModuleId(filter.moduleId).map((s) => s.id);
 
-      const topicIds = topicsRepository.getBySectionId(sectionIds).map((t) => t.id);
+      const topicIds = this.topicsRepository.getBySectionId(sectionIds).map((t) => t.id);
 
       tasks = tasks.filter((t) => topicIds.includes(t.topicId));
     }
@@ -79,22 +86,20 @@ class TaskAggregatedService {
   }
 
   getByModule(moduleId: ModuleId): Task[] {
-    const sectionIds = sectionsRepository.getByModuleId(moduleId).map((s) => s.id);
+    const sectionIds = this.sectionRepository.getByModuleId(moduleId).map((s) => s.id);
 
-    const topicIds = topicsRepository.getBySectionId(sectionIds).map((t) => t.id);
+    const topicIds = this.topicsRepository.getBySectionId(sectionIds).map((t) => t.id);
 
-    return taskService.getAll().filter((task) => topicIds.includes(task.topicId));
+    return this.taskService.getAll().filter((task) => topicIds.includes(task.topicId));
   }
 
   getBySection(sectionId: SectionId): Task[] {
-    const topicIds = topicsRepository.getBySectionId(sectionId).map((t) => t.id);
+    const topicIds = this.topicsRepository.getBySectionId(sectionId).map((t) => t.id);
 
-    return taskService.getAll().filter((task) => topicIds.includes(task.topicId));
+    return this.taskService.getAll().filter((task) => topicIds.includes(task.topicId));
   }
 
   getByTopic(topicId: TopicId): Task[] {
-    return taskService.getByTopic(topicId);
+    return this.taskService.getByTopic(topicId);
   }
 }
-
-export default new TaskAggregatedService();
