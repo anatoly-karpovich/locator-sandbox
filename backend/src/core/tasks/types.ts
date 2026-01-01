@@ -39,8 +39,8 @@ export type UsageSpec = {
   method: "getByText" | "getByRole" | "locator";
   argument: {
     type: "string" | "regex";
-    match?: "exact" | "partial";
-    value?: string | RegExp;
+    // match?: "exact" | "partial";
+    // value?: string | RegExp;
   };
   options?: Record<string, unknown>;
 };

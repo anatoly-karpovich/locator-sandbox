@@ -8,28 +8,42 @@ export type Step =
   | { receiver: ReceiverKind; method: "last"; args: [] }
   | { receiver: ReceiverKind; method: "nth"; args: [number] }
   | { receiver: ReceiverKind; method: "getByText"; args: [string | RegExp, GetByTextOptions?] }
-  | { receiver: ReceiverKind; method: "getByRole"; args: [string, GetByRoleOptions?] };
+  | { receiver: ReceiverKind; method: "getByRole"; args: [GetByRoleArgument, GetByRoleOptions?] }
+  | { receiver: ReceiverKind; method: "getByAltText"; args: [string | RegExp, GetByAltTextOptions?] }
+  | { receiver: ReceiverKind; method: "getByLabel"; args: [string | RegExp, GetByLabelOptions?] }
+  | { receiver: ReceiverKind; method: "getByPlaceholder"; args: [string | RegExp, GetByPlaceholderOptions?] }
+  | { receiver: ReceiverKind; method: "getByTestId"; args: [string | RegExp] }
 
 export type ParsedPlan = {
   root: "page";
   steps: Step[];
+  errors: string[];
 };
 
-export type GetByTextOptions = {
+export interface ExactMatchOption {
   exact?: boolean;
-};
+}
 
-export type GetByRoleOptions = {
-  name?: string;
-  exact?: boolean;
+export interface GetByAltTextOptions extends ExactMatchOption {}
+
+export interface GetByLabelOptions extends ExactMatchOption {}
+
+export interface GetByPlaceholderOptions extends ExactMatchOption {}
+
+export interface GetByTextOptions extends ExactMatchOption {}
+
+export interface GetByRoleOptions extends ExactMatchOption {
+  name?: string | RegExp;
   checked?: boolean;
+  disabled?: boolean;
   pressed?: boolean;
   selected?: boolean;
   expanded?: boolean;
   includeHidden?: boolean;
   level?: number;
-  disabled?: boolean;
 };
+
+export type GetByRoleArgument = "alert" | "alertdialog" | "application" | "article" | "banner" | "blockquote" | "button" | "caption" | "cell" | "checkbox" | "code" | "columnheader" | "combobox" | "complementary" | "contentinfo" | "definition" | "deletion" | "dialog" | "directory" | "document" | "emphasis" | "feed" | "figure" | "form" | "generic" | "grid" | "gridcell" | "group" | "heading" | "img" | "insertion" | "link" | "list" | "listbox" | "listitem" | "log" | "main" | "marquee" | "math" | "meter" | "menu" | "menubar" | "menuitem" | "menuitemcheckbox" | "menuitemradio" | "navigation" | "none" | "note" | "option" | "paragraph" | "presentation" | "progressbar" | "radio" | "radiogroup" | "region" | "row" | "rowgroup" | "rowheader" | "scrollbar" | "search" | "searchbox" | "separator" | "slider" | "spinbutton" | "status" | "strong" | "subscript" | "superscript" | "switch" | "tab" | "table" | "tablist" | "tabpanel" | "term" | "textbox" | "time" | "timer" | "toolbar" | "tooltip" | "tree" | "treegrid" | "treeitem";
 
 export type RawCall = {
   // Base expression the method is called on (identifier or nested call)

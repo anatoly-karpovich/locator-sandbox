@@ -1,9 +1,10 @@
 import { getByPlaceholderTasks } from "./getBy/getByPlaceholder";
+import { getByRoleTasks } from "./getBy/getByRole";
 import { getByTextTasks } from "./getBy/getByText";
 import { Difficulty, Module, Task, TaskId } from "./types";
 
 class TasksService {
-  private tasks: Task[] = [...getByTextTasks, ...getByPlaceholderTasks];
+  private tasks: Task[] = [...getByTextTasks, ...getByPlaceholderTasks, ...getByRoleTasks];
 
   getById(id: TaskId) {
     return this.tasks.find((t) => t.id === id);

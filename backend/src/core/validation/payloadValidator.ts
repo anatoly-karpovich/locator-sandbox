@@ -1,4 +1,4 @@
-import { parsePlaywrightLocatorAst } from "../ast-parser/parser";
+import { AstParser } from "../ast-parser";
 import { ParsedPlan } from "../ast-parser/types";
 
 export class LocatorPayloadValidationError extends Error {
@@ -10,7 +10,7 @@ export class LocatorPayloadValidationError extends Error {
 
 export function validateLocatorPayload(payload: string): ParsedPlan {
   try {
-    return parsePlaywrightLocatorAst(payload);
+    return AstParser.parse(payload);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Invalid locator expression";
 

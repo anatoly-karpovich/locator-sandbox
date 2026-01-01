@@ -9,7 +9,32 @@ export const tasks: Task[] = [
     difficulty: "beginner",
     html: `
         <div class="container">
-          <p>Welcome to the application</p>
+          <header class="app-header">
+            <h1 class="app-title">My Application</h1>
+            <nav class="main-nav">
+              <ul class="nav-list">
+                <li class="nav-item"><a href="#" class="nav-link" data-testid="home-link">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" data-testid="about-link">About</a></li>
+                <li class="nav-item"><a href="#" class="nav-link" data-testid="contact-link">Contact</a></li>
+              </ul>
+            </nav>
+          </header>
+
+          <main class="main-content">
+            <section class="hero-section">
+              <h2 class="hero-title">Welcome to the application</h2>
+              <p class="hero-description">This is a sample application with various elements for testing locator strategies.</p>
+              <button class="cta-button" type="button" aria-label="Get started">Get Started</button>
+            </section>
+          </main>
+
+          <footer class="app-footer">
+            <p class="footer-text">© 2024 My Application. All rights reserved.</p>
+            <div class="footer-links">
+              <a href="#" class="footer-link">Privacy Policy</a>
+              <a href="#" class="footer-link">Terms of Service</a>
+            </div>
+          </footer>
         </div>
       `,
     expectations: {
@@ -18,13 +43,13 @@ export const tasks: Task[] = [
       visible: true,
     },
     studyMaterials: [studyMaterials.locatorMethods.getByText],
-    description: "We use getByText to find elements by partial text match.",
+    description: "We use getByText to find elements by partial text match. In this task we expect to find 1 element with text 'Welcome to the application'.",
     usageSpec: {
       method: "getByText",
       argument: {
         type: "string",
-        match: "partial",
-        value: "Welcome to the application",
+        // match: "partial",
+        // value: "Welcome to the application",
       },
     },
   },
@@ -56,5 +81,36 @@ export const tasks: Task[] = [
       },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByText],
+  },
+  {
+    id: "96ec0c8a-40ec-4d6b-8d1a-c269ad788909",
+    title: "Find element by role",
+    topicId: "3516b765-b3b9-42c1-bc6c-d67324b0d08c",
+    difficulty: "beginner",
+    description: "We use getByRole to find element by role 'button'",
+    html: `
+      <div class="dashboard">
+        <header class="dashboard-header">
+          <h2>Dashboard</h2>
+          <button class="notification-btn">Hello</button>
+        </header>
+        <nav class="main-nav">
+          <a class="nav-link">Home</a>
+          <a class="nav-link">Profile</a>
+        </nav>
+      </div>
+    `,
+    expectations: {
+      count: 1,
+      text: "Hello",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByRole",
+      argument: {
+        type: "string",
+      }
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByRole],
   },
 ];

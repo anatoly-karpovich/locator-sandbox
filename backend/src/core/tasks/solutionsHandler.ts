@@ -20,7 +20,6 @@ export class SolutionsHandler {
     for (const key of Object.keys(expected) as (keyof Expectations)[]) {
       const expectedValue = expected[key];
       const actualValue = actual[key];
-
       const passed = actualValue === expectedValue;
 
       checks.push({
