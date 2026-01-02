@@ -48,7 +48,7 @@ export class LocatorExecutionService {
       await page.setContent(task.html);
 
       const locatorService = new LocatorService(page);
-      const locator = locatorService.createLocator(payload);
+      const locator = locatorService.createLocator(parsedPlan);
 
       const presence = await locatorService.checkPresence(locator, task.expectations.count);
 

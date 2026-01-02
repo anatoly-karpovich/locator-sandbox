@@ -1,18 +1,16 @@
 import { Locator, Page } from "playwright";
 import { getStrictModeViolationElementCount } from "../../utils/throwStrictModeViolationError";
+import { LocatorBuilder } from "./locator.builder";
+import { AstParser, ParsedPlan } from "../ast-parser";
 
 export class LocatorService {
-  constructor(private page: Page) {}
+  private locatorBuilder: LocatorBuilder;
+  constructor(private page: Page) {
+    this.locatorBuilder = new LocatorBuilder(page);
+  }
 
-  createLocator(locatorExpression: string): Locator {
-    const page = this.page;
-    // пока eval, потом AST+builder
-    try {
-      const locator = eval(locatorExpression);
-      return locator;
-    } catch (err) {
-      throw new Error("Invalid locator expression");
-    }
+  createLocator(parsedASTPlan: ParsedPlan): Locator {
+    return this.locatorBuilder.build(parsedASTPlan);
   }
 
   async checkPresence(locator: Locator, expectedCount?: number, timeout = 1000) {
