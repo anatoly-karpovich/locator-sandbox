@@ -1,5 +1,6 @@
 import { Page, Locator } from "playwright";
 import { LocatorOptions, ParsedPlan, Step } from "../ast-parser";
+import { LocatorBuilderError } from "../../error/locatorBuild.error";
 
 export class LocatorBuilder {
   constructor(private readonly page: Page) {}
@@ -12,7 +13,7 @@ export class LocatorBuilder {
     }
 
     if (!this.isLocator(receiver)) {
-      throw new Error("LocatorBuilder did not produce a Locator");
+      throw new LocatorBuilderError("LocatorBuilder did not produce a Locator");
     }
 
     return receiver;
@@ -55,7 +56,7 @@ export class LocatorBuilder {
 
       default: {
         const _never: never = step;
-        throw new Error(`Unhandled step method: ${(step as any).method}`);
+        throw new LocatorBuilderError(`Unhandled step method: ${(step as any).method}`);
       }
     }
   }
@@ -73,7 +74,7 @@ export class LocatorBuilder {
 
   private assertLocator(receiver: Page | Locator, method: string): asserts receiver is Locator {
     if (!this.isLocator(receiver)) {
-      throw new Error(`${method}() can only be called on Locator`);
+      throw new LocatorBuilderError(`${method}() can only be called on Locator`);
     }
   }
 
