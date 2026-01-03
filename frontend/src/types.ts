@@ -127,3 +127,21 @@ export type TrainingRun = {
   topics: TrainingRunTopic[];
   createdAt: string;
 };
+
+// Playground
+export type PlaygroundSubmitRequest = {
+  html: string;
+  payload: string;
+};
+
+export type PlaygroundElement = {
+  tagName: string;
+  text: string | null;
+  attributes: Record<string, string>;
+};
+
+export type PlaygroundSubmitResponse = {
+  result: TaskResultPayload;
+  explanation?: string[];
+  elements: PlaygroundElement[];
+};

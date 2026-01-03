@@ -32,7 +32,12 @@ const SectionCard = ({ title, trainingsCount, tasksTotal, trainingTemplateId, on
   </Card>
 );
 
-export default function HomePage() {
+type HomePageProps = {
+  themeMode: "light" | "dark";
+  onToggleTheme: () => void;
+};
+
+export default function HomePage({ themeMode, onToggleTheme }: HomePageProps) {
   const navigate = useNavigate();
   const [data, setData] = useState<TrainingCatalogResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,8 +55,8 @@ export default function HomePage() {
   }, []);
 
   return (
-    <Box minHeight="100vh" bgcolor="#f5f5f5">
-      <HeaderBar />
+    <Box minHeight="100vh" sx={{ bgcolor: "background.default" }}>
+      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
       <Container sx={{ maxWidth: 1200, marginY: 8 }}>
         <Box
           sx={{
@@ -69,6 +74,11 @@ export default function HomePage() {
               <Typography variant="body1" color="text.secondary">
                 Practice Playwright Locator API. Try selectors on prepared HTML samples and see why locators pass or fail.
               </Typography>
+              <Box>
+                <Button variant="outlined" onClick={() => navigate("/playground")}>
+                  Open Playground
+                </Button>
+              </Box>
               {loading && (
                 <Typography variant="body2" color="text.secondary">
                   Loading trainings...

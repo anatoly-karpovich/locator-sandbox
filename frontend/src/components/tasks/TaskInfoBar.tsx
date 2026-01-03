@@ -15,10 +15,11 @@ export function TaskInfoBar({ description, studyMaterials }: TaskInfoBarProps) {
       direction="row"
       spacing={3}
       sx={{
-        background: "#fff",
+        bgcolor: "background.paper",
         borderRadius: 2,
         padding: 2,
-        border: "1px solid #e0e0e0",
+        border: 1,
+        borderColor: "divider",
         alignItems: "flex-start",
       }}
     >

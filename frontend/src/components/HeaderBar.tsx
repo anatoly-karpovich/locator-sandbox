@@ -1,16 +1,31 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import { AppBar, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 
 type HeaderBarProps = {
   rightSlot?: React.ReactNode;
+  themeMode?: "light" | "dark";
+  onToggleTheme?: () => void;
 };
 
-export function HeaderBar({ rightSlot }: HeaderBarProps) {
+export function HeaderBar({ rightSlot, themeMode, onToggleTheme }: HeaderBarProps) {
+  const ThemeIcon = themeMode === "light" ? LightModeIcon : DarkModeIcon;
+
   return (
     <AppBar position="static" sx={{ height: 64, justifyContent: "center", boxShadow: "none" }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="h6" component="div" fontWeight={600}>
-          Locator Sandbox
-        </Typography>
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <Typography variant="h6" component="div" fontWeight={600}>
+            Locator Sandbox
+          </Typography>
+          {onToggleTheme && themeMode && (
+            <Tooltip title={themeMode === "light" ? "Switch to dark mode" : "Switch to light mode"}>
+              <IconButton color="inherit" onClick={onToggleTheme} aria-label="Toggle theme" size="small">
+                <ThemeIcon fontSize="inherit" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Stack>
         <div>{rightSlot}</div>
       </Toolbar>
     </AppBar>
