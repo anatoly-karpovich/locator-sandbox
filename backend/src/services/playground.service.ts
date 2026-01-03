@@ -3,6 +3,7 @@ import { LocatorService } from "../core/locator/locator.service";
 import { ExpectationCheck, CompareResult } from "../core/tasks/types";
 import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "../dto/playground.dto";
 import { PlaywrightRunner } from "../core/playwright/playwright.runner";
+import { AstParser } from "../core/ast-parser";
 
 const MAX_ELEMENTS_PREVIEW = 10;
 
@@ -14,7 +15,8 @@ export class PlaygroundService {
       await page.setContent(dto.html);
 
       const locatorService = new LocatorService(page);
-      const locator = locatorService.createLocator(dto.payload);
+      const parsedPlan = AstParser.parse(dto.payload);
+      const locator = locatorService.createLocator(parsedPlan);
 
       const count = await locator.count();
 

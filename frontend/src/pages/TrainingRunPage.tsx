@@ -44,11 +44,17 @@ type CheckState = {
   status: CheckStatus;
 };
 
-export default function TrainingRunPage() {
+type TrainingRunPageProps = {
+  themeMode: "light" | "dark";
+  onToggleTheme: () => void;
+};
+
+export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRunPageProps) {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
   const navigate = useNavigate();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [run, setRun] = useState<TrainingRun | null>(null);
   const [topics, setTopics] = useState<TrainingRunTopic[]>([]);
   const [flatTaskIds, setFlatTaskIds] = useState<string[]>([]);
@@ -302,7 +308,7 @@ export default function TrainingRunPage() {
   );
 
   const renderChecksPanel = () => (
-    <Box sx={{ background: "#fff", borderRadius: 2, padding: 2, border: "1px solid #e0e0e0" }}>
+    <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, border: 1, borderColor: "divider" }}>
       <Stack direction="row" alignItems="center" spacing={2} marginBottom={1}>
         <Typography variant="h6">Checks</Typography>
       </Stack>
@@ -359,7 +365,7 @@ export default function TrainingRunPage() {
         : []) || [];
 
     return (
-      <Box sx={{ background: "#fff", borderRadius: 2, padding: 2, border: "1px solid #e0e0e0" }}>
+      <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, border: 1, borderColor: "divider" }}>
         <Typography variant="h6" gutterBottom>
           Explanation
         </Typography>
@@ -384,8 +390,10 @@ export default function TrainingRunPage() {
   const currentTaskLabel = currentTaskData?.title ?? "No task";
 
   return (
-    <Box minHeight="100vh" bgcolor="#f5f5f5">
+    <Box minHeight="100vh" sx={{ bgcolor: "background.default" }}>
       <HeaderBar
+        themeMode={themeMode}
+        onToggleTheme={onToggleTheme}
         rightSlot={
           <Button variant="text" color="inherit" onClick={() => navigate("/")}>
             Home
@@ -394,7 +402,7 @@ export default function TrainingRunPage() {
       />
 
       <Box display="grid" gridTemplateColumns="280px 1fr" height="calc(100vh - 64px)">
-        <Box component="aside" sx={{ borderRight: "1px solid #e0e0e0", background: "#fff", overflow: "auto" }}>
+        <Box component="aside" sx={{ borderRight: 1, borderColor: "divider", bgcolor: "background.paper", overflow: "auto" }}>
           {renderSidebarContent()}
         </Box>
 
@@ -423,9 +431,7 @@ export default function TrainingRunPage() {
                   gap: 2,
                 }}
               >
-                <Box
-                  sx={{ background: "#fff", borderRadius: 2, padding: 2, minHeight: 200, border: "1px solid #e0e0e0" }}
-                >
+                <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, minHeight: 200, border: 1, borderColor: "divider" }}>
                   <Typography variant="h6" gutterBottom>
                     UI preview
                   </Typography>
@@ -433,17 +439,16 @@ export default function TrainingRunPage() {
                   <Box
                     sx={{
                       padding: 1,
-                      background: "#fafafa",
+                      bgcolor: "background.default",
                       borderRadius: 1,
-                      border: "1px dashed #e0e0e0",
+                      border: "1px dashed",
+                      borderColor: "divider",
                       minHeight: 160,
                     }}
                     dangerouslySetInnerHTML={{ __html: currentTaskData.html }}
                   />
                 </Box>
-                <Box
-                  sx={{ background: "#fff", borderRadius: 2, padding: 2, minHeight: 200, border: "1px solid #e0e0e0" }}
-                >
+                <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, minHeight: 200, border: 1, borderColor: "divider" }}>
                   <Typography variant="h6" gutterBottom>
                     HTML code
                   </Typography>

@@ -1,4 +1,5 @@
 import type { Task, TaskMap, SubmitSolutionBody, SolutionResponse, TrainingCatalogResponse, TrainingRun } from "./types";
+import type { PlaygroundSubmitRequest, PlaygroundSubmitResponse } from "./types";
 
 export class HttpError extends Error {
   status: number;
@@ -72,4 +73,13 @@ export async function submitTrainingRunSolution(trainingRunId: string, body: Sub
     body: JSON.stringify(body),
   });
   return handleJson<SolutionResponse>(res);
+}
+
+export async function submitPlayground(body: PlaygroundSubmitRequest): Promise<PlaygroundSubmitResponse> {
+  const res = await fetch("/api/playground/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return handleJson<PlaygroundSubmitResponse>(res);
 }
