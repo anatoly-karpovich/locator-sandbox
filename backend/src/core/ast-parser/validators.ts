@@ -59,7 +59,7 @@ export function readNonNegativeInt(node: t.Expression, ctx: string): number {
 export function isTypeMatch(v: Literal, expected: AllowedType): boolean {
   switch (expected) {
     case "string":
-    case "string|regex": return typeof v === "string" || v instanceof RegExp;
+    case "string|regex": return typeof v === "string"; // in case of regex, it will be converted to string in readLiteral
     case "number": return typeof v === "number";
     case "boolean": return typeof v === "boolean";
     case "null": return v === null;
