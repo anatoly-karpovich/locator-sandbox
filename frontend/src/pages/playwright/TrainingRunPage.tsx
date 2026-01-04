@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import {
@@ -71,6 +71,31 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   const [currentTaskData, setCurrentTaskData] = useState<Task | null>(null);
   const [runLoading, setRunLoading] = useState(true);
   const [runLoadError, setRunLoadError] = useState<string | null>(null);
+  const [splitPercent, setSplitPercent] = useState(50);
+  const isDraggingRef = useRef(false);
+  const splitContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current || !splitContainerRef.current) return;
+      const rect = splitContainerRef.current.getBoundingClientRect();
+      const relativeX = e.clientX - rect.left;
+      const percent = (relativeX / rect.width) * 100;
+      const clamped = Math.min(70, Math.max(30, percent));
+      setSplitPercent(clamped);
+    };
+
+    const handleMouseUp = () => {
+      isDraggingRef.current = false;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
 
   const showError = (err: unknown, fallback = "Something went wrong") => {
     let message = fallback;
@@ -430,69 +455,111 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
           {currentTaskData && !taskLoading && (
             <Stack spacing={3}>
               <Box
+                ref={splitContainerRef}
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                  gap: 2,
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    md: `${splitPercent}% 10px ${100 - splitPercent}%`,
+                  },
+                  gap: { xs: 2, md: 0 },
+                  alignItems: "stretch",
                 }}
               >
-              <Box
-                sx={{
-                  bgcolor: "background.paper",
-                  borderRadius: 2,
-                  padding: 2,
-                  minHeight: 200,
-                  border: 1,
-                  borderColor: "divider",
-                }}
-              >
-                <Typography variant="h6" gutterBottom>
-                  HTML code
-                </Typography>
-                <Divider sx={{ marginBottom: 2 }} />
                 <Box
-                  component="pre"
                   sx={{
-                    background: "#0b1021",
-                    color: "#e3e8ff",
-                    borderRadius: 1,
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
                     padding: 2,
-                    fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
-                    whiteSpace: "pre-wrap",
-                    maxHeight: 410,
-                    overflow: "auto",
+                    minHeight: 320,
+                    maxHeight: 520,
+                    border: 1,
+                    borderColor: "divider",
+                    overflow: "hidden",
                   }}
                 >
-                  {currentTaskData.html}
+                  <Typography variant="h6" gutterBottom>
+                    HTML code
+                  </Typography>
+                  <Divider sx={{ marginBottom: 2 }} />
+                  <Box
+                    component="pre"
+                    sx={{
+                      background: "#0b1021",
+                      color: "#e3e8ff",
+                      borderRadius: 1,
+                      padding: 2,
+                      fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
+                      whiteSpace: "pre-wrap",
+                      maxHeight: 420,
+                      overflow: "auto",
+                    }}
+                  >
+                    {currentTaskData.html}
+                  </Box>
                 </Box>
-              </Box>
-              <Box
-                sx={{
-                  bgcolor: "background.paper",
-                  borderRadius: 2,
-                    padding: 2,
-                    minHeight: 200,
-                    border: 1,
-                  borderColor: "divider",
-                }}
-              >
-                <Typography variant="h6" gutterBottom>
-                  UI preview
-                </Typography>
-                <Divider sx={{ marginBottom: 2 }} />
+
+                <Box
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    isDraggingRef.current = true;
+                  }}
+                  sx={{
+                    display: { xs: "none", md: "flex" },
+                    alignItems: "stretch",
+                    justifyContent: "center",
+                    cursor: "col-resize",
+                    px: 0.5,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 4,
+                      bgcolor: "divider",
+                      borderRadius: 2,
+                      alignSelf: "stretch",
+                      transition: "background-color 0.2s ease",
+                      "&:hover": {
+                        bgcolor: "text.secondary",
+                      },
+                    }}
+                  />
+                </Box>
+
                 <Box
                   sx={{
-                    padding: 1,
-                    bgcolor: "background.default",
-                    borderRadius: 1,
-                    border: "1px dashed",
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
+                    padding: 2,
+                    minHeight: 320,
+                    maxHeight: 520,
+                    border: 1,
                     borderColor: "divider",
-                    minHeight: 160,
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column",
                   }}
-                  dangerouslySetInnerHTML={{ __html: currentTaskData.html }}
-                />
+                >
+                  <Typography variant="h6" gutterBottom>
+                    UI preview
+                  </Typography>
+                  <Divider sx={{ marginBottom: 2 }} />
+                  <Box
+                    sx={{
+                      padding: 1,
+                      bgcolor: "background.default",
+                      borderRadius: 1,
+                      border: "1px dashed",
+                      borderColor: "divider",
+                      minHeight: 250,
+                      maxHeight: 420,
+                      overflow: "auto",
+                      flex: 1,
+                    }}
+                    dangerouslySetInnerHTML={{ __html: currentTaskData.html }}
+                  />
+                </Box>
               </Box>
-            </Box>
 
               <TaskInfoBar description={currentTaskData.description} studyMaterials={currentTaskData.studyMaterials} />
 
