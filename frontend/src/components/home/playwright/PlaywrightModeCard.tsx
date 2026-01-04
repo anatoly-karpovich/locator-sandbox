@@ -7,6 +7,7 @@ type PlaywrightModeCardProps = {
   badges: string[];
   actionLabel: string;
   highlight?: boolean;
+  isDisabled?: boolean;
   onClick: () => void;
 };
 
@@ -17,6 +18,7 @@ export default function PlaywrightModeCard({
   badges,
   actionLabel,
   highlight,
+  isDisabled,
   onClick,
 }: PlaywrightModeCardProps) {
   return (
@@ -58,7 +60,7 @@ export default function PlaywrightModeCard({
       </Stack>
 
       <Box sx={{ marginTop: "auto", paddingTop: 3 }}>
-        <Button variant={highlight ? "contained" : "outlined"} fullWidth onClick={onClick}>
+        <Button variant={highlight ? "contained" : "outlined"} fullWidth onClick={onClick} disabled={isDisabled}>
           {actionLabel}
         </Button>
       </Box>

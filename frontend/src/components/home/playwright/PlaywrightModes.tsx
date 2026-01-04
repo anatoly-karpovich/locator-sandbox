@@ -28,6 +28,7 @@ export default function PlaywrightModes() {
           description="Realistic DOMs with multiple valid solutions. Your goal is to choose a locator you’d be proud to commit."
           badges={["Advanced", "No hints", "Reasoning-focused"]}
           actionLabel="Enter challenges"
+          isDisabled={true}
           onClick={() => {
             // navigate("/playwright/challenges")
           }}

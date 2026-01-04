@@ -146,28 +146,6 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
               sx={{ flex: 1, padding: 2, bgcolor: "background.paper", borderColor: "divider", minHeight: 320 }}
             >
               <Typography variant="h6" gutterBottom>
-                UI preview
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <Box
-                sx={{
-                  padding: 1,
-                  bgcolor: "background.default",
-                  borderRadius: 1,
-                  border: "1px dashed",
-                  borderColor: "divider",
-                  minHeight: 250,
-                  overflow: "auto",
-                }}
-                dangerouslySetInnerHTML={{ __html: html }}
-              />
-            </Paper>
-
-            <Paper
-              variant="outlined"
-              sx={{ flex: 1, padding: 2, bgcolor: "background.paper", borderColor: "divider", minHeight: 320 }}
-            >
-              <Typography variant="h6" gutterBottom>
                 HTML code
               </Typography>
               <Divider sx={{ mb: 2 }} />
@@ -183,6 +161,28 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                     fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
                   },
                 }}
+              />
+            </Paper>
+
+            <Paper
+              variant="outlined"
+              sx={{ flex: 1, padding: 2, bgcolor: "background.paper", borderColor: "divider", minHeight: 320 }}
+            >
+              <Typography variant="h6" gutterBottom>
+                UI preview
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              <Box
+                sx={{
+                  padding: 1,
+                  bgcolor: "background.default",
+                  borderRadius: 1,
+                  border: "1px dashed",
+                  borderColor: "divider",
+                  minHeight: 250,
+                  overflow: "auto",
+                }}
+                dangerouslySetInnerHTML={{ __html: html }}
               />
             </Paper>
           </Stack>

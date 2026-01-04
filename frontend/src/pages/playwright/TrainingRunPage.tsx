@@ -436,63 +436,63 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                   gap: 2,
                 }}
               >
+              <Box
+                sx={{
+                  bgcolor: "background.paper",
+                  borderRadius: 2,
+                  padding: 2,
+                  minHeight: 200,
+                  border: 1,
+                  borderColor: "divider",
+                }}
+              >
+                <Typography variant="h6" gutterBottom>
+                  HTML code
+                </Typography>
+                <Divider sx={{ marginBottom: 2 }} />
                 <Box
+                  component="pre"
                   sx={{
-                    bgcolor: "background.paper",
-                    borderRadius: 2,
+                    background: "#0b1021",
+                    color: "#e3e8ff",
+                    borderRadius: 1,
                     padding: 2,
-                    minHeight: 200,
-                    border: 1,
-                    borderColor: "divider",
+                    fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
+                    whiteSpace: "pre-wrap",
+                    maxHeight: 410,
+                    overflow: "auto",
                   }}
                 >
-                  <Typography variant="h6" gutterBottom>
-                    UI preview
-                  </Typography>
-                  <Divider sx={{ marginBottom: 2 }} />
-                  <Box
-                    sx={{
-                      padding: 1,
-                      bgcolor: "background.default",
-                      borderRadius: 1,
-                      border: "1px dashed",
-                      borderColor: "divider",
-                      minHeight: 160,
-                    }}
-                    dangerouslySetInnerHTML={{ __html: currentTaskData.html }}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    bgcolor: "background.paper",
-                    borderRadius: 2,
-                    padding: 2,
-                    minHeight: 200,
-                    border: 1,
-                    borderColor: "divider",
-                  }}
-                >
-                  <Typography variant="h6" gutterBottom>
-                    HTML code
-                  </Typography>
-                  <Divider sx={{ marginBottom: 2 }} />
-                  <Box
-                    component="pre"
-                    sx={{
-                      background: "#0b1021",
-                      color: "#e3e8ff",
-                      borderRadius: 1,
-                      padding: 2,
-                      fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
-                      whiteSpace: "pre-wrap",
-                      maxHeight: 410,
-                      overflow: "auto",
-                    }}
-                  >
-                    {currentTaskData.html}
-                  </Box>
+                  {currentTaskData.html}
                 </Box>
               </Box>
+              <Box
+                sx={{
+                  bgcolor: "background.paper",
+                  borderRadius: 2,
+                    padding: 2,
+                    minHeight: 200,
+                    border: 1,
+                  borderColor: "divider",
+                }}
+              >
+                <Typography variant="h6" gutterBottom>
+                  UI preview
+                </Typography>
+                <Divider sx={{ marginBottom: 2 }} />
+                <Box
+                  sx={{
+                    padding: 1,
+                    bgcolor: "background.default",
+                    borderRadius: 1,
+                    border: "1px dashed",
+                    borderColor: "divider",
+                    minHeight: 160,
+                  }}
+                  dangerouslySetInnerHTML={{ __html: currentTaskData.html }}
+                />
+              </Box>
+            </Box>
 
               <TaskInfoBar description={currentTaskData.description} studyMaterials={currentTaskData.studyMaterials} />
 
