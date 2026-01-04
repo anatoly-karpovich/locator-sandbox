@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Chip, CircularProgress, Divider, Paper, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Chip, CircularProgress, Divider, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { useSnackbar } from "notistack";
 import { HeaderBar } from "../../components/HeaderBar";
@@ -58,21 +58,23 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
     return (
       <Stack spacing={1}>
         {elements.map((el, idx) => (
-          <Paper
-            key={`${el.tagName}-${idx}`}
-            variant="outlined"
-            sx={{ padding: 1.5, bgcolor: "background.paper", borderColor: "divider" }}
-          >
-            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-              <Chip label={el.tagName} size="small" />
-              <Typography variant="body2" color="text.secondary">
-                text: {el.text ?? "-"}
-              </Typography>
-              {Object.entries(el.attributes).map(([k, v]) => (
-                <Chip key={k} label={`${k}=${v}`} size="small" variant="outlined" />
-              ))}
-            </Stack>
-          </Paper>
+            <Paper
+              key={`${el.tagName}-${idx}`}
+              variant="outlined"
+              sx={{ padding: 1.5, bgcolor: "background.paper", borderColor: "divider" }}
+            >
+              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                <Chip label={el.tagName} size="small" />
+                <Tooltip title={el.text ?? "-"} disableInteractive>
+                  <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: { xs: "100%", md: "70%" } }}>
+                    text: {el.text ?? "-"}
+                  </Typography>
+                </Tooltip>
+                {Object.entries(el.attributes).map(([k, v]) => (
+                  <Chip key={k} label={`${k}=${v}`} size="small" variant="outlined" />
+                ))}
+              </Stack>
+            </Paper>
         ))}
       </Stack>
     );
@@ -143,7 +145,15 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
           <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="stretch">
             <Paper
               variant="outlined"
-              sx={{ flex: 1, padding: 2, bgcolor: "background.paper", borderColor: "divider", minHeight: 320 }}
+              sx={{
+                flex: 1,
+                padding: 2,
+                bgcolor: "background.paper",
+                borderColor: "divider",
+                minHeight: 320,
+                maxHeight: 520,
+                overflow: "hidden",
+              }}
             >
               <Typography variant="h6" gutterBottom>
                 HTML code
@@ -153,12 +163,18 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 fullWidth
                 multiline
                 minRows={12}
+                maxRows={18}
                 value={html}
                 onChange={(e) => setHtml(e.target.value)}
                 placeholder="<div>Hello</div>"
                 InputProps={{
                   sx: {
                     fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
+                    "& textarea": {
+                      whiteSpace: "pre",
+                      overflow: "auto",
+                      maxHeight: 420,
+                    },
                   },
                 }}
               />
@@ -166,7 +182,15 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
 
             <Paper
               variant="outlined"
-              sx={{ flex: 1, padding: 2, bgcolor: "background.paper", borderColor: "divider", minHeight: 320 }}
+              sx={{
+                flex: 1,
+                padding: 2,
+                bgcolor: "background.paper",
+                borderColor: "divider",
+                minHeight: 320,
+                maxHeight: 520,
+                overflow: "hidden",
+              }}
             >
               <Typography variant="h6" gutterBottom>
                 UI preview
@@ -180,6 +204,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                   border: "1px dashed",
                   borderColor: "divider",
                   minHeight: 250,
+                  maxHeight: 420,
                   overflow: "auto",
                 }}
                 dangerouslySetInnerHTML={{ __html: html }}
