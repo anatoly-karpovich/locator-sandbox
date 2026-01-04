@@ -1,28 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Divider,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Chip, CircularProgress, Divider, Paper, Stack, TextField, Typography } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { useSnackbar } from "notistack";
-import { HeaderBar } from "../components/HeaderBar";
-import { submitPlayground, HttpError } from "../api";
-import type { PlaygroundElement, PlaygroundSubmitResponse } from "../types";
+import { HeaderBar } from "../../components/HeaderBar";
+import { submitPlayground, HttpError } from "../../api";
+import type { BasePageProps, PlaygroundElement, PlaygroundSubmitResponse } from "../../types";
 
-type PlaygroundPageProps = {
-  themeMode: "light" | "dark";
-  onToggleTheme: () => void;
-};
-
-export default function PlaygroundPage({ themeMode, onToggleTheme }: PlaygroundPageProps) {
+export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePageProps) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [html, setHtml] = useState("");

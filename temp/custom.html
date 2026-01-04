@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Custom Training – Test Automation Sandbox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      :root {
+        --bg: #0e0f13;
+        --bg-soft: #151721;
+        --bg-card: #1b1e2b;
+        --border: #2a2e42;
+
+        --text-main: #e6e8f2;
+        --text-muted: #9aa0c3;
+        --accent: #6aa9ff;
+        --accent-soft: rgba(106, 169, 255, 0.15);
+
+        --radius: 14px;
+        --radius-sm: 10px;
+        --spacing: 24px;
+        --spacing-lg: 48px;
+
+        font-family: Inter, system-ui, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: radial-gradient(1200px 600px at 20% -10%, #1a1f35, transparent),
+          radial-gradient(800px 400px at 80% 0%, #10152b, transparent), var(--bg);
+        color: var(--text-main);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0 0 12px 0;
+      }
+
+      p {
+        margin: 0 0 12px 0;
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--spacing-lg) var(--spacing);
+      }
+
+      /* ---------- HERO ---------- */
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 48px;
+        margin-bottom: 64px;
+      }
+
+      .hero h1 {
+        font-size: 42px;
+        line-height: 1.15;
+      }
+
+      .hero p {
+        font-size: 17px;
+        max-width: 600px;
+      }
+
+      .hero-box {
+        background: linear-gradient(135deg, #1b1f33, #14182a);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px;
+      }
+
+      .hero-box ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .hero-box li {
+        margin-bottom: 10px;
+        color: var(--text-muted);
+      }
+
+      /* ---------- GOALS ---------- */
+
+      .goals {
+        margin-bottom: 64px;
+      }
+
+      .goal-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+
+      .goal-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .goal-card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent-soft);
+      }
+
+      .goal-card h4 {
+        margin-bottom: 6px;
+        font-size: 16px;
+      }
+
+      /* ---------- CONFIG ---------- */
+
+      .config {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 48px;
+        margin-bottom: 64px;
+      }
+
+      .config-section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px;
+        margin-bottom: 24px;
+      }
+
+      .config-section h3 {
+        margin-bottom: 16px;
+      }
+
+      .radio-group,
+      .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .chip {
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--bg-soft);
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .chip.active {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .topic-group {
+        margin-bottom: 16px;
+      }
+
+      .topic-group strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .slider {
+        width: 100%;
+        margin-top: 12px;
+      }
+
+      /* ---------- SUMMARY ---------- */
+
+      .summary {
+        background: linear-gradient(135deg, #18203a, #12172b);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px;
+        position: sticky;
+        top: 32px;
+      }
+
+      .summary h3 {
+        margin-bottom: 16px;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+
+      .cta {
+        margin-top: 24px;
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: none;
+        font-size: 16px;
+        background: linear-gradient(135deg, #6aa9ff, #4f7dff);
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .cta:hover {
+        opacity: 0.9;
+      }
+
+      /* ---------- NEXT ---------- */
+
+      .next {
+        margin-top: 80px;
+      }
+
+      .next-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+
+      .next-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- HERO -->
+      <section class="hero">
+        <div>
+          <h1>Custom Training</h1>
+          <p>
+            Build a focused training session tailored to your current goals. Choose exactly what you want to practice,
+            control the difficulty, and work only on what really matters for you right now.
+          </p>
+          <p>
+            This mode is designed for <strong>deliberate practice</strong> — not random challenges, not guided
+            tutorials, but intentional skill improvement.
+          </p>
+        </div>
+
+        <div class="hero-box">
+          <h3>What you can do here</h3>
+          <ul>
+            <li>Focus on specific Playwright locator methods</li>
+            <li>Practice weak areas without distractions</li>
+            <li>Control task count and session length</li>
+            <li>Prepare for interviews or real projects</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- GOALS -->
+      <section class="goals">
+        <h2>Training goal</h2>
+        <p>Select the intent behind this session. This helps shape the training experience.</p>
+
+        <div class="goal-grid">
+          <div class="goal-card">
+            <h4>Practice basics</h4>
+            <p>Reinforce core locator skills</p>
+          </div>
+          <div class="goal-card">
+            <h4>Improve robustness</h4>
+            <p>Work with filters, has, chains</p>
+          </div>
+          <div class="goal-card">
+            <h4>Interview prep</h4>
+            <p>Typical real-world scenarios</p>
+          </div>
+          <div class="goal-card">
+            <h4>Edge cases</h4>
+            <p>Tricky DOM and selectors</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONFIG -->
+      <section class="config">
+        <div>
+          <div class="config-section">
+            <h3>Difficulty</h3>
+            <div class="radio-group">
+              <div class="chip active">Beginner</div>
+              <div class="chip">Intermediate</div>
+              <div class="chip">Advanced</div>
+            </div>
+          </div>
+
+          <div class="config-section">
+            <h3>Topics</h3>
+
+            <div class="topic-group">
+              <strong>GetBy</strong>
+              <div class="checkbox-group">
+                <div class="chip active">getByText</div>
+                <div class="chip">getByRole</div>
+                <div class="chip">getByPlaceholder</div>
+              </div>
+            </div>
+
+            <div class="topic-group">
+              <strong>Locator</strong>
+              <div class="checkbox-group">
+                <div class="chip">locator()</div>
+                <div class="chip">filter()</div>
+                <div class="chip">has / hasText</div>
+                <div class="chip">nth()</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-section">
+            <h3>Number of tasks</h3>
+            <p>Choose how long and deep this session should be.</p>
+            <input class="slider" type="range" min="5" max="30" value="12" />
+          </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <aside class="summary">
+          <h3>Training summary</h3>
+
+          <div class="summary-row">
+            <span>Difficulty</span>
+            <span>Beginner</span>
+          </div>
+          <div class="summary-row">
+            <span>Topics</span>
+            <span>4 selected</span>
+          </div>
+          <div class="summary-row">
+            <span>Tasks</span>
+            <span>~12</span>
+          </div>
+          <div class="summary-row">
+            <span>Estimated time</span>
+            <span>20–30 min</span>
+          </div>
+
+          <button class="cta">Start custom training</button>
+        </aside>
+      </section>
+
+      <!-- NEXT -->
+      <section class="next">
+        <h2>What’s next</h2>
+        <div class="next-grid">
+          <div class="next-card">
+            <h4>Challenge mode</h4>
+            <p>Test your skills under pressure with advanced tasks.</p>
+          </div>
+          <div class="next-card">
+            <h4>Beginner trainings</h4>
+            <p>Guided sessions for learning new concepts.</p>
+          </div>
+          <div class="next-card">
+            <h4>Playground</h4>
+            <p>Experiment with your own HTML and locators.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

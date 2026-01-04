@@ -24,10 +24,17 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { HeaderBar } from "../components/HeaderBar";
-import { TaskInfoBar } from "../components/tasks/TaskInfoBar";
-import type { SolutionResponse, Task, TaskResultPayload, TrainingRun, TrainingRunTopic } from "../types";
-import { submitTrainingRunSolution, fetchTask, fetchTrainingRun, HttpError } from "../api";
+import { HeaderBar } from "../../components/HeaderBar";
+import { TaskInfoBar } from "../../components/tasks/TaskInfoBar";
+import type {
+  BasePageProps,
+  SolutionResponse,
+  Task,
+  TaskResultPayload,
+  TrainingRun,
+  TrainingRunTopic,
+} from "../../types";
+import { submitTrainingRunSolution, fetchTask, fetchTrainingRun, HttpError } from "../../api";
 
 const CHECK_STATUS = {
   Pending: "Pending",
@@ -44,12 +51,7 @@ type CheckState = {
   status: CheckStatus;
 };
 
-type TrainingRunPageProps = {
-  themeMode: "light" | "dark";
-  onToggleTheme: () => void;
-};
-
-export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRunPageProps) {
+export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePageProps) {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
   const navigate = useNavigate();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -402,7 +404,10 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRu
       />
 
       <Box display="grid" gridTemplateColumns="280px 1fr" height="calc(100vh - 64px)">
-        <Box component="aside" sx={{ borderRight: 1, borderColor: "divider", bgcolor: "background.paper", overflow: "auto" }}>
+        <Box
+          component="aside"
+          sx={{ borderRight: 1, borderColor: "divider", bgcolor: "background.paper", overflow: "auto" }}
+        >
           {renderSidebarContent()}
         </Box>
 
@@ -431,7 +436,16 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRu
                   gap: 2,
                 }}
               >
-                <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, minHeight: 200, border: 1, borderColor: "divider" }}>
+                <Box
+                  sx={{
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
+                    padding: 2,
+                    minHeight: 200,
+                    border: 1,
+                    borderColor: "divider",
+                  }}
+                >
                   <Typography variant="h6" gutterBottom>
                     UI preview
                   </Typography>
@@ -448,7 +462,16 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRu
                     dangerouslySetInnerHTML={{ __html: currentTaskData.html }}
                   />
                 </Box>
-                <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, minHeight: 200, border: 1, borderColor: "divider" }}>
+                <Box
+                  sx={{
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
+                    padding: 2,
+                    minHeight: 200,
+                    border: 1,
+                    borderColor: "divider",
+                  }}
+                >
                   <Typography variant="h6" gutterBottom>
                     HTML code
                   </Typography>

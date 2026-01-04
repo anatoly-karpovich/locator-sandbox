@@ -3,10 +3,10 @@ import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import { useMemo, useState } from "react";
 import HomePage from "./pages/HomePage";
-import TrainingRunPage from "./pages/TrainingRunPage";
-import PlaygroundPage from "./pages/PlaygroundPage";
-
-type PaletteMode = "light" | "dark";
+import TrainingRunPage from "./pages/playwright/TrainingRunPage";
+import PlaygroundPage from "./pages/playwright/PlaygroundPage";
+import PlaywrightTrainingsPage from "./pages/playwright/PlaywrightTrainingsPage";
+import type { PaletteMode } from "./types";
 
 function App() {
   const [mode, setMode] = useState<PaletteMode>("light");
@@ -43,8 +43,26 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage themeMode={mode} onToggleTheme={toggleTheme} />} />
-            <Route path="/playground" element={<PlaygroundPage themeMode={mode} onToggleTheme={toggleTheme} />} />
-            <Route path="/training-run/:trainingRunId" element={<TrainingRunPage themeMode={mode} onToggleTheme={toggleTheme} />} />
+            <Route
+              path="/playwright/playground"
+              element={<PlaygroundPage themeMode={mode} onToggleTheme={toggleTheme} />}
+            />
+            <Route
+              path="/playwright/training-run/:trainingRunId"
+              element={<TrainingRunPage themeMode={mode} onToggleTheme={toggleTheme} />}
+            />
+            <Route
+              path="/playwright/trainings"
+              element={<PlaywrightTrainingsPage themeMode={mode} onToggleTheme={toggleTheme} />}
+            />
+            {/* <Route
+              path="/playwright/challenges"
+              element={<ChallengesPage themeMode={mode} onToggleTheme={toggleTheme} />}
+            />
+            <Route
+              path="/playwright/custom"
+              element={<CustomTrainingPage themeMode={mode} onToggleTheme={toggleTheme} />}
+            /> */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </BrowserRouter>
