@@ -497,7 +497,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
               <TaskInfoBar description={currentTaskData.description} studyMaterials={currentTaskData.studyMaterials} />
 
               <Stack spacing={2}>
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="flex-start">
                   <TextField
                     fullWidth
                     multiline
@@ -506,7 +506,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                     value={locatorInput}
                     onChange={(e) => setLocatorInput(e.target.value)}
                   />
-                  <Stack spacing={1}>
+                  <Stack spacing={1} alignItems="flex-start">
                     <Button
                       variant="contained"
                       startIcon={isRunning ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}

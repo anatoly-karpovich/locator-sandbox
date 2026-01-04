@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, CircularProgress, Container, Stack, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Container, Stack, Typography } from "@mui/material";
 import { fetchTrainingsCatalog, startTrainingRun } from "../../api";
 import type { BasePageProps, TrainingCatalogResponse } from "../../types";
 import { HeaderBar } from "../../components/HeaderBar";
@@ -32,7 +32,15 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
 
   return (
     <Box minHeight="100vh" bgcolor="background.default">
-      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
+      <HeaderBar
+        themeMode={themeMode}
+        onToggleTheme={onToggleTheme}
+        rightSlot={
+          <Button variant="text" color="inherit" onClick={() => navigate("/")}>
+            Home
+          </Button>
+        }
+      />
 
       <Container
         maxWidth={false}

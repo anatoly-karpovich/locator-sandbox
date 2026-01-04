@@ -7,25 +7,16 @@ export function PlaywrightSection() {
       elevation={0}
       sx={{
         width: "100%",
-        maxWidth: "90vw",
-        margin: "0 auto",
+        margin: 0,
         mt: 6,
         p: { xs: 3, md: 5 },
-        borderRadius: 4,
+        borderRadius: 3,
         border: "1px solid",
         borderColor: "divider",
         backgroundColor: "background.paper",
       }}
     >
-      <Box
-        component="section"
-        sx={{
-          width: "100%",
-          maxWidth: "90vw",
-          margin: "0 auto",
-          paddingY: 0,
-        }}
-      >
+      <Box component="section" sx={{ width: "100%" }}>
         {/* Header */}
         <Stack spacing={2} sx={{ marginBottom: 4 }}>
           <Typography variant="h3" fontWeight={800}>

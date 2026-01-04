@@ -16,7 +16,7 @@ export default function PlaywrightModes() {
           subtitle="Guided practice"
           description="Step-by-step tasks focused on correct Playwright locator usage and understanding semantic APIs."
           badges={["Beginner", "~40 tasks", "Hints enabled"]}
-          actionLabel="Start training"
+          actionLabel="Enter training"
           onClick={() => {
             navigate("/playwright/trainings");
           }}

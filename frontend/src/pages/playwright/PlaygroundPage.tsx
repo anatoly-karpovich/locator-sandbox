@@ -198,7 +198,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 onChange={(e) => setPayload(e.target.value)}
                 sx={{ flex: 1 }}
               />
-              <Stack spacing={1} justifyContent="flex-start" alignItems={{ xs: "stretch", md: "flex-end" }}>
+              <Stack spacing={1} justifyContent="flex-start" alignItems={{ xs: "stretch", md: "flex-start" }}>
                 <Button
                   variant="contained"
                   startIcon={isRunning ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}
