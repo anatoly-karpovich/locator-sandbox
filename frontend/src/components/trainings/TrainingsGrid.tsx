@@ -20,7 +20,7 @@ function mapDifficulty(difficulty: "beginner" | "intermediate" | "advanced"): "B
 
 export function TrainingsGrid({ trainings, onStart }: TrainingsGridProps) {
   return (
-    <Box display="flex" flexWrap="wrap" gap={3}>
+    <Box display="flex" flexWrap="wrap" gap={2.5}>
       {trainings.map((training) => (
         <TrainingCard
           key={training.id}

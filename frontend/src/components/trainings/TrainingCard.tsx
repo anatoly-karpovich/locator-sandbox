@@ -32,7 +32,8 @@ export function TrainingCard({
   return (
     <Box
       sx={{
-        flex: "1 1 420px",
+        flex: "1 1 320px",
+        minWidth: 210,
         maxWidth: 250,
         borderRadius: 3,
         border: "1px solid",
@@ -41,9 +42,14 @@ export function TrainingCard({
         bgcolor: "background.paper",
         display: "flex",
         flexDirection: "column",
+        boxShadow: 1,
+        transition: "0.15s ease",
+        "&:hover": {
+          boxShadow: 4,
+        },
       }}
     >
-      <Stack spacing={2} flexGrow={1}>
+      <Stack spacing={1.5} flexGrow={1}>
         <Typography variant="h6" fontWeight={700}>
           {title}
         </Typography>
@@ -57,7 +63,7 @@ export function TrainingCard({
           <Chip size="small" label={`~${tasksCount} tasks`} />
         </Stack>
 
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={{ wordBreak: "break-word" }}>
           {description}
         </Typography>
 
@@ -68,14 +74,16 @@ export function TrainingCard({
         )}
       </Stack>
 
-      <Button
-        variant={isAdvanced ? "outlined" : "contained"}
-        sx={{ mt: 3, alignSelf: "flex-start" }}
-        href={onStart ? undefined : href}
-        onClick={handleClick}
-      >
-        {isAdvanced ? "Enter" : "Start training"}
-      </Button>
+      <Box sx={{ pt: 2 }}>
+        <Button
+          fullWidth
+          variant={isAdvanced ? "outlined" : "contained"}
+          href={onStart ? undefined : href}
+          onClick={handleClick}
+        >
+          {isAdvanced ? "Enter" : "Start training"}
+        </Button>
+      </Box>
     </Box>
   );
 }

@@ -42,24 +42,17 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
         }
       />
 
-      <Container
-        maxWidth={false}
-        sx={{
-          width: "90%",
-          maxWidth: 1400,
-          py: 6,
-        }}
-      >
-        <Stack spacing={6}>
+      <Container sx={{ py: 6 }}>
+        <Stack spacing={4}>
           <TrainingsIntro />
           {loading && <CircularProgress />}
           {error && <Typography color="error">{error}</Typography>}
 
           {catalog?.modules.map((module) =>
             module.sections.map((section) => (
-              <Box key={section.id}>
-                <Typography variant="h5" fontWeight={700} mb={2}>
-                  Module: {section.title}
+              <Box key={section.id} sx={{ mb: 2 }}>
+                <Typography variant="h5" fontWeight={700} sx={{ mb: 1, px: { xs: 0, md: 1 } }}>
+                  {module.title} / {section.title}
                 </Typography>
 
                 <TrainingsGrid trainings={section.trainings} onStart={handleStart} />
