@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import {
@@ -24,10 +24,17 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { HeaderBar } from "../components/HeaderBar";
-import { TaskInfoBar } from "../components/tasks/TaskInfoBar";
-import type { SolutionResponse, Task, TaskResultPayload, TrainingRun, TrainingRunTopic } from "../types";
-import { submitTrainingRunSolution, fetchTask, fetchTrainingRun, HttpError } from "../api";
+import { HeaderBar } from "../../components/HeaderBar";
+import { TaskInfoBar } from "../../components/tasks/TaskInfoBar";
+import type {
+  BasePageProps,
+  SolutionResponse,
+  Task,
+  TaskResultPayload,
+  TrainingRun,
+  TrainingRunTopic,
+} from "../../types";
+import { submitTrainingRunSolution, fetchTask, fetchTrainingRun, HttpError } from "../../api";
 
 const CHECK_STATUS = {
   Pending: "Pending",
@@ -44,12 +51,7 @@ type CheckState = {
   status: CheckStatus;
 };
 
-type TrainingRunPageProps = {
-  themeMode: "light" | "dark";
-  onToggleTheme: () => void;
-};
-
-export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRunPageProps) {
+export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePageProps) {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
   const navigate = useNavigate();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -69,6 +71,31 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRu
   const [currentTaskData, setCurrentTaskData] = useState<Task | null>(null);
   const [runLoading, setRunLoading] = useState(true);
   const [runLoadError, setRunLoadError] = useState<string | null>(null);
+  const [splitPercent, setSplitPercent] = useState(50);
+  const isDraggingRef = useRef(false);
+  const splitContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current || !splitContainerRef.current) return;
+      const rect = splitContainerRef.current.getBoundingClientRect();
+      const relativeX = e.clientX - rect.left;
+      const percent = (relativeX / rect.width) * 100;
+      const clamped = Math.min(70, Math.max(30, percent));
+      setSplitPercent(clamped);
+    };
+
+    const handleMouseUp = () => {
+      isDraggingRef.current = false;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
 
   const showError = (err: unknown, fallback = "Something went wrong") => {
     let message = fallback;
@@ -402,7 +429,10 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRu
       />
 
       <Box display="grid" gridTemplateColumns="280px 1fr" height="calc(100vh - 64px)">
-        <Box component="aside" sx={{ borderRight: 1, borderColor: "divider", bgcolor: "background.paper", overflow: "auto" }}>
+        <Box
+          component="aside"
+          sx={{ borderRight: 1, borderColor: "divider", bgcolor: "background.paper", overflow: "auto" }}
+        >
           {renderSidebarContent()}
         </Box>
 
@@ -425,30 +455,29 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRu
           {currentTaskData && !taskLoading && (
             <Stack spacing={3}>
               <Box
+                ref={splitContainerRef}
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                  gap: 2,
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    md: `${splitPercent}% 10px ${100 - splitPercent}%`,
+                  },
+                  gap: { xs: 2, md: 0 },
+                  alignItems: "stretch",
                 }}
               >
-                <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, minHeight: 200, border: 1, borderColor: "divider" }}>
-                  <Typography variant="h6" gutterBottom>
-                    UI preview
-                  </Typography>
-                  <Divider sx={{ marginBottom: 2 }} />
-                  <Box
-                    sx={{
-                      padding: 1,
-                      bgcolor: "background.default",
-                      borderRadius: 1,
-                      border: "1px dashed",
-                      borderColor: "divider",
-                      minHeight: 160,
-                    }}
-                    dangerouslySetInnerHTML={{ __html: currentTaskData.html }}
-                  />
-                </Box>
-                <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, minHeight: 200, border: 1, borderColor: "divider" }}>
+                <Box
+                  sx={{
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
+                    padding: 2,
+                    minHeight: 320,
+                    maxHeight: 520,
+                    border: 1,
+                    borderColor: "divider",
+                    overflow: "hidden",
+                  }}
+                >
                   <Typography variant="h6" gutterBottom>
                     HTML code
                   </Typography>
@@ -462,19 +491,80 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRu
                       padding: 2,
                       fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
                       whiteSpace: "pre-wrap",
-                      maxHeight: 410,
+                      maxHeight: 420,
                       overflow: "auto",
                     }}
                   >
                     {currentTaskData.html}
                   </Box>
                 </Box>
+
+                <Box
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    isDraggingRef.current = true;
+                  }}
+                  sx={{
+                    display: { xs: "none", md: "flex" },
+                    alignItems: "stretch",
+                    justifyContent: "center",
+                    cursor: "col-resize",
+                    px: 0.5,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 4,
+                      bgcolor: "divider",
+                      borderRadius: 2,
+                      alignSelf: "stretch",
+                      transition: "background-color 0.2s ease",
+                      "&:hover": {
+                        bgcolor: "text.secondary",
+                      },
+                    }}
+                  />
+                </Box>
+
+                <Box
+                  sx={{
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
+                    padding: 2,
+                    minHeight: 320,
+                    maxHeight: 520,
+                    border: 1,
+                    borderColor: "divider",
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Typography variant="h6" gutterBottom>
+                    UI preview
+                  </Typography>
+                  <Divider sx={{ marginBottom: 2 }} />
+                  <Box
+                    sx={{
+                      padding: 1,
+                      bgcolor: "background.default",
+                      borderRadius: 1,
+                      border: "1px dashed",
+                      borderColor: "divider",
+                      minHeight: 250,
+                      maxHeight: 420,
+                      overflow: "auto",
+                      flex: 1,
+                    }}
+                    dangerouslySetInnerHTML={{ __html: currentTaskData.html }}
+                  />
+                </Box>
               </Box>
 
               <TaskInfoBar description={currentTaskData.description} studyMaterials={currentTaskData.studyMaterials} />
 
               <Stack spacing={2}>
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="flex-start">
                   <TextField
                     fullWidth
                     multiline
@@ -483,7 +573,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: TrainingRu
                     value={locatorInput}
                     onChange={(e) => setLocatorInput(e.target.value)}
                   />
-                  <Stack spacing={1}>
+                  <Stack spacing={1} alignItems="flex-start">
                     <Button
                       variant="contained"
                       startIcon={isRunning ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}

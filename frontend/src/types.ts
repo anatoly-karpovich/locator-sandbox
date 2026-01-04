@@ -145,3 +145,10 @@ export type PlaygroundSubmitResponse = {
   explanation?: string[];
   elements: PlaygroundElement[];
 };
+
+export type PaletteMode = "light" | "dark";
+
+export type BasePageProps = {
+  themeMode: PaletteMode;
+  onToggleTheme: () => void;
+};
