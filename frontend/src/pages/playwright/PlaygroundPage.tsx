@@ -190,6 +190,8 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 minHeight: 320,
                 maxHeight: 520,
                 overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               <Typography variant="h6" gutterBottom>
@@ -206,6 +208,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                   minHeight: 250,
                   maxHeight: 420,
                   overflow: "auto",
+                  flex: 1,
                 }}
                 dangerouslySetInnerHTML={{ __html: html }}
               />
