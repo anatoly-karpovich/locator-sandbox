@@ -2,7 +2,7 @@ import { Box, Container } from "@mui/material";
 import { HeaderBar } from "../components/HeaderBar";
 import { HeroSection } from "../components/home/HeroSection";
 import { PlaywrightSection } from "../components/home/playwright/PlaywrightSection";
-import { FutureToolsSection } from "../components/FutureToolsSection";
+// import { FutureToolsSection } from "../components/FutureToolsSection";
 import type { BasePageProps } from "../types";
 
 export default function HomePage({ themeMode, onToggleTheme }: BasePageProps) {
@@ -13,7 +13,7 @@ export default function HomePage({ themeMode, onToggleTheme }: BasePageProps) {
       <Container sx={{ py: 6 }}>
         <HeroSection />
         <PlaywrightSection />
-        <FutureToolsSection />
+        {/* <FutureToolsSection /> */}
       </Container>
     </Box>
   );
