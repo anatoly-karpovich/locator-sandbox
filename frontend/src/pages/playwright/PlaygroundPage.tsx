@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Chip, CircularProgress, Divider, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -14,6 +14,31 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
   const [payload, setPayload] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [result, setResult] = useState<PlaygroundSubmitResponse | null>(null);
+  const [splitPercent, setSplitPercent] = useState(50);
+  const isDraggingRef = useRef(false);
+  const splitContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current || !splitContainerRef.current) return;
+      const rect = splitContainerRef.current.getBoundingClientRect();
+      const relativeX = e.clientX - rect.left;
+      const percent = (relativeX / rect.width) * 100;
+      const clamped = Math.min(70, Math.max(30, percent));
+      setSplitPercent(clamped);
+    };
+
+    const handleMouseUp = () => {
+      isDraggingRef.current = false;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
 
   const showError = (err: unknown, fallback = "Something went wrong") => {
     let message = fallback;
@@ -142,11 +167,22 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
         </Stack>
 
         <Stack spacing={3}>
-          <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="stretch">
+          <Box
+            ref={splitContainerRef}
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                md: `${splitPercent}% 10px ${100 - splitPercent}%`,
+              },
+              gap: { xs: 2, md: 0 },
+              alignItems: "stretch",
+            }}
+          >
             <Paper
               variant="outlined"
               sx={{
-                flex: 1,
+                width: "100%",
                 padding: 2,
                 bgcolor: "background.paper",
                 borderColor: "divider",
@@ -180,10 +216,37 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
               />
             </Paper>
 
+            <Box
+              onMouseDown={(e) => {
+                e.preventDefault();
+                isDraggingRef.current = true;
+              }}
+              sx={{
+                display: { xs: "none", md: "flex" },
+                alignItems: "stretch",
+                justifyContent: "center",
+                cursor: "col-resize",
+                px: 0.5,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 4,
+                  bgcolor: "divider",
+                  borderRadius: 2,
+                  alignSelf: "stretch",
+                  transition: "background-color 0.2s ease",
+                  "&:hover": {
+                    bgcolor: "text.secondary",
+                  },
+                }}
+              />
+            </Box>
+
             <Paper
               variant="outlined"
               sx={{
-                flex: 1,
+                width: "100%",
                 padding: 2,
                 bgcolor: "background.paper",
                 borderColor: "divider",
@@ -213,7 +276,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 dangerouslySetInnerHTML={{ __html: html }}
               />
             </Paper>
-          </Stack>
+          </Box>
 
           <Paper variant="outlined" sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider" }}>
             <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="flex-start">
