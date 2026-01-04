@@ -1,6 +1,7 @@
 import { Box, Button, Stack, Typography, Chip } from "@mui/material";
 
 type TrainingCardProps = {
+  id: string;
   title: string;
   description: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
@@ -8,9 +9,11 @@ type TrainingCardProps = {
   example?: string;
   href: string;
   isAdvanced?: boolean;
+  onStart?: (templateId: string) => void;
 };
 
 export function TrainingCard({
+  id,
   title,
   description,
   difficulty,
@@ -18,12 +21,19 @@ export function TrainingCard({
   example,
   href,
   isAdvanced,
+  onStart,
 }: TrainingCardProps) {
+  const handleClick = () => {
+    if (onStart) {
+      onStart(id);
+    }
+  };
+
   return (
     <Box
       sx={{
         flex: "1 1 420px",
-        maxWidth: 520,
+        maxWidth: 250,
         borderRadius: 3,
         border: "1px solid",
         borderColor: "divider",
@@ -58,7 +68,12 @@ export function TrainingCard({
         )}
       </Stack>
 
-      <Button variant={isAdvanced ? "outlined" : "contained"} sx={{ mt: 3, alignSelf: "flex-start" }} href={href}>
+      <Button
+        variant={isAdvanced ? "outlined" : "contained"}
+        sx={{ mt: 3, alignSelf: "flex-start" }}
+        href={onStart ? undefined : href}
+        onClick={handleClick}
+      >
         {isAdvanced ? "Enter" : "Start training"}
       </Button>
     </Box>

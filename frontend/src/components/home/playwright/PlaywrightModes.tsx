@@ -40,7 +40,7 @@ export default function PlaywrightModes() {
           badges={["Instant feedback", "No progress tracking"]}
           actionLabel="Open playground"
           onClick={() => {
-            // navigate("/playwright/playground")
+            navigate("/playwright/playground");
           }}
         />
       </Stack>
