@@ -17,7 +17,7 @@ export const GET_BY_PLACEHOLDER_KEYS: KeySchema = {
 };
 
 export const GET_BY_ROLE_KEYS: KeySchema = {
-  name: "string?",
+  name: "string|regex?",
   exact: "boolean?",
   checked: "boolean?",
   pressed: "boolean?",
