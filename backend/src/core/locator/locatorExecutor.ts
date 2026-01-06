@@ -1,14 +1,14 @@
 import { CompareResult, ExpectationCheck, Expectations, Task } from "../tasks/types";
 import { SolutionsHandler } from "../tasks/solutionsHandler";
 import { UsageSpecification } from "../usageSpec/usageSpecification";
-import { LocatorService } from "./locator.service";
+import { LocatorHandler } from "./locatorHandler";
 import { ITrainingsRunSubmitSolutionResponseDTO } from "../../dto/trainingRuns.dto";
 import { PlaywrightRunner } from "../playwright/playwright.runner";
 import { AstParser } from "../ast-parser/AstParser";
 import { AstError } from "../../error/astError";
 import { ParsedPlan } from "../ast-parser";
 
-export class LocatorExecutionService {
+export class LocatorExecutor {
   constructor(
     private readonly playwrightRunner: PlaywrightRunner = new PlaywrightRunner(),
     private readonly usageSpecification: UsageSpecification = new UsageSpecification()
@@ -47,7 +47,7 @@ export class LocatorExecutionService {
     return this.playwrightRunner.run(async (page) => {
       await page.setContent(task.html);
 
-      const locatorService = new LocatorService(page);
+      const locatorService = new LocatorHandler(page);
       const locator = locatorService.createLocator(parsedPlan);
 
       const presence = await locatorService.checkPresence(locator, task.expectations.count);

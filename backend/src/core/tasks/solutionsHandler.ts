@@ -1,9 +1,9 @@
 import { Locator } from "playwright";
 import { CompareResult, ExecutionResult, ExpectationCheck, Expectations, ExpectationsValues, Task } from "./types";
-import { LocatorStateService } from "../locator/expect.service";
+import { LocatorStateHandler } from "../locator/locatorStateHandler";
 
 export class SolutionsHandler {
-  constructor(private stateService: LocatorStateService = new LocatorStateService()) {}
+  constructor(private stateService: LocatorStateHandler = new LocatorStateHandler()) {}
 
   async runTask(task: Task, locator: Locator) {
     const state = await this.stateService.getActual(locator, task.expectations);

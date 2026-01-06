@@ -3,13 +3,13 @@ import { ITrainingRun, TrainingRunId } from "../../core/training/types";
 import { TopicRepository, TrainingRunsRepository } from "../../repositories";
 import { TaskService } from "../task/task.service";
 import { TrainingTemplateService } from "./trainingTemplate.service";
-import { LocatorExecutionService } from "../../core/locator/execute.service";
+import { LocatorExecutor } from "../../core/locator/locatorExecutor";
 import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "../../core/training/enums";
 import { ITrainingSubmitSolutionRequestDTO } from "../../dto/trainingRuns.dto";
 
 export class TrainingsRunService {
   constructor(
-    private locatorExecutionService: LocatorExecutionService = new LocatorExecutionService(),
+    private locatorExecutionService: LocatorExecutor = new LocatorExecutor(),
     private trainingTemplateService: TrainingTemplateService = new TrainingTemplateService(),
     private taskService: TaskService = new TaskService(),
     private trainingRunsRepository: TrainingRunsRepository = new TrainingRunsRepository(),

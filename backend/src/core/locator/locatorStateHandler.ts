@@ -4,7 +4,7 @@ import { Expectations, ExpectationsValues } from "../tasks/types";
 interface LocatorState
   extends Record<keyof Required<Expectations>, (locator: Locator) => Promise<ExpectationsValues>> {}
 
-export class LocatorStateService implements LocatorState {
+export class LocatorStateHandler implements LocatorState {
   async getActual(
     locator: Locator,
     expectations: Expectations

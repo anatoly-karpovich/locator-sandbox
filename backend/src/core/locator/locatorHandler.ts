@@ -1,9 +1,9 @@
 import { Locator, Page } from "playwright";
 import { getStrictModeViolationElementCount } from "../../utils/throwStrictModeViolationError";
 import { LocatorBuilder } from "./locator.builder";
-import { AstParser, ParsedPlan } from "../ast-parser";
+import { ParsedPlan } from "../ast-parser";
 
-export class LocatorService {
+export class LocatorHandler {
   private locatorBuilder: LocatorBuilder;
   constructor(private page: Page) {
     this.locatorBuilder = new LocatorBuilder(page);

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { chromium } from "playwright";
-import { LocatorService } from "../core/locator/locator.service";
+import { LocatorHandler } from "../core/locator/locatorHandler";
 import taskService from "../core/tasks/tasks.service";
 import { SolutionsHandler } from "../core/tasks/solutionsHandler";
 import { AstParser } from "../core/ast-parser/AstParser";
@@ -22,7 +22,7 @@ export class SolutionController {
     const browser = await chromium.launch(); // consider pooling
     const page = await browser.newPage();
 
-    const locatorService = new LocatorService(page);
+    const locatorService = new LocatorHandler(page);
     const usageSpecification = new UsageSpecification();
 
     let result: any = {

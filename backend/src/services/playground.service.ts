@@ -1,5 +1,5 @@
 import { Locator } from "playwright";
-import { LocatorService } from "../core/locator/locator.service";
+import { LocatorHandler } from "../core/locator/locatorHandler";
 import { ExpectationCheck, CompareResult } from "../core/tasks/types";
 import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "../dto/playground.dto";
 import { PlaywrightRunner } from "../core/playwright/playwright.runner";
@@ -14,7 +14,7 @@ export class PlaygroundService {
     return this.playwrightRunner.run(async (page) => {
       await page.setContent(dto.html);
 
-      const locatorService = new LocatorService(page);
+      const locatorService = new LocatorHandler(page);
       const parsedPlan = AstParser.parse(dto.payload);
       const locator = locatorService.createLocator(parsedPlan);
 
