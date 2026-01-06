@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSnackbar } from "notistack";
 import {
   Accordion,
   AccordionDetails,
@@ -26,6 +25,7 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../../components/HeaderBar";
 import { TaskInfoBar } from "../../components/tasks/TaskInfoBar";
+import { useErrorSnackbar } from "../../hooks/useErrorSnackbar";
 import type {
   BasePageProps,
   SolutionResponse,
@@ -34,7 +34,7 @@ import type {
   TrainingRun,
   TrainingRunTopic,
 } from "../../types";
-import { submitTrainingRunSolution, fetchTask, fetchTrainingRun, HttpError } from "../../api";
+import { submitTrainingRunSolution, fetchTask, fetchTrainingRun } from "../../api";
 
 const CHECK_STATUS = {
   Pending: "Pending",
@@ -54,7 +54,7 @@ type CheckState = {
 export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePageProps) {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
   const navigate = useNavigate();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const showError = useErrorSnackbar();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [run, setRun] = useState<TrainingRun | null>(null);
@@ -96,26 +96,6 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
-
-  const showError = (err: unknown, fallback = "Something went wrong") => {
-    let message = fallback;
-    if (err instanceof HttpError) {
-      message = err.body || fallback;
-      if (err.status >= 500) {
-        message = "Server error. Please try again.";
-      }
-    } else if (err instanceof Error && err.message) {
-      message = err.message;
-    }
-    return enqueueSnackbar(message, {
-      variant: "error",
-      action: (snackbarId) => (
-        <Button color="inherit" size="small" onClick={() => closeSnackbar(snackbarId)}>
-          Close
-        </Button>
-      ),
-    });
-  };
 
   // Fetch training run data
   useEffect(() => {

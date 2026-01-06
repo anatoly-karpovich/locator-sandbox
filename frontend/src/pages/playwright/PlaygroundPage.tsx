@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Chip, CircularProgress, Divider, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { useSnackbar } from "notistack";
 import { HeaderBar } from "../../components/HeaderBar";
-import { submitPlayground, HttpError } from "../../api";
+import { useErrorSnackbar } from "../../hooks/useErrorSnackbar";
+import { submitPlayground } from "../../api";
 import type { BasePageProps, PlaygroundElement, PlaygroundSubmitResponse } from "../../types";
 
 export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePageProps) {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const showError = useErrorSnackbar();
   const navigate = useNavigate();
   const [html, setHtml] = useState("");
   const [payload, setPayload] = useState("");
@@ -39,24 +39,6 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
-
-  const showError = (err: unknown, fallback = "Something went wrong") => {
-    let message = fallback;
-    if (err instanceof HttpError) {
-      message = err.body || fallback;
-      if (err.status >= 500) message = "Server error. Please try again.";
-    } else if (err instanceof Error && err.message) {
-      message = err.message;
-    }
-    enqueueSnackbar(message, {
-      variant: "error",
-      action: (key) => (
-        <Button color="inherit" size="small" onClick={() => closeSnackbar(key)}>
-          Close
-        </Button>
-      ),
-    });
-  };
 
   const handleRun = async () => {
     if (!html.trim() || !payload.trim()) return;

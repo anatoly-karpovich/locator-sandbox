@@ -1,4 +1,11 @@
-import type { Task, TaskMap, SubmitSolutionBody, SolutionResponse, TrainingCatalogResponse, TrainingRun } from "./types";
+import type {
+  Task,
+  TaskMap,
+  SubmitSolutionBody,
+  SolutionResponse,
+  TrainingCatalogResponse,
+  TrainingRun,
+} from "./types";
 import type { PlaygroundSubmitRequest, PlaygroundSubmitResponse } from "./types";
 
 export class HttpError extends Error {
@@ -14,8 +21,13 @@ export class HttpError extends Error {
 
 async function handleJson<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    const text = await res.text();
-    throw new HttpError(res.status, text);
+    if (res.status >= 400 && res.status < 500) {
+      const json = await res.json();
+      throw new HttpError(res.status, json.error || res.statusText);
+    } else {
+      const text = await res.text();
+      throw new HttpError(res.status, text || res.statusText);
+    }
   }
   return res.json() as Promise<T>;
 }
@@ -66,7 +78,10 @@ export async function fetchTrainingRun(trainingRunId: string): Promise<TrainingR
   return handleJson<TrainingRun>(res);
 }
 
-export async function submitTrainingRunSolution(trainingRunId: string, body: SubmitSolutionBody): Promise<SolutionResponse> {
+export async function submitTrainingRunSolution(
+  trainingRunId: string,
+  body: SubmitSolutionBody
+): Promise<SolutionResponse> {
   const res = await fetch(`/api/training-runs/${trainingRunId}/submit`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

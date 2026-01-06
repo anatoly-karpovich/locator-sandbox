@@ -7,19 +7,24 @@ import { HeaderBar } from "../../components/HeaderBar";
 import { WhatsNextBlock } from "../../components/common/WhatsNextBlock";
 import { TrainingsIntro } from "../../components/trainings/TrainingsIntro";
 import { TrainingsGrid } from "../../components/trainings/TrainingsGrid";
+import { useErrorSnackbar } from "../../hooks/useErrorSnackbar";
 
 export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProps) {
   const navigate = useNavigate();
   const [catalog, setCatalog] = useState<TrainingCatalogResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const showError = useErrorSnackbar();
 
   useEffect(() => {
     fetchTrainingsCatalog()
       .then(setCatalog)
-      .catch((e) => setError(e.message))
+      .catch((e) => {
+        setError(e.message);
+        showError(e, "Failed to load trainings");
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [showError]);
 
   const handleStart = async (templateId: string) => {
     try {
@@ -27,6 +32,7 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
       navigate(`/playwright/training-run/${run.id}`);
     } catch (e: any) {
       setError(e?.message ?? "Failed to start training");
+      showError(e, "Failed to start training");
     }
   };
 
