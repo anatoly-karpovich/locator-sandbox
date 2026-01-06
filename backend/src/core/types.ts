@@ -1,7 +1,7 @@
 import { Page, Locator } from "playwright";
-import { Step } from "./ast-parser/types";
-import { UsageCheckResult, UsageSpec, CompareResult, Expectations, ExpectationsValues, Task } from "./tasks/types";
-import { ITrainingsRunSubmitSolutionResponseDTO } from "../dto/trainingRuns.dto";
+import { Step } from "@core/ast-parser/types.js";
+import { UsageCheckResult, UsageSpec, CompareResult, Expectations, ExpectationsValues, Task } from "@core/tasks/types.js";
+import { ITrainingsRunSubmitSolutionResponseDTO } from "@dto/trainingRuns.dto.js";
 
 export interface IPlaywrightRunner {
   run<T>(fn: (page: Page) => Promise<T>): Promise<T>;

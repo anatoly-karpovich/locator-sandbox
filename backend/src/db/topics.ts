@@ -1,4 +1,4 @@
-import { ITopic } from "../core/tasks/types";
+import { ITopic } from "@core/tasks/types.js";
 
 export const topics: ITopic[] = [
   {

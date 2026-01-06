@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
-import { ModuleId, Task, SectionId, TopicId } from "../../core/tasks/types";
-import { ITaskCatalogResponse } from "../../core/training/types";
-import { ITopicRepository, ISectionRepository, IModuleRepository, ITaskRepository } from "../../repositories";
-import { ITaskService } from "../types";
-import { TYPES } from "../../container/types";
-import { ITaskAggregatedService, TaskQueryFilter } from "../types";
+import { ModuleId, Task, SectionId, TopicId } from "@core/tasks/types.js";
+import { ITaskCatalogResponse } from "@core/training/types.js";
+import { ITopicRepository, ISectionRepository, IModuleRepository, ITaskRepository } from "@repositories/index.js";
+import { ITaskService } from "@services/types.js";
+import { TYPES } from "../../container/types.js";
+import { ITaskAggregatedService, TaskQueryFilter } from "@services/types.js";
 
 @injectable()
 export class TaskAggregatedService implements ITaskAggregatedService {

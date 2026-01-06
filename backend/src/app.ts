@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import express from "express";
-import { solutionsRouter, tasksRouter, trainingsRouter, trainingsRunsRouter, playgroundRouter } from "./router";
+import { solutionsRouter, tasksRouter, trainingsRouter, trainingsRunsRouter, playgroundRouter } from "./router/index.js";
 
 const app = express();
 app.use(express.json());

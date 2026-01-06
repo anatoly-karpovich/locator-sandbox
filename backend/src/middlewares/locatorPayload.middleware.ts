@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { ErrorResponseDTO } from "../dto/common.dto";
-import { LocatorPayloadValidationError, validateLocatorPayload } from "../core/validation/payloadValidator";
-import { HTTP_CODES } from "../core/httpCodes";
-import { ITrainingSubmitSolutionRequestDTO } from "../dto/trainingRuns.dto";
-import { PlaygroundSubmitRequestDTO } from "../dto/playground.dto";
+import { ErrorResponseDTO } from "@dto/common.dto.js";
+import { LocatorPayloadValidationError, validateLocatorPayload } from "@core/validation/payloadValidator.js";
+import { HTTP_CODES } from "@core/httpCodes.js";
+import { ITrainingSubmitSolutionRequestDTO } from "@dto/trainingRuns.dto.js";
+import { PlaygroundSubmitRequestDTO } from "@dto/playground.dto.js";
 
 export function validateLocatorPayloadMiddleware(
   req: Request<{}, {}, PlaygroundSubmitRequestDTO | ITrainingSubmitSolutionRequestDTO>,

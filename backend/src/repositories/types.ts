@@ -1,9 +1,9 @@
-import { Difficulty, Task, TaskId, TopicId, ModuleId, SectionId } from "../core/tasks/types";
-import { modules } from "../db/modules";
-import { sections } from "../db/sections";
-import { topics } from "../db/topics";
-import { trainings } from "../db/trainings";
-import { ITrainingRun, TrainingRunId } from "../core/training/types";
+import { Difficulty, Task, TaskId, TopicId, ModuleId, SectionId } from "@core/tasks/types.js";
+import { modules } from "../db/modules.js";
+import { sections } from "../db/sections.js";
+import { topics } from "../db/topics.js";
+import { trainings } from "../db/trainings.js";
+import { ITrainingRun, TrainingRunId } from "@core/training/types.js";
 
 export interface ITaskRepository {
   getAll(): Task[];

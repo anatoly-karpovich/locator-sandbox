@@ -1,4 +1,4 @@
-import { ITrainingTemplate } from "../core/training/types";
+import { ITrainingTemplate } from "@core/training/types.js";
 
 export const trainings: ITrainingTemplate[] = [
   {

@@ -1,9 +1,9 @@
 import { inject, injectable } from "inversify";
 import { Request, Response } from "express";
-import { Module } from "../core/tasks/types";
-import { HTTP_CODES } from "../core/httpCodes";
-import { ITaskAggregatedService, ITaskService } from "../services";
-import { TYPES } from "../container/types";
+import { Module } from "@core/tasks/types.js";
+import { HTTP_CODES } from "@core/httpCodes.js";
+import { ITaskAggregatedService, ITaskService } from "@services/index.js";
+import { TYPES } from "../container/types.js";
 
 @injectable()
 export class TasksController {

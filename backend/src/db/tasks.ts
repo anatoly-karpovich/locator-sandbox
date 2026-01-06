@@ -1,5 +1,5 @@
-import { studyMaterials } from "../core/tasks/studyMaterials/data";
-import { Task } from "../core/tasks/types";
+import { studyMaterials } from "@core/tasks/studyMaterials/data.js";
+import { Task } from "@core/tasks/types.js";
 
 export const tasks: Task[] = [
   {

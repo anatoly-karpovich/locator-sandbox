@@ -1,8 +1,8 @@
-import { Difficulty, Task, TaskId, TopicId, ModuleId, SectionId } from "../core/tasks/types";
-import { ITaskCatalogResponse, ITrainingTemplate, ITrainingRun, TrainingRunId } from "../core/training/types";
-import { TrainingCatalogResponseDTO } from "../dto/trainings.dto";
-import { ITrainingSubmitSolutionRequestDTO, ITrainingsRunSubmitSolutionResponseDTO } from "../dto/trainingRuns.dto";
-import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "../dto/playground.dto";
+import { Difficulty, Task, TaskId, TopicId, ModuleId, SectionId } from "@core/tasks/types.js";
+import { ITaskCatalogResponse, ITrainingTemplate, ITrainingRun, TrainingRunId } from "@core/training/types.js";
+import { TrainingCatalogResponseDTO } from "@dto/trainings.dto.js";
+import { ITrainingSubmitSolutionRequestDTO, ITrainingsRunSubmitSolutionResponseDTO } from "@dto/trainingRuns.dto.js";
+import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "@dto/playground.dto.js";
 
 export interface ITaskService {
   getById(taskId: TaskId): Task | undefined;

@@ -1,2 +1,2 @@
-export { container } from "./container";
-export { TYPES } from "./types";
+export { container } from "./container.js";
+export { TYPES } from "./types.js";

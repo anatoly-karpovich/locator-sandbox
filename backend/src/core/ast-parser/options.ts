@@ -1,4 +1,4 @@
-import { KeySchema } from "./types";
+import { KeySchema } from "@core/ast-parser/types.js";
 
 export const GET_BY_TEXT_KEYS: KeySchema = {
   exact: "boolean?",

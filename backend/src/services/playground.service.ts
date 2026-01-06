@@ -1,12 +1,12 @@
 import { Locator } from "playwright";
 import { inject, injectable } from "inversify";
-import { LocatorHandler } from "../core/locator/locatorHandler";
-import { ExpectationCheck, CompareResult } from "../core/tasks/types";
-import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "../dto/playground.dto";
-import { AstParser } from "../core/ast-parser";
-import { TYPES } from "../container/types";
-import { IPlaygroundService } from "./types";
-import { IPlaywrightRunner } from "../core/types";
+import { LocatorHandler } from "@core/locator/locatorHandler.js";
+import { ExpectationCheck, CompareResult } from "@core/tasks/types.js";
+import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "@dto/playground.dto.js";
+import { AstParser } from "@core/ast-parser/index.js";
+import { TYPES } from "../container/types.js";
+import { IPlaygroundService } from "@services/types.js";
+import { IPlaywrightRunner } from "@core/types.js";
 
 const MAX_ELEMENTS_PREVIEW = 10;
 

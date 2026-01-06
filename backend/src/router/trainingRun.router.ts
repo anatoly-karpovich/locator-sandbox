@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { TrainingRunsController } from "../controllers";
-import { validateLocatorPayloadMiddleware } from "../middlewares/locatorPayload.middleware";
-import { container, TYPES } from "../container";
+import { TrainingRunsController } from "@controllers/index.js";
+import { validateLocatorPayloadMiddleware } from "@middlewares/locatorPayload.middleware.js";
+import { container, TYPES } from "../container/index.js";
 
 const trainingsRunsRouter = Router();
 const trainingsRunsController = container.get<TrainingRunsController>(TYPES.TrainingRunsController);

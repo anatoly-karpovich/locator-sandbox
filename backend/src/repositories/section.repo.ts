@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
-import { sections } from "../db/sections";
-import { SectionId } from "../core/tasks/types";
-import { ISectionRepository } from "./types";
+import { sections } from "../db/sections.js";
+import { SectionId } from "@core/tasks/types.js";
+import { ISectionRepository } from "@repositories/types.js";
 
 @injectable()
 export class SectionRepository implements ISectionRepository {

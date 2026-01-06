@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { chromium, Page } from "playwright";
-import { IPlaywrightRunner } from "../types";
+import { IPlaywrightRunner } from "@core/types.js";
 
 @injectable()
 export class PlaywrightRunner implements IPlaywrightRunner {

@@ -1,12 +1,12 @@
 import { inject, injectable } from "inversify";
-import { CompareResult, ExpectationCheck, Expectations, Task } from "../tasks/types";
-import { LocatorHandler } from "./locatorHandler";
-import { ITrainingsRunSubmitSolutionResponseDTO } from "../../dto/trainingRuns.dto";
-import { AstParser } from "../ast-parser/AstParser";
-import { AstError } from "../../error/astError";
-import { ParsedPlan } from "../ast-parser";
-import { TYPES } from "../../container/types";
-import { ILocatorExecutor, IPlaywrightRunner, IUsageSpecification, ISolutionsHandler } from "../types";
+import { CompareResult, ExpectationCheck, Expectations, Task } from "@core/tasks/types.js";
+import { LocatorHandler } from "@core/locator/locatorHandler.js";
+import { ITrainingsRunSubmitSolutionResponseDTO } from "@dto/trainingRuns.dto.js";
+import { AstParser } from "@core/ast-parser/AstParser.js";
+import { AstError } from "../../error/astError.js";
+import { ParsedPlan } from "@core/ast-parser/index.js";
+import { TYPES } from "../../container/types.js";
+import { ILocatorExecutor, IPlaywrightRunner, IUsageSpecification, ISolutionsHandler } from "@core/types.js";
 
 @injectable()
 export class LocatorExecutor implements ILocatorExecutor {

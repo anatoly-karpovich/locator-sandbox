@@ -1,6 +1,6 @@
 import * as t from "@babel/types";
-import { AllowedType, KeySchema, Literal } from "./types";
-import { AstError } from "../../error/astError";
+import { AllowedType, KeySchema, Literal } from "@core/ast-parser/types.js";
+import { AstError } from "../../error/astError.js";
 
 export function assertArgCount(method: string, args: unknown[], countConstraint: [number, number] | number) {
   if (!isValidArgumentCount(args, countConstraint)) {

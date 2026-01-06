@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
-import { Step } from "../ast-parser/types";
-import { UsageCheckResult, UsageSpec } from "../tasks/types";
-import { getArgumentType } from "../../utils/getArgumentType";
-import { IUsageSpecification } from "../types";
+import { Step } from "@core/ast-parser/types.js";
+import { UsageCheckResult, UsageSpec } from "@core/tasks/types.js";
+import { getArgumentType } from "../../utils/getArgumentType.js";
+import { IUsageSpecification } from "@core/types.js";
 
 @injectable()
 export class UsageSpecification implements IUsageSpecification {

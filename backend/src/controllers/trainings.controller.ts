@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
-import { HTTP_CODES } from "../core/httpCodes";
+import { HTTP_CODES } from "@core/httpCodes.js";
 import { Request, Response } from "express";
-import { ITrainingTemplateService } from "../services";
-import { TrainingCatalogResponseDTO } from "../dto/trainings.dto";
-import { ErrorResponseDTO } from "../dto/common.dto";
-import { TYPES } from "../container/types";
+import { ITrainingTemplateService } from "@services/index.js";
+import { TrainingCatalogResponseDTO } from "@dto/trainings.dto.js";
+import { ErrorResponseDTO } from "@dto/common.dto.js";
+import { TYPES } from "../container/types.js";
 
 @injectable()
 export class TrainingsController {

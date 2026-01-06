@@ -1,15 +1,15 @@
 import { inject, injectable } from "inversify";
-import { TopicId } from "../../core/tasks/types";
-import { ITrainingRun, TrainingRunId } from "../../core/training/types";
-import { ITopicRepository, ITrainingRunsRepository } from "../../repositories";
-import { ITaskService, ITrainingTemplateService, ITrainingsRunService } from "../types";
-import { ILocatorExecutor } from "../../core/types";
-import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "../../core/training/enums";
+import { TopicId } from "@core/tasks/types.js";
+import { ITrainingRun, TrainingRunId } from "@core/training/types.js";
+import { ITopicRepository, ITrainingRunsRepository } from "@repositories/index.js";
+import { ITaskService, ITrainingTemplateService, ITrainingsRunService } from "@services/types.js";
+import { ILocatorExecutor } from "@core/types.js";
+import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "@core/training/enums.js";
 import {
   ITrainingSubmitSolutionRequestDTO,
   ITrainingsRunSubmitSolutionResponseDTO,
-} from "../../dto/trainingRuns.dto";
-import { TYPES } from "../../container/types";
+} from "@dto/trainingRuns.dto.js";
+import { TYPES } from "../../container/types.js";
 
 @injectable()
 export class TrainingsRunService implements ITrainingsRunService {

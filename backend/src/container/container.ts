@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { Container } from "inversify";
-import { TYPES } from "./types";
+import { TYPES } from "./types.js";
 import {
   TaskRepository,
   ModuleRepository,
@@ -14,7 +14,7 @@ import {
   ITopicRepository,
   ITrainingTemplateRepository,
   ITrainingRunsRepository,
-} from "../repositories";
+} from "@repositories/index.js";
 import {
   TaskService,
   ITaskService,
@@ -26,14 +26,14 @@ import {
   ITrainingsRunService,
   PlaygroundService,
   IPlaygroundService,
-} from "../services";
-import { PlaywrightRunner } from "../core/playwright/playwright.runner";
-import { UsageSpecification } from "../core/usageSpec/usageSpecification";
-import { LocatorExecutor } from "../core/locator/locatorExecutor";
-import { LocatorStateHandler } from "../core/locator/locatorStateHandler";
-import { SolutionsHandler } from "../core/tasks/solutionsHandler";
-import { IPlaywrightRunner, IUsageSpecification, ILocatorExecutor, ILocatorStateHandler, ISolutionsHandler } from "../core/types";
-import { TasksController, TrainingsController, TrainingRunsController, PlaygroundController, SolutionController } from "../controllers";
+} from "@services/index.js";
+import { PlaywrightRunner } from "@core/playwright/playwright.runner.js";
+import { UsageSpecification } from "@core/usageSpec/usageSpecification.js";
+import { LocatorExecutor } from "@core/locator/locatorExecutor.js";
+import { LocatorStateHandler } from "@core/locator/locatorStateHandler.js";
+import { SolutionsHandler } from "@core/tasks/solutionsHandler.js";
+import { IPlaywrightRunner, IUsageSpecification, ILocatorExecutor, ILocatorStateHandler, ISolutionsHandler } from "@core/types.js";
+import { TasksController, TrainingsController, TrainingRunsController, PlaygroundController, SolutionController } from "@controllers/index.js";
 
 const container = new Container({
   defaultScope: "Singleton",

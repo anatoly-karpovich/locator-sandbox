@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
-import { topics } from "../db/topics";
-import { TopicId, SectionId } from "../core/tasks/types";
-import { ITopicRepository } from "./types";
+import { topics } from "../db/topics.js";
+import { TopicId, SectionId } from "@core/tasks/types.js";
+import { ITopicRepository } from "@repositories/types.js";
 
 @injectable()
 export class TopicRepository implements ITopicRepository {

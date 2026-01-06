@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
-import { ITrainingTemplate } from "../../core/training/types";
-import { ITaskService } from "../types";
-import { IModuleRepository, ISectionRepository, ITrainingTemplateRepository } from "../../repositories";
-import { TrainingCatalogResponseDTO } from "../../dto/trainings.dto";
-import { TYPES } from "../../container/types";
-import { ITrainingTemplateService } from "../types";
+import { ITrainingTemplate } from "@core/training/types.js";
+import { ITaskService } from "@services/types.js";
+import { IModuleRepository, ISectionRepository, ITrainingTemplateRepository } from "@repositories/index.js";
+import { TrainingCatalogResponseDTO } from "@dto/trainings.dto.js";
+import { TYPES } from "../../container/types.js";
+import { ITrainingTemplateService } from "@services/types.js";
 
 @injectable()
 export class TrainingTemplateService implements ITrainingTemplateService {

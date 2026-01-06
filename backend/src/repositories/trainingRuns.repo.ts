@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
 import path from "path";
 import fs from "fs";
-import { ITrainingRun, TrainingRunId } from "../core/training/types";
-import { ITrainingRunsRepository } from "./types";
+import { ITrainingRun, TrainingRunId } from "@core/training/types.js";
+import { ITrainingRunsRepository } from "@repositories/types.js";
 
 @injectable()
 export class TrainingRunsRepository implements ITrainingRunsRepository {

@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
-import { Difficulty, Task, TaskId, TopicId } from "../../core/tasks/types";
-import { ITaskRepository } from "../../repositories";
-import { TYPES } from "../../container/types";
-import { ITaskService } from "../types";
+import { Difficulty, Task, TaskId, TopicId } from "@core/tasks/types.js";
+import { ITaskRepository } from "@repositories/index.js";
+import { TYPES } from "../../container/types.js";
+import { ITaskService } from "@services/types.js";
 
 @injectable()
 export class TaskService implements ITaskService {

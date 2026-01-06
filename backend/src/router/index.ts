@@ -1,7 +1,7 @@
-import solutionsRouter from "./solutions.router";
-import tasksRouter from "./tasks.router";
-import trainingsRunsRouter from "./trainingRun.router";
-import trainingsRouter from "./trainings.router";
-import playgroundRouter from "./playground.router";
+import solutionsRouter from "./solutions.router.js";
+import tasksRouter from "./tasks.router.js";
+import trainingsRunsRouter from "./trainingRun.router.js";
+import trainingsRouter from "./trainings.router.js";
+import playgroundRouter from "./playground.router.js";
 
 export { solutionsRouter, tasksRouter, trainingsRunsRouter, trainingsRouter, playgroundRouter };

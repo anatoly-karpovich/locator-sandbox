@@ -1,6 +1,6 @@
 import { parseExpression } from "@babel/parser";
 import * as t from "@babel/types";
-import { AstError } from "../../error/astError";
+import { AstError } from "../../error/astError.js";
 import {
   ParsedPlan,
   ReceiverKind,
@@ -11,15 +11,15 @@ import {
   GetByTextOptions,
   GetByRoleOptions,
   GetByRoleArgument,
-} from "./types";
-import { GET_BY_TEXT_KEYS, GET_BY_ROLE_KEYS } from "./options";
+} from "@core/ast-parser/types.js";
+import { GET_BY_TEXT_KEYS, GET_BY_ROLE_KEYS } from "@core/ast-parser/options.js";
 import {
   assertArgCount,
   readString,
   readNonNegativeInt,
   readObjectLiteral,
   readStringOrRegExp,
-} from "./validators";
+} from "@core/ast-parser/validators.js";
 
 export class AstParser {
   /**

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { TrainingsController } from "../controllers";
-import { container, TYPES } from "../container";
+import { TrainingsController } from "@controllers/index.js";
+import { container, TYPES } from "../container/index.js";
 
 const trainingsRouter = Router();
 const trainingsController = container.get<TrainingsController>(TYPES.TrainingsController);

@@ -1,4 +1,4 @@
-import { ISection } from "../core/tasks/types";
+import { ISection } from "@core/tasks/types.js";
 
 export const sections: ISection[] = [
   {

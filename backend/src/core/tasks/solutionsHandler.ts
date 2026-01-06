@@ -1,9 +1,9 @@
 import { inject, injectable } from "inversify";
 import { Locator } from "playwright";
-import { CompareResult, ExpectationCheck, Expectations, ExpectationsValues, Task } from "./types";
-import { LocatorStateHandler } from "../locator/locatorStateHandler";
-import { TYPES } from "../../container/types";
-import { ILocatorStateHandler, ISolutionsHandler } from "../types";
+import { CompareResult, ExpectationCheck, Expectations, ExpectationsValues, Task } from "@core/tasks/types.js";
+import { LocatorStateHandler } from "@core/locator/locatorStateHandler.js";
+import { TYPES } from "../../container/types.js";
+import { ILocatorStateHandler, ISolutionsHandler } from "@core/types.js";
 
 @injectable()
 export class SolutionsHandler implements ISolutionsHandler {

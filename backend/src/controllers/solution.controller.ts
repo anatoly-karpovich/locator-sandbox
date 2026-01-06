@@ -1,11 +1,11 @@
 import { inject, injectable } from "inversify";
 import { Request, Response } from "express";
-import { LocatorHandler } from "../core/locator/locatorHandler";
-import { AstParser } from "../core/ast-parser/AstParser";
-import { HTTP_CODES } from "../core/httpCodes";
-import { ITaskService } from "../services";
-import { TYPES } from "../container/types";
-import { IPlaywrightRunner, IUsageSpecification, ISolutionsHandler } from "../core/types";
+import { LocatorHandler } from "@core/locator/locatorHandler.js";
+import { AstParser } from "@core/ast-parser/AstParser.js";
+import { HTTP_CODES } from "@core/httpCodes.js";
+import { ITaskService } from "@services/index.js";
+import { TYPES } from "../container/types.js";
+import { IPlaywrightRunner, IUsageSpecification, ISolutionsHandler } from "@core/types.js";
 
 export type SubmitSolutionDTO = { payload: string; taskId: number };
 
