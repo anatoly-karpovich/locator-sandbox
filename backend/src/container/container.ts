@@ -1,0 +1,66 @@
+import "reflect-metadata";
+import { Container } from "inversify";
+import { TYPES } from "./types";
+import {
+  TaskRepository,
+  ModuleRepository,
+  SectionRepository,
+  TopicRepository,
+  TrainingTemplateRepository,
+  TrainingRunsRepository,
+  ITaskRepository,
+  IModuleRepository,
+  ISectionRepository,
+  ITopicRepository,
+  ITrainingTemplateRepository,
+  ITrainingRunsRepository,
+} from "../repositories";
+import { ITaskService, TaskService, ITaskAggregatedService, TaskAggregatedService } from "../services";
+import {
+  ITrainingTemplateService,
+  TrainingTemplateService,
+  ITrainingsRunService,
+  TrainingsRunService,
+} from "../services";
+import { IPlaygroundService, PlaygroundService } from "../services/playground.service";
+import { IPlaywrightRunner, PlaywrightRunner } from "../core/playwright/playwright.runner";
+import { IUsageSpecification, UsageSpecification } from "../core/usageSpec/usageSpecification";
+import { ILocatorExecutor, LocatorExecutor } from "../core/locator/locatorExecutor";
+import { ILocatorStateHandler, LocatorStateHandler } from "../core/locator/locatorStateHandler";
+import { ISolutionsHandler, SolutionsHandler } from "../core/tasks/solutionsHandler";
+import { TasksController, TrainingsController, TrainingRunsController, PlaygroundController, SolutionController } from "../controllers";
+
+const container = new Container({
+  defaultScope: "Singleton",
+});
+
+// repositories
+container.bind<ITaskRepository>(TYPES.TaskRepository).to(TaskRepository);
+container.bind<IModuleRepository>(TYPES.ModuleRepository).to(ModuleRepository);
+container.bind<ISectionRepository>(TYPES.SectionRepository).to(SectionRepository);
+container.bind<ITopicRepository>(TYPES.TopicRepository).to(TopicRepository);
+container.bind<ITrainingTemplateRepository>(TYPES.TrainingTemplateRepository).to(TrainingTemplateRepository);
+container.bind<ITrainingRunsRepository>(TYPES.TrainingRunsRepository).to(TrainingRunsRepository);
+
+// core helpers
+container.bind<IPlaywrightRunner>(TYPES.PlaywrightRunner).to(PlaywrightRunner);
+container.bind<IUsageSpecification>(TYPES.UsageSpecification).to(UsageSpecification);
+container.bind<ILocatorStateHandler>(TYPES.LocatorStateHandler).to(LocatorStateHandler);
+container.bind<ISolutionsHandler>(TYPES.SolutionsHandler).to(SolutionsHandler);
+container.bind<ILocatorExecutor>(TYPES.LocatorExecutor).to(LocatorExecutor);
+
+// services
+container.bind<ITaskService>(TYPES.TaskService).to(TaskService);
+container.bind<ITaskAggregatedService>(TYPES.TaskAggregatedService).to(TaskAggregatedService);
+container.bind<ITrainingTemplateService>(TYPES.TrainingTemplateService).to(TrainingTemplateService);
+container.bind<ITrainingsRunService>(TYPES.TrainingsRunService).to(TrainingsRunService);
+container.bind<IPlaygroundService>(TYPES.PlaygroundService).to(PlaygroundService);
+
+// controllers
+container.bind<TasksController>(TYPES.TasksController).to(TasksController);
+container.bind<TrainingsController>(TYPES.TrainingsController).to(TrainingsController);
+container.bind<TrainingRunsController>(TYPES.TrainingRunsController).to(TrainingRunsController);
+container.bind<PlaygroundController>(TYPES.PlaygroundController).to(PlaygroundController);
+container.bind<SolutionController>(TYPES.SolutionController).to(SolutionController);
+
+export { container };

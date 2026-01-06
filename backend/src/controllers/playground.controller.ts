@@ -1,11 +1,14 @@
+import { inject, injectable } from "inversify";
 import { Request, Response } from "express";
 import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "../dto/playground.dto";
-import { PlaygroundService } from "../services/playground.service";
+import { IPlaygroundService } from "../services/playground.service";
 import { ErrorResponseDTO } from "../dto/common.dto";
 import { HTTP_CODES } from "../core/httpCodes";
+import { TYPES } from "../container/types";
 
+@injectable()
 export class PlaygroundController {
-  constructor(private playgroundService: PlaygroundService = new PlaygroundService()) {}
+  constructor(@inject(TYPES.PlaygroundService) private playgroundService: IPlaygroundService) {}
   async submit(
     req: Request<{}, {}, PlaygroundSubmitRequestDTO>,
     res: Response<IPlaygroundSubmitResponseDTO | ErrorResponseDTO>

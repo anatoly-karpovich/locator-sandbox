@@ -1,8 +1,17 @@
+import { injectable } from "inversify";
 import path from "path";
 import fs from "fs";
 import { ITrainingRun, TrainingRunId } from "../core/training/types";
 
-export class TrainingRunsRepository {
+export interface ITrainingRunsRepository {
+  create(run: Omit<ITrainingRun, "id">): ITrainingRun;
+  update(runId: TrainingRunId, run: ITrainingRun): ITrainingRun | null;
+  getById(id: TrainingRunId): ITrainingRun | null;
+  getAll(): ITrainingRun[];
+}
+
+@injectable()
+export class TrainingRunsRepository implements ITrainingRunsRepository {
   private filePath = path.resolve(process.cwd(), "src/db/trainingRuns.json");
 
   create(run: Omit<ITrainingRun, "id">): ITrainingRun {

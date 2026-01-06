@@ -1,6 +1,7 @@
+import { inject, injectable } from "inversify";
 import { Request, Response } from "express";
 
-import { TrainingsRunService, TrainingTemplateService } from "../services";
+import { ITrainingsRunService, ITrainingTemplateService } from "../services";
 import { HTTP_CODES } from "../core/httpCodes";
 import {
   StartFixedTrainingRequest,
@@ -11,11 +12,13 @@ import {
 } from "../dto/trainingRuns.dto";
 import { ErrorResponseDTO } from "../dto/common.dto";
 import { TrainingCatalogResponseDTO } from "../dto/trainings.dto";
+import { TYPES } from "../container/types";
 
+@injectable()
 export class TrainingRunsController {
   constructor(
-    private trainingTemplateService: TrainingTemplateService = new TrainingTemplateService(),
-    private trainingsRunService: TrainingsRunService = new TrainingsRunService()
+    @inject(TYPES.TrainingTemplateService) private trainingTemplateService: ITrainingTemplateService,
+    @inject(TYPES.TrainingsRunService) private trainingsRunService: ITrainingsRunService
   ) {}
   startTraining(
     req: Request<{}, {}, StartTrainingRequestDTO>,

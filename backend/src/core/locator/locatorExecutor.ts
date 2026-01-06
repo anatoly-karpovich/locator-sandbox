@@ -1,22 +1,28 @@
+import { inject, injectable } from "inversify";
 import { CompareResult, ExpectationCheck, Expectations, Task } from "../tasks/types";
-import { SolutionsHandler } from "../tasks/solutionsHandler";
-import { UsageSpecification } from "../usageSpec/usageSpecification";
+import { ISolutionsHandler } from "../tasks/solutionsHandler";
+import { IUsageSpecification } from "../usageSpec/usageSpecification";
 import { LocatorHandler } from "./locatorHandler";
 import { ITrainingsRunSubmitSolutionResponseDTO } from "../../dto/trainingRuns.dto";
-import { PlaywrightRunner } from "../playwright/playwright.runner";
+import { IPlaywrightRunner } from "../playwright/playwright.runner";
 import { AstParser } from "../ast-parser/AstParser";
 import { AstError } from "../../error/astError";
 import { ParsedPlan } from "../ast-parser";
+import { TYPES } from "../../container/types";
 
-export class LocatorExecutor {
+export interface ILocatorExecutor {
+  execute(task: Task, payload: string): Promise<ITrainingsRunSubmitSolutionResponseDTO>;
+}
+
+@injectable()
+export class LocatorExecutor implements ILocatorExecutor {
   constructor(
-    private readonly playwrightRunner: PlaywrightRunner = new PlaywrightRunner(),
-    private readonly usageSpecification: UsageSpecification = new UsageSpecification()
+    @inject(TYPES.PlaywrightRunner) private readonly playwrightRunner: IPlaywrightRunner,
+    @inject(TYPES.UsageSpecification) private readonly usageSpecification: IUsageSpecification,
+    @inject(TYPES.SolutionsHandler) private readonly solutionHandler: ISolutionsHandler
   ) {}
 
   async execute(task: Task, payload: string): Promise<ITrainingsRunSubmitSolutionResponseDTO> {
-    const solutionHandler = new SolutionsHandler();
-
     const baseSolution: ITrainingsRunSubmitSolutionResponseDTO = {
       result: {
         passed: false,
@@ -56,7 +62,7 @@ export class LocatorExecutor {
         return this.buildNotFoundResult(task.expectations, presence.count);
       }
 
-      const result = await solutionHandler.runTask(task, locator);
+      const result = await this.solutionHandler.runTask(task, locator);
 
       return {
         result,

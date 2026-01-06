@@ -1,8 +1,15 @@
+import { injectable } from "inversify";
 import { Step } from "../ast-parser/types";
 import { UsageCheckResult, UsageSpec } from "../tasks/types";
 import { getArgumentType } from "../../utils/getArgumentType";
 
-export class UsageSpecification {
+export interface IUsageSpecification {
+  validate(steps: Step[], specs: UsageSpec): UsageCheckResult;
+  buildExplanation(result: UsageCheckResult): string[];
+}
+
+@injectable()
+export class UsageSpecification implements IUsageSpecification {
   private messages: Set<string> = new Set();
 
   public validate(steps: Step[], specs: UsageSpec): UsageCheckResult {

@@ -1,7 +1,12 @@
+import { inject, injectable } from "inversify";
 import { ModuleId, Task, SectionId, TopicId, Difficulty } from "../../core/tasks/types";
 import { ITaskCatalogResponse } from "../../core/training/types";
-import { TopicRepository, SectionRepository, ModuleRepository, TaskRepository } from "../../repositories";
-import { TaskService } from "./task.service";
+import { ITopicRepository } from "../../repositories/topic.repo";
+import { ISectionRepository } from "../../repositories/section.repo";
+import { IModuleRepository } from "../../repositories/module.repo";
+import { ITaskRepository } from "../../repositories/tasks.repo";
+import { ITaskService } from "./task.service";
+import { TYPES } from "../../container/types";
 
 type TaskQueryFilter = {
   difficulty?: Difficulty;
@@ -11,14 +16,24 @@ type TaskQueryFilter = {
   limit?: number;
 };
 
-export class TaskAggregatedService {
+export interface ITaskAggregatedService {
+  getCatalog(): ITaskCatalogResponse;
+  query(filter: TaskQueryFilter): Task[];
+  getByModule(moduleId: ModuleId): Task[];
+  getBySection(sectionId: SectionId): Task[];
+  getByTopic(topicId: TopicId): Task[];
+}
+
+@injectable()
+export class TaskAggregatedService implements ITaskAggregatedService {
   constructor(
-    private taskService: TaskService = new TaskService(),
-    private sectionRepository: SectionRepository = new SectionRepository(),
-    private moduleRepository: ModuleRepository = new ModuleRepository(),
-    private tasksRepository: TaskRepository = new TaskRepository(),
-    private topicsRepository: TopicRepository = new TopicRepository()
+    @inject(TYPES.TaskService) private taskService: ITaskService,
+    @inject(TYPES.SectionRepository) private sectionRepository: ISectionRepository,
+    @inject(TYPES.ModuleRepository) private moduleRepository: IModuleRepository,
+    @inject(TYPES.TaskRepository) private tasksRepository: ITaskRepository,
+    @inject(TYPES.TopicRepository) private topicsRepository: ITopicRepository
   ) {}
+
   getCatalog(): ITaskCatalogResponse {
     const modules = this.moduleRepository.getAll();
 

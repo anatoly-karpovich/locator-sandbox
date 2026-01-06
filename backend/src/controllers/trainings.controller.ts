@@ -1,11 +1,16 @@
+import { inject, injectable } from "inversify";
 import { HTTP_CODES } from "../core/httpCodes";
 import { Request, Response } from "express";
-import { TrainingTemplateService } from "../services";
+import { ITrainingTemplateService } from "../services";
 import { TrainingCatalogResponseDTO } from "../dto/trainings.dto";
 import { ErrorResponseDTO } from "../dto/common.dto";
+import { TYPES } from "../container/types";
 
+@injectable()
 export class TrainingsController {
-  constructor(private trainingTemplateService: TrainingTemplateService = new TrainingTemplateService()) {}
+  constructor(
+    @inject(TYPES.TrainingTemplateService) private trainingTemplateService: ITrainingTemplateService
+  ) {}
   getCatalog(req: Request, res: Response<TrainingCatalogResponseDTO | ErrorResponseDTO>) {
     try {
       const catalog = this.trainingTemplateService.getCatalogView();

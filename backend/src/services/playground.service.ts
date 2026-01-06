@@ -1,14 +1,21 @@
 import { Locator } from "playwright";
+import { inject, injectable } from "inversify";
 import { LocatorHandler } from "../core/locator/locatorHandler";
 import { ExpectationCheck, CompareResult } from "../core/tasks/types";
 import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "../dto/playground.dto";
-import { PlaywrightRunner } from "../core/playwright/playwright.runner";
+import { IPlaywrightRunner } from "../core/playwright/playwright.runner";
 import { AstParser } from "../core/ast-parser";
+import { TYPES } from "../container/types";
 
 const MAX_ELEMENTS_PREVIEW = 10;
 
-export class PlaygroundService {
-  constructor(private readonly playwrightRunner = new PlaywrightRunner()) {}
+export interface IPlaygroundService {
+  submit(dto: PlaygroundSubmitRequestDTO): Promise<IPlaygroundSubmitResponseDTO>;
+}
+
+@injectable()
+export class PlaygroundService implements IPlaygroundService {
+  constructor(@inject(TYPES.PlaywrightRunner) private readonly playwrightRunner: IPlaywrightRunner) {}
 
   async submit(dto: PlaygroundSubmitRequestDTO): Promise<IPlaygroundSubmitResponseDTO> {
     return this.playwrightRunner.run(async (page) => {

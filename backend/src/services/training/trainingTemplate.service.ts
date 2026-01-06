@@ -1,15 +1,27 @@
+import { inject, injectable } from "inversify";
 import { ITrainingTemplate } from "../../core/training/types";
-import { TaskService } from "../task/task.service";
-import { ModuleRepository, SectionRepository, TrainingTemplateRepository } from "../../repositories";
+import { ITaskService } from "../task/task.service";
+import { IModuleRepository } from "../../repositories/module.repo";
+import { ISectionRepository } from "../../repositories/section.repo";
+import { ITrainingTemplateRepository } from "../../repositories/trainingTemplates.repo";
 import { TrainingCatalogResponseDTO } from "../../dto/trainings.dto";
+import { TYPES } from "../../container/types";
 
-export class TrainingTemplateService {
+export interface ITrainingTemplateService {
+  getById(id: string): ITrainingTemplate;
+  validateTemplatesOnStartup(): void;
+  getCatalogView(): TrainingCatalogResponseDTO;
+}
+
+@injectable()
+export class TrainingTemplateService implements ITrainingTemplateService {
   constructor(
-    private taskService: TaskService = new TaskService(),
-    private trainingTemplatesRepository: TrainingTemplateRepository = new TrainingTemplateRepository(),
-    private modulesRepository: ModuleRepository = new ModuleRepository(),
-    private sectionsRepository: SectionRepository = new SectionRepository()
+    @inject(TYPES.TaskService) private taskService: ITaskService,
+    @inject(TYPES.TrainingTemplateRepository) private trainingTemplatesRepository: ITrainingTemplateRepository,
+    @inject(TYPES.ModuleRepository) private modulesRepository: IModuleRepository,
+    @inject(TYPES.SectionRepository) private sectionsRepository: ISectionRepository
   ) {}
+
   getById(id: string): ITrainingTemplate {
     const template = this.trainingTemplatesRepository.getById(id);
     if (!template) {
@@ -23,7 +35,7 @@ export class TrainingTemplateService {
 
     for (const template of templates) {
       for (const taskId of template.taskIds) {
-        this.taskService.getById(taskId); // выбросит ошибку если невалидно
+        this.taskService.getById(taskId); // Ñý¥<Ññ¥?Ñó¥?Ñ÷¥' Ñó¥^Ñ÷ÑñÑ§¥Ÿ Ñæ¥?Ñ¯Ñ÷ Ñ«ÑæÑýÑøÑ¯Ñ÷ÑïÑ«Ñó
       }
     }
   }
@@ -41,7 +53,7 @@ export class TrainingTemplateService {
           title: module.title,
           sections: sections.map((section) => {
             const sectionTemplates = templates.filter(
-              (t) => t.moduleId === module.id && t.sectionId === section.id // см. примечание ниже
+              (t) => t.moduleId === module.id && t.sectionId === section.id // ¥?Ñ¬. Ñ¨¥?Ñ÷Ñ¬Ñæ¥ÎÑøÑ«Ñ÷Ñæ Ñ«Ñ÷ÑôÑæ
             );
 
             return {

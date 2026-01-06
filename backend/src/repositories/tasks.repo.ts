@@ -1,7 +1,16 @@
-import { Difficulty, TaskId, TopicId } from "../core/tasks/types";
+import { injectable } from "inversify";
+import { Difficulty, Task, TaskId, TopicId } from "../core/tasks/types";
 import { tasks } from "../db/tasks";
 
-export class TaskRepository {
+export interface ITaskRepository {
+  getAll(): Task[];
+  getByTopic(topicId: TopicId): Task[];
+  getById(id: TaskId): Task | undefined;
+  getByDifficulty(difficulty: Difficulty): Task[];
+}
+
+@injectable()
+export class TaskRepository implements ITaskRepository {
   private table = tasks;
   getAll() {
     return this.table;

@@ -1,6 +1,13 @@
+import { injectable } from "inversify";
 import { trainings } from "../db/trainings";
 
-export class TrainingTemplateRepository {
+export interface ITrainingTemplateRepository {
+  getAll(): typeof trainings;
+  getById(id: string): typeof trainings[number] | undefined;
+}
+
+@injectable()
+export class TrainingTemplateRepository implements ITrainingTemplateRepository {
   private table = trainings;
 
   getAll() {
