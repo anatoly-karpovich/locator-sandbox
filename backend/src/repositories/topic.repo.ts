@@ -1,12 +1,7 @@
 import { injectable } from "inversify";
 import { topics } from "../db/topics";
 import { TopicId, SectionId } from "../core/tasks/types";
-
-export interface ITopicRepository {
-  getById(id: TopicId): typeof topics[number] | undefined;
-  getBySectionId(sectionId: SectionId | SectionId[]): typeof topics;
-  getAll(): typeof topics;
-}
+import { ITopicRepository } from "./types";
 
 @injectable()
 export class TopicRepository implements ITopicRepository {

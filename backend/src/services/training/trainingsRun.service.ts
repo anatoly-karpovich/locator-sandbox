@@ -1,26 +1,15 @@
 import { inject, injectable } from "inversify";
 import { TopicId } from "../../core/tasks/types";
 import { ITrainingRun, TrainingRunId } from "../../core/training/types";
-import { ITopicRepository } from "../../repositories/topic.repo";
-import { ITrainingRunsRepository } from "../../repositories/trainingRuns.repo";
-import { ITaskService } from "../task/task.service";
-import { ITrainingTemplateService } from "./trainingTemplate.service";
-import { ILocatorExecutor } from "../../core/locator/locatorExecutor";
+import { ITopicRepository, ITrainingRunsRepository } from "../../repositories";
+import { ITaskService, ITrainingTemplateService, ITrainingsRunService } from "../types";
+import { ILocatorExecutor } from "../../core/types";
 import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "../../core/training/enums";
 import {
   ITrainingSubmitSolutionRequestDTO,
   ITrainingsRunSubmitSolutionResponseDTO,
 } from "../../dto/trainingRuns.dto";
 import { TYPES } from "../../container/types";
-
-export interface ITrainingsRunService {
-  startFixedTraining(templateId: string): ITrainingRun;
-  handleSolution(
-    trainingRunIn: TrainingRunId,
-    dto: ITrainingSubmitSolutionRequestDTO
-  ): Promise<ITrainingsRunSubmitSolutionResponseDTO>;
-  getRunById(trainingRunId: TrainingRunId): Promise<ITrainingRun>;
-}
 
 @injectable()
 export class TrainingsRunService implements ITrainingsRunService {

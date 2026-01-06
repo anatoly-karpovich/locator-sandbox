@@ -1,9 +1,6 @@
 import { injectable } from "inversify";
 import { chromium, Page } from "playwright";
-
-export interface IPlaywrightRunner {
-  run<T>(fn: (page: Page) => Promise<T>): Promise<T>;
-}
+import { IPlaywrightRunner } from "../types";
 
 @injectable()
 export class PlaywrightRunner implements IPlaywrightRunner {

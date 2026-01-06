@@ -1,18 +1,12 @@
 import { inject, injectable } from "inversify";
 import { CompareResult, ExpectationCheck, Expectations, Task } from "../tasks/types";
-import { ISolutionsHandler } from "../tasks/solutionsHandler";
-import { IUsageSpecification } from "../usageSpec/usageSpecification";
 import { LocatorHandler } from "./locatorHandler";
 import { ITrainingsRunSubmitSolutionResponseDTO } from "../../dto/trainingRuns.dto";
-import { IPlaywrightRunner } from "../playwright/playwright.runner";
 import { AstParser } from "../ast-parser/AstParser";
 import { AstError } from "../../error/astError";
 import { ParsedPlan } from "../ast-parser";
 import { TYPES } from "../../container/types";
-
-export interface ILocatorExecutor {
-  execute(task: Task, payload: string): Promise<ITrainingsRunSubmitSolutionResponseDTO>;
-}
+import { ILocatorExecutor, IPlaywrightRunner, IUsageSpecification, ISolutionsHandler } from "../types";
 
 @injectable()
 export class LocatorExecutor implements ILocatorExecutor {

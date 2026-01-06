@@ -1,13 +1,10 @@
 import { injectable } from "inversify";
 import { Locator } from "playwright";
 import { Expectations, ExpectationsValues } from "../tasks/types";
+import { ILocatorStateHandler } from "../types";
 
 interface LocatorState
   extends Record<keyof Required<Expectations>, (locator: Locator) => Promise<ExpectationsValues>> {}
-
-export interface ILocatorStateHandler extends LocatorState {
-  getActual(locator: Locator, expectations: Expectations): Promise<Record<keyof Expectations, ExpectationsValues>>;
-}
 
 @injectable()
 export class LocatorStateHandler implements ILocatorStateHandler {

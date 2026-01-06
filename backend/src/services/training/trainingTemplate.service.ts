@@ -1,17 +1,10 @@
 import { inject, injectable } from "inversify";
 import { ITrainingTemplate } from "../../core/training/types";
-import { ITaskService } from "../task/task.service";
-import { IModuleRepository } from "../../repositories/module.repo";
-import { ISectionRepository } from "../../repositories/section.repo";
-import { ITrainingTemplateRepository } from "../../repositories/trainingTemplates.repo";
+import { ITaskService } from "../types";
+import { IModuleRepository, ISectionRepository, ITrainingTemplateRepository } from "../../repositories";
 import { TrainingCatalogResponseDTO } from "../../dto/trainings.dto";
 import { TYPES } from "../../container/types";
-
-export interface ITrainingTemplateService {
-  getById(id: string): ITrainingTemplate;
-  validateTemplatesOnStartup(): void;
-  getCatalogView(): TrainingCatalogResponseDTO;
-}
+import { ITrainingTemplateService } from "../types";
 
 @injectable()
 export class TrainingTemplateService implements ITrainingTemplateService {

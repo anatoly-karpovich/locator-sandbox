@@ -1,16 +1,9 @@
 import { inject, injectable } from "inversify";
 import { Locator } from "playwright";
 import { CompareResult, ExpectationCheck, Expectations, ExpectationsValues, Task } from "./types";
-import { ILocatorStateHandler, LocatorStateHandler } from "../locator/locatorStateHandler";
+import { LocatorStateHandler } from "../locator/locatorStateHandler";
 import { TYPES } from "../../container/types";
-
-export interface ISolutionsHandler {
-  runTask(task: Task, locator: Locator): Promise<CompareResult>;
-  compareWithExpectations(
-    actual: Record<keyof Expectations, ExpectationsValues>,
-    expected: Expectations
-  ): CompareResult;
-}
+import { ILocatorStateHandler, ISolutionsHandler } from "../types";
 
 @injectable()
 export class SolutionsHandler implements ISolutionsHandler {

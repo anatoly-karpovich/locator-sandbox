@@ -15,19 +15,24 @@ import {
   ITrainingTemplateRepository,
   ITrainingRunsRepository,
 } from "../repositories";
-import { ITaskService, TaskService, ITaskAggregatedService, TaskAggregatedService } from "../services";
 import {
-  ITrainingTemplateService,
+  TaskService,
+  ITaskService,
+  TaskAggregatedService,
+  ITaskAggregatedService,
   TrainingTemplateService,
-  ITrainingsRunService,
+  ITrainingTemplateService,
   TrainingsRunService,
+  ITrainingsRunService,
+  PlaygroundService,
+  IPlaygroundService,
 } from "../services";
-import { IPlaygroundService, PlaygroundService } from "../services/playground.service";
-import { IPlaywrightRunner, PlaywrightRunner } from "../core/playwright/playwright.runner";
-import { IUsageSpecification, UsageSpecification } from "../core/usageSpec/usageSpecification";
-import { ILocatorExecutor, LocatorExecutor } from "../core/locator/locatorExecutor";
-import { ILocatorStateHandler, LocatorStateHandler } from "../core/locator/locatorStateHandler";
-import { ISolutionsHandler, SolutionsHandler } from "../core/tasks/solutionsHandler";
+import { PlaywrightRunner } from "../core/playwright/playwright.runner";
+import { UsageSpecification } from "../core/usageSpec/usageSpecification";
+import { LocatorExecutor } from "../core/locator/locatorExecutor";
+import { LocatorStateHandler } from "../core/locator/locatorStateHandler";
+import { SolutionsHandler } from "../core/tasks/solutionsHandler";
+import { IPlaywrightRunner, IUsageSpecification, ILocatorExecutor, ILocatorStateHandler, ISolutionsHandler } from "../core/types";
 import { TasksController, TrainingsController, TrainingRunsController, PlaygroundController, SolutionController } from "../controllers";
 
 const container = new Container({

@@ -1,12 +1,7 @@
 import { injectable } from "inversify";
 import { sections } from "../db/sections";
 import { SectionId } from "../core/tasks/types";
-
-export interface ISectionRepository {
-  getById(id: SectionId): typeof sections[number] | undefined;
-  getByModuleId(moduleId: SectionId): typeof sections;
-  getAll(): typeof sections;
-}
+import { ISectionRepository } from "./types";
 
 @injectable()
 export class SectionRepository implements ISectionRepository {

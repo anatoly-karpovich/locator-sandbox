@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { Request, Response } from "express";
 import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "../dto/playground.dto";
-import { IPlaygroundService } from "../services/playground.service";
+import { IPlaygroundService } from "../services";
 import { ErrorResponseDTO } from "../dto/common.dto";
 import { HTTP_CODES } from "../core/httpCodes";
 import { TYPES } from "../container/types";

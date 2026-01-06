@@ -1,28 +1,10 @@
 import { inject, injectable } from "inversify";
-import { ModuleId, Task, SectionId, TopicId, Difficulty } from "../../core/tasks/types";
+import { ModuleId, Task, SectionId, TopicId } from "../../core/tasks/types";
 import { ITaskCatalogResponse } from "../../core/training/types";
-import { ITopicRepository } from "../../repositories/topic.repo";
-import { ISectionRepository } from "../../repositories/section.repo";
-import { IModuleRepository } from "../../repositories/module.repo";
-import { ITaskRepository } from "../../repositories/tasks.repo";
-import { ITaskService } from "./task.service";
+import { ITopicRepository, ISectionRepository, IModuleRepository, ITaskRepository } from "../../repositories";
+import { ITaskService } from "../types";
 import { TYPES } from "../../container/types";
-
-type TaskQueryFilter = {
-  difficulty?: Difficulty;
-  moduleId?: ModuleId;
-  sectionId?: SectionId;
-  topicId?: TopicId;
-  limit?: number;
-};
-
-export interface ITaskAggregatedService {
-  getCatalog(): ITaskCatalogResponse;
-  query(filter: TaskQueryFilter): Task[];
-  getByModule(moduleId: ModuleId): Task[];
-  getBySection(sectionId: SectionId): Task[];
-  getByTopic(topicId: TopicId): Task[];
-}
+import { ITaskAggregatedService, TaskQueryFilter } from "../types";
 
 @injectable()
 export class TaskAggregatedService implements ITaskAggregatedService {

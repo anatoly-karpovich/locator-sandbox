@@ -3,15 +3,12 @@ import { inject, injectable } from "inversify";
 import { LocatorHandler } from "../core/locator/locatorHandler";
 import { ExpectationCheck, CompareResult } from "../core/tasks/types";
 import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "../dto/playground.dto";
-import { IPlaywrightRunner } from "../core/playwright/playwright.runner";
 import { AstParser } from "../core/ast-parser";
 import { TYPES } from "../container/types";
+import { IPlaygroundService } from "./types";
+import { IPlaywrightRunner } from "../core/types";
 
 const MAX_ELEMENTS_PREVIEW = 10;
-
-export interface IPlaygroundService {
-  submit(dto: PlaygroundSubmitRequestDTO): Promise<IPlaygroundSubmitResponseDTO>;
-}
 
 @injectable()
 export class PlaygroundService implements IPlaygroundService {

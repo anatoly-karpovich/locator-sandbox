@@ -1,11 +1,7 @@
 import { injectable } from "inversify";
 import { ModuleId } from "../core/tasks/types";
 import { modules } from "../db/modules";
-
-export interface IModuleRepository {
-  getById(id: ModuleId): typeof modules[number] | undefined;
-  getAll(): typeof modules;
-}
+import { IModuleRepository } from "./types";
 
 @injectable()
 export class ModuleRepository implements IModuleRepository {

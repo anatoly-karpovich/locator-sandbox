@@ -1,15 +1,8 @@
 import { inject, injectable } from "inversify";
 import { Difficulty, Task, TaskId, TopicId } from "../../core/tasks/types";
-import { ITaskRepository } from "../../repositories/tasks.repo";
+import { ITaskRepository } from "../../repositories";
 import { TYPES } from "../../container/types";
-
-export interface ITaskService {
-  getById(taskId: TaskId): Task | undefined;
-  getManyByIds(taskIds: TaskId[]): Task[];
-  getByDifficulty(difficulty: Difficulty): Task[];
-  getByTopic(topicId: TopicId): Task[];
-  getAll(): Task[];
-}
+import { ITaskService } from "../types";
 
 @injectable()
 export class TaskService implements ITaskService {
