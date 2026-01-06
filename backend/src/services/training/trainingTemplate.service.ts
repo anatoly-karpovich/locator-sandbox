@@ -28,7 +28,7 @@ export class TrainingTemplateService implements ITrainingTemplateService {
 
     for (const template of templates) {
       for (const taskId of template.taskIds) {
-        this.taskService.getById(taskId); // Ñý¥<Ññ¥?Ñó¥?Ñ÷¥' Ñó¥^Ñ÷ÑñÑ§¥Ÿ Ñæ¥?Ñ¯Ñ÷ Ñ«ÑæÑýÑøÑ¯Ñ÷ÑïÑ«Ñó
+        this.taskService.getById(taskId);
       }
     }
   }
