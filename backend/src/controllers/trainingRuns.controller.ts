@@ -1,21 +1,24 @@
+import { inject, injectable } from "inversify";
 import { Request, Response } from "express";
 
-import { TrainingsRunService, TrainingTemplateService } from "../services";
-import { HTTP_CODES } from "../core/httpCodes";
+import { ITrainingsRunService, ITrainingTemplateService } from "@services/index.js";
+import { HTTP_CODES } from "@core/httpCodes.js";
 import {
   StartFixedTrainingRequest,
   ITrainingSubmitSolutionRequestDTO,
   StartTrainingRequestDTO,
   StartTrainingResponseDTO,
   ITrainingsRunSubmitSolutionResponseDTO,
-} from "../dto/trainingRuns.dto";
-import { ErrorResponseDTO } from "../dto/common.dto";
-import { TrainingCatalogResponseDTO } from "../dto/trainings.dto";
+} from "@dto/trainingRuns.dto.js";
+import { ErrorResponseDTO } from "@dto/common.dto.js";
+import { TrainingCatalogResponseDTO } from "@dto/trainings.dto.js";
+import { TYPES } from "../container/types.js";
 
+@injectable()
 export class TrainingRunsController {
   constructor(
-    private trainingTemplateService: TrainingTemplateService = new TrainingTemplateService(),
-    private trainingsRunService: TrainingsRunService = new TrainingsRunService()
+    @inject(TYPES.TrainingTemplateService) private trainingTemplateService: ITrainingTemplateService,
+    @inject(TYPES.TrainingsRunService) private trainingsRunService: ITrainingsRunService
   ) {}
   startTraining(
     req: Request<{}, {}, StartTrainingRequestDTO>,

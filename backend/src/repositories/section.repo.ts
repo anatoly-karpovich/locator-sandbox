@@ -1,7 +1,10 @@
-import { sections } from "../db/sections";
-import { SectionId } from "../core/tasks/types";
+import { injectable } from "inversify";
+import { sections } from "../db/sections.js";
+import { SectionId } from "@core/tasks/types.js";
+import { ISectionRepository } from "@repositories/types.js";
 
-export class SectionRepository {
+@injectable()
+export class SectionRepository implements ISectionRepository {
   getById(id: SectionId) {
     return sections.find((s) => s.id === id);
   }

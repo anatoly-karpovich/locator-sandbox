@@ -1,15 +1,19 @@
-import { Difficulty, Task, TaskId, TopicId } from "../../core/tasks/types";
-import { TaskRepository } from "../../repositories/tasks.repo";
+import { inject, injectable } from "inversify";
+import { Difficulty, Task, TaskId, TopicId } from "@core/tasks/types.js";
+import { ITaskRepository } from "@repositories/index.js";
+import { TYPES } from "../../container/types.js";
+import { ITaskService } from "@services/types.js";
 
-export class TaskService {
-  constructor(private taskRepository: TaskRepository = new TaskRepository()) {}
-  getById(taskId: TaskId): Task {
-    const task = this.taskRepository.getById(taskId);
-    return task;
+@injectable()
+export class TaskService implements ITaskService {
+  constructor(@inject(TYPES.TaskRepository) private taskRepository: ITaskRepository) {}
+
+  getById(taskId: TaskId): Task | undefined {
+    return this.taskRepository.getById(taskId);
   }
 
   getManyByIds(taskIds: TaskId[]): Task[] {
-    return taskIds.map((id) => this.getById(id));
+    return taskIds.map((id) => this.getById(id)).filter(Boolean) as Task[];
   }
 
   getByDifficulty(difficulty: Difficulty): Task[] {

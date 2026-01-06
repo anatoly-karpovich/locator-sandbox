@@ -1,16 +1,17 @@
 import { Router } from "express";
-import { SolutionController } from "../controllers";
-import { solutionsSubmitMiddleware } from "../middlewares/solutions.middleware";
-import { validateLocatorPayloadMiddleware } from "../middlewares/locatorPayload.middleware";
+import { SolutionController } from "@controllers/index.js";
+import { solutionsSubmitMiddleware } from "@middlewares/solutions.middleware.js";
+import { validateLocatorPayloadMiddleware } from "@middlewares/locatorPayload.middleware.js";
+import { container, TYPES } from "../container/index.js";
 
 const solutionsRouter = Router();
-const solutionsController = new SolutionController();
+const solutionsController = container.get<SolutionController>(TYPES.SolutionController);
 
 solutionsRouter.post(
   "/solutions",
   solutionsSubmitMiddleware,
   validateLocatorPayloadMiddleware,
-  solutionsController.submit
+  solutionsController.submit.bind(solutionsController)
 );
 
 export default solutionsRouter;

@@ -1,4 +1,4 @@
-import { TrainingCatalogItem } from "../core/training/types";
+import { TrainingCatalogItem } from "@core/training/types.js";
 
 export interface TrainingCatalogResponseDTO {
   modules: Array<{

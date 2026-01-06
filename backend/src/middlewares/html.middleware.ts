@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { ErrorResponseDTO } from "../dto/common.dto";
-import { HTTP_CODES } from "../core/httpCodes";
-import { validateHtmlContent, HtmlValidationError } from "../core/validation/htmlValidator";
-import { PlaygroundSubmitRequestDTO } from "../dto/playground.dto";
+import { ErrorResponseDTO } from "@dto/common.dto.js";
+import { HTTP_CODES } from "@core/httpCodes.js";
+import { validateHtmlContent, HtmlValidationError } from "@core/validation/htmlValidator.js";
+import { PlaygroundSubmitRequestDTO } from "@dto/playground.dto.js";
 
 export function validateHtmlContentMiddleware(
   req: Request<{}, {}, PlaygroundSubmitRequestDTO>,

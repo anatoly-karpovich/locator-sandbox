@@ -1,10 +1,13 @@
+import { injectable } from "inversify";
 import { Locator } from "playwright";
-import { Expectations, ExpectationsValues } from "../tasks/types";
+import { Expectations, ExpectationsValues } from "@core/tasks/types.js";
+import { ILocatorStateHandler } from "@core/types.js";
 
 interface LocatorState
   extends Record<keyof Required<Expectations>, (locator: Locator) => Promise<ExpectationsValues>> {}
 
-export class LocatorStateService implements LocatorState {
+@injectable()
+export class LocatorStateHandler implements ILocatorStateHandler {
   async getActual(
     locator: Locator,
     expectations: Expectations

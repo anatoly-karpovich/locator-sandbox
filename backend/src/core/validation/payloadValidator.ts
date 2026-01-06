@@ -1,5 +1,5 @@
-import { AstParser } from "../ast-parser";
-import { ParsedPlan } from "../ast-parser/types";
+import { AstParser } from "@core/ast-parser/index.js";
+import { ParsedPlan } from "@core/ast-parser/types.js";
 
 export class LocatorPayloadValidationError extends Error {
   constructor(message: string) {

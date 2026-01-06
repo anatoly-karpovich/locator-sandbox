@@ -1,5 +1,5 @@
-import { studyMaterials } from "../studyMaterials/data";
-import { Task } from "../types";
+import { studyMaterials } from "@core/tasks/studyMaterials/data.js";
+import { Task } from "@core/tasks/types.js";
 
 export const getByRoleTasks: Task[] = [
   {

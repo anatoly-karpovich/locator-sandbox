@@ -1,7 +1,10 @@
-import { Difficulty, TaskId, TopicId } from "../core/tasks/types";
-import { tasks } from "../db/tasks";
+import { injectable } from "inversify";
+import { TaskId, TopicId, Difficulty } from "@core/tasks/types.js";
+import { tasks } from "../db/tasks.js";
+import { ITaskRepository } from "@repositories/types.js";
 
-export class TaskRepository {
+@injectable()
+export class TaskRepository implements ITaskRepository {
   private table = tasks;
   getAll() {
     return this.table;

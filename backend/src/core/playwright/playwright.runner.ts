@@ -1,6 +1,9 @@
+import { injectable } from "inversify";
 import { chromium, Page } from "playwright";
+import { IPlaywrightRunner } from "@core/types.js";
 
-export class PlaywrightRunner {
+@injectable()
+export class PlaywrightRunner implements IPlaywrightRunner {
   async run<T>(fn: (page: Page) => Promise<T>): Promise<T> {
     const browser = await chromium.launch();
     const page = await browser.newPage();

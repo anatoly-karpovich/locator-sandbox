@@ -1,4 +1,4 @@
-import { IModule } from "../core/tasks/types";
+import { IModule } from "@core/tasks/types.js";
 
 export const modules: IModule[] = [
   {

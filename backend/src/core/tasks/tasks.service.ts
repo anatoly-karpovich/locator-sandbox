@@ -1,7 +1,7 @@
-import { getByPlaceholderTasks } from "./getBy/getByPlaceholder";
-import { getByRoleTasks } from "./getBy/getByRole";
-import { getByTextTasks } from "./getBy/getByText";
-import { Difficulty, Module, Task, TaskId } from "./types";
+import { getByPlaceholderTasks } from "@core/tasks/getBy/getByPlaceholder.js";
+import { getByRoleTasks } from "@core/tasks/getBy/getByRole.js";
+import { getByTextTasks } from "@core/tasks/getBy/getByText.js";
+import { Difficulty, Module, Task, TaskId } from "@core/tasks/types.js";
 
 class TasksService {
   private tasks: Task[] = [...getByTextTasks, ...getByPlaceholderTasks, ...getByRoleTasks];

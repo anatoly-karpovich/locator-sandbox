@@ -1,4 +1,4 @@
-import { ITrainingsRunSubmitSolutionResponseDTO } from "./trainingRuns.dto";
+import { ITrainingsRunSubmitSolutionResponseDTO } from "@dto/trainingRuns.dto.js";
 
 export interface PlaygroundSubmitRequestDTO {
   html: string;

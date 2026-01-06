@@ -1,6 +1,9 @@
-import { trainings } from "../db/trainings";
+import { injectable } from "inversify";
+import { trainings } from "../db/trainings.js";
+import { ITrainingTemplateRepository } from "@repositories/types.js";
 
-export class TrainingTemplateRepository {
+@injectable()
+export class TrainingTemplateRepository implements ITrainingTemplateRepository {
   private table = trainings;
 
   getAll() {

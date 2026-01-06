@@ -1,6 +1,6 @@
 import { Page, Locator } from "playwright";
-import { LocatorOptions, ParsedPlan, Step } from "../ast-parser";
-import { LocatorBuilderError } from "../../error/locatorBuild.error";
+import { LocatorOptions, ParsedPlan, Step } from "@core/ast-parser/index.js";
+import { LocatorBuilderError } from "../../error/locatorBuild.error.js";
 
 export class LocatorBuilder {
   constructor(private readonly page: Page) {}

@@ -1,24 +1,21 @@
-import { ModuleId, Task, SectionId, TopicId, Difficulty } from "../../core/tasks/types";
-import { ITaskCatalogResponse } from "../../core/training/types";
-import { TopicRepository, SectionRepository, ModuleRepository, TaskRepository } from "../../repositories";
-import { TaskService } from "./task.service";
+import { inject, injectable } from "inversify";
+import { ModuleId, Task, SectionId, TopicId } from "@core/tasks/types.js";
+import { ITaskCatalogResponse } from "@core/training/types.js";
+import { ITopicRepository, ISectionRepository, IModuleRepository, ITaskRepository } from "@repositories/index.js";
+import { ITaskService } from "@services/types.js";
+import { TYPES } from "../../container/types.js";
+import { ITaskAggregatedService, TaskQueryFilter } from "@services/types.js";
 
-type TaskQueryFilter = {
-  difficulty?: Difficulty;
-  moduleId?: ModuleId;
-  sectionId?: SectionId;
-  topicId?: TopicId;
-  limit?: number;
-};
-
-export class TaskAggregatedService {
+@injectable()
+export class TaskAggregatedService implements ITaskAggregatedService {
   constructor(
-    private taskService: TaskService = new TaskService(),
-    private sectionRepository: SectionRepository = new SectionRepository(),
-    private moduleRepository: ModuleRepository = new ModuleRepository(),
-    private tasksRepository: TaskRepository = new TaskRepository(),
-    private topicsRepository: TopicRepository = new TopicRepository()
+    @inject(TYPES.TaskService) private taskService: ITaskService,
+    @inject(TYPES.SectionRepository) private sectionRepository: ISectionRepository,
+    @inject(TYPES.ModuleRepository) private moduleRepository: IModuleRepository,
+    @inject(TYPES.TaskRepository) private tasksRepository: ITaskRepository,
+    @inject(TYPES.TopicRepository) private topicsRepository: ITopicRepository
   ) {}
+
   getCatalog(): ITaskCatalogResponse {
     const modules = this.moduleRepository.getAll();
 

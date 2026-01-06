@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { TrainingRunsController } from "../controllers";
-import { validateLocatorPayloadMiddleware } from "../middlewares/locatorPayload.middleware";
+import { TrainingRunsController } from "@controllers/index.js";
+import { validateLocatorPayloadMiddleware } from "@middlewares/locatorPayload.middleware.js";
+import { container, TYPES } from "../container/index.js";
 
 const trainingsRunsRouter = Router();
-const trainingsRunsController = new TrainingRunsController();
+const trainingsRunsController = container.get<TrainingRunsController>(TYPES.TrainingRunsController);
 
 trainingsRunsRouter.post("/training-runs/start", trainingsRunsController.startTraining.bind(trainingsRunsController));
 trainingsRunsRouter.post(

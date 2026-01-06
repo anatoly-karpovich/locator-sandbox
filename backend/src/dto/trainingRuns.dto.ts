@@ -1,5 +1,5 @@
-import { CompareResult, Difficulty, TaskId } from "../core/tasks/types";
-import { TrainingTemplateId, ITrainingRun } from "../core/training/types";
+import { CompareResult, Difficulty, TaskId } from "@core/tasks/types.js";
+import { TrainingTemplateId, ITrainingRun } from "@core/training/types.js";
 
 export interface StartFixedTrainingRequest {
   trainingTemplateId: TrainingTemplateId;

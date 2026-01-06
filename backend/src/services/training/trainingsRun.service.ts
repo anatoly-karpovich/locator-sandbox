@@ -1,26 +1,31 @@
-import { TopicId } from "../../core/tasks/types";
-import { ITrainingRun, TrainingRunId } from "../../core/training/types";
-import { TopicRepository, TrainingRunsRepository } from "../../repositories";
-import { TaskService } from "../task/task.service";
-import { TrainingTemplateService } from "./trainingTemplate.service";
-import { LocatorExecutionService } from "../../core/locator/execute.service";
-import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "../../core/training/enums";
-import { ITrainingSubmitSolutionRequestDTO } from "../../dto/trainingRuns.dto";
+import { inject, injectable } from "inversify";
+import { TopicId } from "@core/tasks/types.js";
+import { ITrainingRun, TrainingRunId } from "@core/training/types.js";
+import { ITopicRepository, ITrainingRunsRepository } from "@repositories/index.js";
+import { ITaskService, ITrainingTemplateService, ITrainingsRunService } from "@services/types.js";
+import { ILocatorExecutor } from "@core/types.js";
+import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "@core/training/enums.js";
+import {
+  ITrainingSubmitSolutionRequestDTO,
+  ITrainingsRunSubmitSolutionResponseDTO,
+} from "@dto/trainingRuns.dto.js";
+import { TYPES } from "../../container/types.js";
 
-export class TrainingsRunService {
+@injectable()
+export class TrainingsRunService implements ITrainingsRunService {
   constructor(
-    private locatorExecutionService: LocatorExecutionService = new LocatorExecutionService(),
-    private trainingTemplateService: TrainingTemplateService = new TrainingTemplateService(),
-    private taskService: TaskService = new TaskService(),
-    private trainingRunsRepository: TrainingRunsRepository = new TrainingRunsRepository(),
-    private topicsRepository: TopicRepository = new TopicRepository()
+    @inject(TYPES.LocatorExecutor) private locatorExecutionService: ILocatorExecutor,
+    @inject(TYPES.TrainingTemplateService) private trainingTemplateService: ITrainingTemplateService,
+    @inject(TYPES.TaskService) private taskService: ITaskService,
+    @inject(TYPES.TrainingRunsRepository) private trainingRunsRepository: ITrainingRunsRepository,
+    @inject(TYPES.TopicRepository) private topicsRepository: ITopicRepository
   ) {}
+
   startFixedTraining(templateId: string): ITrainingRun {
     const template = this.trainingTemplateService.getById(templateId);
 
     const tasks = this.taskService.getManyByIds(template.taskIds);
 
-    // 1️⃣ группируем таски по topicId
     const tasksByTopic = new Map<TopicId, typeof tasks>();
 
     for (const task of tasks) {
@@ -30,7 +35,6 @@ export class TrainingsRunService {
       tasksByTopic.get(task.topicId)!.push(task);
     }
 
-    // 2️⃣ собираем topics DTO
     const topics = Array.from(tasksByTopic.entries()).map(([topicId, topicTasks]) => {
       const topic = this.topicsRepository.getById(topicId);
 
@@ -64,26 +68,10 @@ export class TrainingsRunService {
     return run;
   }
 
-  // startCustomTraining(params: { difficulty?: string; scope?: Partial<Task["scope"]>; limit: number }): ITrainingSet {
-  //   const tasks = taskService.query({
-  //     difficulty: params.difficulty,
-  //     scope: params.scope,
-  //     limit: params.limit,
-  //   });
-
-  //   if (tasks.length === 0) {
-  //     throw new Error("No tasks found for given parameters");
-  //   }
-
-  //   return {
-  //     id: generateUUID(),
-  //     source: "custom",
-  //     taskIds: tasks.map((t) => t.id),
-  //     createdAt: new Date().toISOString(),
-  //   };
-  // }
-
-  async handleSolution(trainingRunIn: TrainingRunId, dto: ITrainingSubmitSolutionRequestDTO) {
+  async handleSolution(
+    trainingRunIn: TrainingRunId,
+    dto: ITrainingSubmitSolutionRequestDTO
+  ): Promise<ITrainingsRunSubmitSolutionResponseDTO> {
     const run = this.trainingRunsRepository.getById(trainingRunIn);
     if (!run) throw new Error(`Training run "${trainingRunIn}" not found`);
 
@@ -131,47 +119,4 @@ export class TrainingsRunService {
       run.status = TRAINING_RUN_STATUS.IN_PROGRESS;
     }
   }
-  /*
-  handleSolution(dto) {
-  const run = runRepo.getById(dto.runId);
-  if (!run) throw new Error("Run not found");
-
-  const taskRun = run.tasks.find(t => t.taskId === dto.taskId);
-  if (!taskRun) throw new Error("Task not in run");
-
-  // 1. Execution
-  const executionResult = locatorExecutionService.execute(task, dto.payload);
-
-  // 2. Usage validation
-  const usageResult = usageValidationService.validate(task, dto.payload);
-
-  // 3. Итог
-  const passed = executionResult.passed && usageResult.passed;
-
-  // 4. Обновляем состояние
-  taskRun.attempts += 1;
-  taskRun.lastSubmittedAt = now();
-
-  if (passed) {
-    taskRun.status = "passed";
-  } else {
-    taskRun.status =
-      taskRun.status === "not_started"
-        ? "in_progress"
-        : "failed";
-  }
-
-  run.updatedAt = now();
-
-  // 5. Persist
-  runRepo.save(run);
-
-  return {
-    passed,
-    executionResult,
-    usageResult,
-    taskStatus: taskRun.status,
-  };
-}
-  */
 }

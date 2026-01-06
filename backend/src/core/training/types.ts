@@ -1,5 +1,5 @@
-import { Difficulty, ModuleId, SectionId, TaskId, TopicId } from "../tasks/types";
-import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "./enums";
+import { Difficulty, ModuleId, SectionId, TaskId, TopicId } from "@core/tasks/types.js";
+import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "@core/training/enums.js";
 
 export type TrainingRunId = string; // UUID
 

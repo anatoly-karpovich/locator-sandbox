@@ -1,20 +1,24 @@
 import { Locator } from "playwright";
-import { LocatorService } from "../core/locator/locator.service";
-import { ExpectationCheck, CompareResult } from "../core/tasks/types";
-import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "../dto/playground.dto";
-import { PlaywrightRunner } from "../core/playwright/playwright.runner";
-import { AstParser } from "../core/ast-parser";
+import { inject, injectable } from "inversify";
+import { LocatorHandler } from "@core/locator/locatorHandler.js";
+import { ExpectationCheck, CompareResult } from "@core/tasks/types.js";
+import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "@dto/playground.dto.js";
+import { AstParser } from "@core/ast-parser/index.js";
+import { TYPES } from "../container/types.js";
+import { IPlaygroundService } from "@services/types.js";
+import { IPlaywrightRunner } from "@core/types.js";
 
 const MAX_ELEMENTS_PREVIEW = 10;
 
-export class PlaygroundService {
-  constructor(private readonly playwrightRunner = new PlaywrightRunner()) {}
+@injectable()
+export class PlaygroundService implements IPlaygroundService {
+  constructor(@inject(TYPES.PlaywrightRunner) private readonly playwrightRunner: IPlaywrightRunner) {}
 
   async submit(dto: PlaygroundSubmitRequestDTO): Promise<IPlaygroundSubmitResponseDTO> {
     return this.playwrightRunner.run(async (page) => {
       await page.setContent(dto.html);
 
-      const locatorService = new LocatorService(page);
+      const locatorService = new LocatorHandler(page);
       const parsedPlan = AstParser.parse(dto.payload);
       const locator = locatorService.createLocator(parsedPlan);
 
