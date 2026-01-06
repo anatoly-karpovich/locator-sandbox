@@ -58,7 +58,8 @@ export function readNonNegativeInt(node: t.Expression, ctx: string): number {
 
 export function isTypeMatch(v: Literal, expected: AllowedType): boolean {
   switch (expected) {
-    case "string": return typeof v === "string";
+    case "string":
+    case "string|regex": return typeof v === "string"; // in case of regex, it will be converted to string in readLiteral
     case "number": return typeof v === "number";
     case "boolean": return typeof v === "boolean";
     case "null": return v === null;
@@ -99,6 +100,7 @@ function readLiteral(node: t.Expression): Literal {
   if (t.isStringLiteral(node)) return node.value;
   if (t.isNumericLiteral(node)) return node.value;
   if (t.isBooleanLiteral(node)) return node.value;
+  if (t.isRegExpLiteral(node)) return new RegExp(node.pattern, node.flags).toString();
   if (t.isNullLiteral(node)) return null;
 
   if (t.isArrayExpression(node)) {
@@ -130,6 +132,6 @@ function readLiteral(node: t.Expression): Literal {
     return obj;
   }
 
-  // Disallow RegExpLiteral, TemplateLiteral, Function, etc.
+  // Disallow TemplateLiteral, Function, etc.
   throw new AstError("Only literal arguments are allowed (string/number/boolean/null/object/array)");
 }

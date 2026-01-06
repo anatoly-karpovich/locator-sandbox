@@ -108,7 +108,7 @@ export class UsageSpecification {
     expectedOptions: Record<string, unknown>
   ): UsageCheckResult["details"]["options"] {
     const opts = actualOptions as Record<string, unknown> | undefined;
-    const passed = Object.entries(expectedOptions).every(([key, value]) => opts?.[key] === value);
+    const passed = Object.entries(expectedOptions).every(([key, value]) => opts?.[key]?.toString() === value?.toString());
     return {
       passed,
       expected: `{ ${Object.entries(expectedOptions)

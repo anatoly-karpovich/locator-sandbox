@@ -76,7 +76,8 @@ export type AllowedType =
   | "boolean"
   | "null"
   | "array"
-  | "object";
+  | "object"
+  | "string|regex";
 
 export type SchemaAtom = `${AllowedType}${"" | "?"}`; // e.g. "boolean?" means optional
 
