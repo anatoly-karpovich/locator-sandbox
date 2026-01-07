@@ -108,11 +108,20 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
           {catalog?.modules.map((module) =>
             module.sections.map((section) => (
               <Box key={section.id} id={`section-${section.id}`} sx={{ mb: 2, scrollMarginTop: 96 }}>
-                <Typography variant="h5" fontWeight={700} sx={{ mb: 1, px: { xs: 0, md: 1 } }}>
-                  {module.title} / {section.title}
-                </Typography>
-
-                <TrainingsGrid trainings={section.trainings} onStart={handleStart} />
+                <Box
+                  sx={{
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    bgcolor: "background.paper",
+                    p: { xs: 2, md: 3 },
+                  }}
+                >
+                  <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
+                    {module.title} / {section.title}
+                  </Typography>
+                  <TrainingsGrid trainings={section.trainings} onStart={handleStart} />
+                </Box>
               </Box>
             ))
           )}
