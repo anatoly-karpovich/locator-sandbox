@@ -315,7 +315,16 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   );
 
   const renderChecksPanel = () => (
-    <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, border: 1, borderColor: "divider" }}>
+    <Box
+      sx={{
+        bgcolor: "background.paper",
+        borderRadius: 2,
+        padding: 2,
+        border: 1,
+        borderColor: "divider",
+        boxShadow: { xs: "none", md: 0 },
+      }}
+    >
       <Stack direction="row" alignItems="center" spacing={2} marginBottom={1}>
         <Typography variant="h6">Checks</Typography>
       </Stack>
@@ -372,7 +381,16 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
         : []) || [];
 
     return (
-      <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, border: 1, borderColor: "divider" }}>
+      <Box
+        sx={{
+          bgcolor: "background.paper",
+          borderRadius: 2,
+          padding: 2,
+          border: 1,
+          borderColor: "divider",
+          boxShadow: { xs: "none", md: 0 },
+        }}
+      >
         <Typography variant="h6" gutterBottom>
           Explanation
         </Typography>
@@ -397,7 +415,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   const currentTaskLabel = currentTaskData?.title ?? "No task";
 
   return (
-    <Box minHeight="100vh" sx={{ bgcolor: "background.default" }}>
+    <Box minHeight="100vh">
       <HeaderBar
         themeMode={themeMode}
         onToggleTheme={onToggleTheme}
@@ -456,6 +474,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                     border: 1,
                     borderColor: "divider",
                     overflow: "hidden",
+                    boxShadow: { xs: "none", md: 0 },
                   }}
                 >
                   <Typography variant="h6" gutterBottom>
@@ -473,6 +492,8 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                       whiteSpace: "pre-wrap",
                       maxHeight: 420,
                       overflow: "auto",
+                      border: "1px solid",
+                      borderColor: "divider",
                     }}
                   >
                     {currentTaskData.html}
@@ -518,6 +539,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
+                    boxShadow: { xs: "none", md: 0 },
                   }}
                 >
                   <Typography variant="h6" gutterBottom>
@@ -527,7 +549,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                   <Box
                     sx={{
                       padding: 1,
-                      bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : theme.palette.background.default),
+                      bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#edf0f7"),
                       borderRadius: 1,
                       border: "1px dashed",
                       borderColor: "divider",

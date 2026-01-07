@@ -126,7 +126,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
   };
 
   return (
-    <Box minHeight="100vh" sx={{ bgcolor: "background.default" }}>
+    <Box minHeight="100vh">
       <HeaderBar
         themeMode={themeMode}
         onToggleTheme={onToggleTheme}
@@ -171,6 +171,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 minHeight: 320,
                 maxHeight: 520,
                 overflow: "hidden",
+                boxShadow: { xs: "none", md: 0 },
               }}
             >
               <Typography variant="h6" gutterBottom>
@@ -188,7 +189,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 InputProps={{
                   sx: {
                     fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
-                    bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "background.paper"),
+                    bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#f3f5fa"),
                     "& textarea": {
                       whiteSpace: "pre",
                       overflow: "auto",
@@ -238,6 +239,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
+                boxShadow: { xs: "none", md: 0 },
               }}
             >
               <Typography variant="h6" gutterBottom>
@@ -247,7 +249,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
               <Box
                 sx={{
                   padding: 1,
-                  bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : theme.palette.background.default),
+                  bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#edf0f7"),
                   borderRadius: 1,
                   border: "1px dashed",
                   borderColor: "divider",
@@ -261,7 +263,10 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
             </Paper>
           </Box>
 
-          <Paper variant="outlined" sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider" }}>
+          <Paper
+            variant="outlined"
+            sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider", boxShadow: { xs: "none", md: 0 } }}
+          >
             <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="flex-start">
               <TextField
                 fullWidth
@@ -287,7 +292,10 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
           </Paper>
 
           <Stack spacing={2} marginBottom={4}>
-            <Paper variant="outlined" sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider" }}>
+            <Paper
+              variant="outlined"
+              sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider", boxShadow: { xs: "none", md: 0 } }}
+            >
               <Stack direction="row" alignItems="center" spacing={1} marginBottom={1}>
                 <Typography variant="h6">Result</Typography>
                 <Chip
@@ -311,7 +319,10 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
             {renderChecks()}
 
             {result?.explanation && result.explanation.length > 0 && (
-              <Paper variant="outlined" sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider" }}>
+              <Paper
+                variant="outlined"
+                sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider", boxShadow: { xs: "none", md: 0 } }}
+              >
                 <Typography variant="h6" gutterBottom>
                   Explanation
                 </Typography>
