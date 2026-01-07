@@ -1,11 +1,8 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Box, Stack, Typography } from "@mui/material";
 import PlaywrightModes from "./PlaywrightModes";
 import { PlaywrightExamples } from "./PlaywrightExamples";
 
 export function PlaywrightSection() {
-  const navigate = useNavigate();
-
   return (
     <Box
       id="playwright"
@@ -20,29 +17,13 @@ export function PlaywrightSection() {
       }}
     >
       <Stack spacing={4}>
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          spacing={2}
-          alignItems={{ xs: "flex-start", md: "center" }}
-          justifyContent="space-between"
-        >
-          <Box>
-            <Typography variant="h3">Playwright</Typography>
-            <Typography variant="body1" color="text.secondary" maxWidth={900} sx={{ mt: 1 }}>
-              Locator thinking, not selector guessing. Train getBy*, locator(), filtering and chaining - from beginner
-              drills to real-world challenges.
-            </Typography>
-          </Box>
-
-          <Stack direction="row" spacing={1} flexWrap="wrap">
-            <Button variant="contained" onClick={() => navigate("/playwright/trainings")}>
-              Beginner trainings
-            </Button>
-            <Button variant="outlined" onClick={() => navigate("/playwright/playground")}>
-              Playground
-            </Button>
-          </Stack>
-        </Stack>
+        <Box>
+          <Typography variant="h3">Playwright</Typography>
+          <Typography variant="body1" color="text.secondary" maxWidth={900} sx={{ mt: 1 }}>
+            Locator thinking, not selector guessing. Train getBy*, locator(), filtering and chaining - from beginner
+            drills to real-world challenges.
+          </Typography>
+        </Box>
 
         <PlaywrightExamples />
 

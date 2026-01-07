@@ -1,8 +1,6 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Box, Stack, Typography } from "@mui/material";
 
 export function HeroSection() {
-  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -30,15 +28,6 @@ export function HeroSection() {
           Documentation shows what is possible. DevTools shows what works once. This sandbox trains what actually
           matters in real projects: stable locators, trade-offs, and intent-driven selection.
         </Typography>
-
-        <Stack direction="row" spacing={2} flexWrap="wrap">
-          <Button variant="contained" size="large" onClick={() => navigate("/playwright/trainings")}>
-            Open Playwright
-          </Button>
-          <Button variant="outlined" size="large" onClick={() => navigate("/playwright/playground")}>
-            Jump to Playground
-          </Button>
-        </Stack>
 
         <Box display="flex" flexWrap="wrap" gap={2} mt={2}>
           {[

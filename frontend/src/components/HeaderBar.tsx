@@ -12,7 +12,11 @@ export function HeaderBar({ rightSlot, themeMode, onToggleTheme }: HeaderBarProp
   const ThemeIcon = themeMode === "light" ? LightModeIcon : DarkModeIcon;
 
   return (
-    <AppBar position="static" sx={{ height: 64, justifyContent: "center", boxShadow: "none" }}>
+    <AppBar
+      position="static"
+      color="transparent"
+      sx={{ height: 64, justifyContent: "center", boxShadow: "none", color: "text.primary" }}
+    >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Stack direction="row" alignItems="center" spacing={1.5}>
           <Typography variant="h6" component="div" fontWeight={600}>
