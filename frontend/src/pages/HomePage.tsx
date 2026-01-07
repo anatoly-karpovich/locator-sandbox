@@ -1,10 +1,11 @@
-import { Box, Container, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { HeaderBar } from "../components/HeaderBar";
 import { HeroSection } from "../components/home/HeroSection";
 import { PlaywrightSection } from "../components/home/playwright/PlaywrightSection";
 import { ToolsPanel } from "../components/home/ToolsPanel";
 import { TipPanel } from "../components/home/TipPanel";
 import { FormsSection } from "../components/home/FormsSection";
+import { CenteredLayout } from "../components/layout/CenteredLayout";
 // import { FutureToolsSection } from "../components/FutureToolsSection";
 import type { BasePageProps } from "../types";
 
@@ -13,36 +14,23 @@ export default function HomePage({ themeMode, onToggleTheme }: BasePageProps) {
     <Box minHeight="100vh">
       <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
 
-      <Container maxWidth={false} sx={{ py: 6 }}>
-        <Box sx={{ position: "relative" }}>
-          <Stack
-            spacing={2}
-            component="aside"
-            sx={{
-              width: 260,
-              display: { xs: "none", md: "flex" },
-              position: "absolute",
-              top: 0,
-              left: "max(16px, calc(25% - 420px))",
-            }}
-          >
+      <CenteredLayout
+        sidebar={
+          <Stack spacing={2}>
             <ToolsPanel />
             <TipPanel />
           </Stack>
-
-          <Stack spacing={2} component="aside" sx={{ display: { xs: "flex", md: "none" }, mb: 4 }}>
-            <ToolsPanel />
-            <TipPanel />
-          </Stack>
-
-          <Stack spacing={4} component="main" sx={{ maxWidth: 1200, mx: "auto" }}>
-            <HeroSection />
-            <PlaywrightSection />
-            <FormsSection />
-          </Stack>
-        </Box>
+        }
+        sidebarWidth={260}
+        contentWidth={1200}
+      >
+        <Stack spacing={4}>
+          <HeroSection />
+          <PlaywrightSection />
+          <FormsSection />
+        </Stack>
         {/* <FutureToolsSection /> */}
-      </Container>
+      </CenteredLayout>
     </Box>
   );
 }
