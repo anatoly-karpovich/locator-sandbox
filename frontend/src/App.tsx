@@ -3,7 +3,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import { useMemo, useState } from "react";
 import HomePage from "./pages/HomePage";
-// import TrainingRunPage from "./pages/playwright/TrainingRunPage";
+import TrainingRunPage from "./pages/playwright/TrainingRunPage";
 import PlaygroundPage from "./pages/playwright/PlaygroundPage";
 import PlaywrightTrainingsPage from "./pages/playwright/PlaywrightTrainingsPage";
 import type { PaletteMode } from "./types";
@@ -32,10 +32,10 @@ function App() {
                 path={APP_ROUTES.PLAYWRIGHT_PLAYGROUND}
                 element={<PlaygroundPage themeMode={mode} onToggleTheme={toggleTheme} />}
               />
-              {/* <Route
-                path={APP_ROUTES.PLAYWRIGHT_TRAINING_RUN}
+              <Route
+                path={APP_ROUTES.PLAYWRIGHT_TRAINING_RUN(":trainingRunId")}
                 element={<TrainingRunPage themeMode={mode} onToggleTheme={toggleTheme} />}
-              /> */}
+              />
               <Route
                 path={APP_ROUTES.PLAYWRIGHT_TRAININGS}
                 element={<PlaywrightTrainingsPage themeMode={mode} onToggleTheme={toggleTheme} />}
