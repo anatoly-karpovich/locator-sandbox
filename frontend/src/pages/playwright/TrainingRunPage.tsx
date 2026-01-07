@@ -561,7 +561,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                   <TextField
                     fullWidth
                     multiline
-                    minRows={3}
+                    minRows={1}
                     placeholder="page.getByRole('heading', { name: 'Task 1' })"
                     value={locatorInput}
                     onChange={(e) => setLocatorInput(e.target.value)}

@@ -138,10 +138,10 @@ export type PlaygroundElement = {
   tagName: string;
   text: string | null;
   attributes: Record<string, string>;
+  visible: boolean;
 };
 
 export type PlaygroundSubmitResponse = {
-  result: TaskResultPayload;
   explanation?: string[];
   elements: PlaygroundElement[];
 };
@@ -152,3 +152,4 @@ export type BasePageProps = {
   themeMode: PaletteMode;
   onToggleTheme: () => void;
 };
+
