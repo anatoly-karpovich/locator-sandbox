@@ -10,6 +10,7 @@ import type { PaletteMode } from "./types";
 import { createAppTheme } from "./theme";
 import { AppProvider } from "./providers/AppProvider/AppProvider";
 import { APP_ROUTES } from "./constants/routes";
+import { ScrollToTop } from "./components/routing/ScrollToTop";
 
 function App() {
   const [mode, setMode] = useState<PaletteMode>("light");
@@ -24,6 +25,7 @@ function App() {
         <AppProvider>
           <CssBaseline />
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               <Route path={APP_ROUTES.HOME} element={<HomePage themeMode={mode} onToggleTheme={toggleTheme} />} />
               <Route
