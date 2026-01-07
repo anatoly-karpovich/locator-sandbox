@@ -110,12 +110,16 @@ export function createAppTheme(mode: PaletteMode) {
       },
       MuiChip: {
         styleOverrides: {
-          root: {
-            borderRadius: 999,
-            border: `1px solid ${divider}`,
-            background: isDark ? "rgba(255, 255, 255, 0.04)" : backgroundAlt,
-            fontSize: 11,
-            height: 24,
+          root: ({ ownerState }) => {
+            const isDefault = !ownerState.color || ownerState.color === "default";
+            if (!isDefault) return {};
+            return {
+              borderRadius: 999,
+              border: `1px solid ${divider}`,
+              background: isDark ? "rgba(255, 255, 255, 0.04)" : backgroundAlt,
+              fontSize: 11,
+              height: 24,
+            };
           },
         },
       },

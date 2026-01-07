@@ -465,8 +465,8 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                   <Box
                     component="pre"
                     sx={{
-                      background: "#0b1021",
-                      color: "#e3e8ff",
+                      background: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#f3f5fa"),
+                      color: (theme) => (theme.palette.mode === "dark" ? "#e3e8ff" : "#1f2937"),
                       borderRadius: 1,
                       padding: 2,
                       fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
@@ -527,7 +527,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                   <Box
                     sx={{
                       padding: 1,
-                      bgcolor: "background.default",
+                      bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : theme.palette.background.default),
                       borderRadius: 1,
                       border: "1px dashed",
                       borderColor: "divider",

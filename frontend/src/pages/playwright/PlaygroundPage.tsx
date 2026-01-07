@@ -188,6 +188,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 InputProps={{
                   sx: {
                     fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
+                    bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "background.paper"),
                     "& textarea": {
                       whiteSpace: "pre",
                       overflow: "auto",
@@ -246,7 +247,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
               <Box
                 sx={{
                   padding: 1,
-                  bgcolor: "background.default",
+                  bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : theme.palette.background.default),
                   borderRadius: 1,
                   border: "1px dashed",
                   borderColor: "divider",
