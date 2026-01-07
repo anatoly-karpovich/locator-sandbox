@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { TrainingCard } from "./TrainingCard";
 import type { TrainingCatalogItem } from "../../types";
+import { APP_ROUTES } from "../../constants/routes";
 
 type TrainingsGridProps = {
   trainings: TrainingCatalogItem[];
@@ -39,7 +40,7 @@ export function TrainingsGrid({ trainings, onStart }: TrainingsGridProps) {
           description={training.description ?? ""}
           difficulty={mapDifficulty(training.difficulty)}
           tasksCount={training.taskCount}
-          href={`/playwright/training-run/${training.id}`}
+          href={APP_ROUTES.PLAYWRIGHT_TRAINING_RUN(training.id)}
           isAdvanced={training.difficulty === "advanced"}
           onStart={onStart}
         />

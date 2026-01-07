@@ -1,12 +1,11 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import type { ROUTES } from "../../constants/routes";
 
 type WhatsNextItem = {
   title: string;
   description: string;
   actionLabel: string;
-  route: ROUTES;
+  route: string;
   disabled?: boolean;
 };
 

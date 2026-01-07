@@ -2,6 +2,7 @@ import { AppBar, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/ma
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useNavigate } from "react-router-dom";
+import { APP_ROUTES } from "../constants/routes";
 
 type HeaderBarProps = {
   themeMode?: "light" | "dark";
@@ -24,7 +25,7 @@ export function HeaderBar({ themeMode, onToggleTheme }: HeaderBarProps) {
             variant="h6"
             component="div"
             fontWeight={600}
-            onClick={() => navigate("/")}
+            onClick={() => navigate(APP_ROUTES.HOME)}
             sx={{ cursor: "pointer" }}
           >
             Locator Sandbox

@@ -1,6 +1,7 @@
 import { Box, Stack, Typography } from "@mui/material";
 import PlaywrightModeCard from "./PlaywrightModeCard";
 import { useNavigate } from "react-router-dom";
+import { APP_ROUTES } from "../../../constants/routes";
 
 export default function PlaywrightModes() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function PlaywrightModes() {
           badges={["Beginner", "~40 tasks", "Hints enabled"]}
           actionLabel="Enter training"
           onClick={() => {
-            navigate("/playwright/trainings");
+            navigate(APP_ROUTES.PLAYWRIGHT_TRAININGS);
           }}
         />
 
@@ -30,7 +31,7 @@ export default function PlaywrightModes() {
           actionLabel="Enter challenges"
           isDisabled={true}
           onClick={() => {
-            // navigate("/playwright/challenges")
+            navigate(APP_ROUTES.PLAYWRIGHT_CHALLENGES);
           }}
         />
 
@@ -41,7 +42,7 @@ export default function PlaywrightModes() {
           badges={["Instant feedback", "No progress tracking"]}
           actionLabel="Open playground"
           onClick={() => {
-            navigate("/playwright/playground");
+            navigate(APP_ROUTES.PLAYWRIGHT_PLAYGROUND);
           }}
         />
       </Stack>

@@ -1,6 +1,7 @@
 import { alpha, useTheme } from "@mui/material/styles";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
+import { APP_ROUTES } from "../../constants/routes";
 
 type ToolItem = {
   label: string;
@@ -19,8 +20,8 @@ const tools: ToolItem[] = [
 ];
 
 const quickActions: QuickAction[] = [
-  { label: "Beginner trainings", to: "/playwright/trainings" },
-  { label: "Playground", to: "/playwright/playground" },
+  { label: "Beginner trainings", to: APP_ROUTES.PLAYWRIGHT_TRAININGS },
+  { label: "Playground", to: APP_ROUTES.PLAYWRIGHT_PLAYGROUND },
 ];
 
 export function ToolsPanel() {

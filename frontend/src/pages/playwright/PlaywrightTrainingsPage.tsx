@@ -31,7 +31,7 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
   const handleStart = async (templateId: string) => {
     try {
       const run = await startTrainingRun(templateId);
-      navigate(`/playwright/training-run/${run.id}`);
+      navigate(APP_ROUTES.PLAYWRIGHT_TRAINING_RUN(run.id));
     } catch (e: any) {
       setError(e?.message ?? "Failed to start training");
       showError(e, "Failed to start training");
