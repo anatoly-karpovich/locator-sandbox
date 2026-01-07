@@ -48,26 +48,21 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
         }
       />
 
-      <Container sx={{ py: 6 }}>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "240px 1fr" },
-            gap: 3,
-            alignItems: "start",
-          }}
-        >
+      <Container maxWidth={false} sx={{ py: 6 }}>
+        <Box sx={{ position: "relative" }}>
           <Box
             component="aside"
             sx={{
+              width: 240,
               display: { xs: "none", md: "block" },
+              position: "absolute",
+              top: 0,
+              left: "max(16px, calc(25% - 420px))",
               borderRadius: 3,
               border: "1px solid",
               borderColor: "divider",
               bgcolor: "background.paper",
               p: 2,
-              position: "sticky",
-              top: 92,
             }}
           >
             <Typography variant="caption" sx={{ letterSpacing: "0.2em", color: "text.secondary" }}>
@@ -107,7 +102,55 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
             </Stack>
           </Box>
 
-          <Stack spacing={4} component="main">
+          <Stack spacing={2} component="aside" sx={{ display: { xs: "flex", md: "none" }, mb: 4 }}>
+            <Box
+              sx={{
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "divider",
+                bgcolor: "background.paper",
+                p: 2,
+              }}
+            >
+              <Typography variant="caption" sx={{ letterSpacing: "0.2em", color: "text.secondary" }}>
+                BEGINNER PATH
+              </Typography>
+              <Stack spacing={1} sx={{ mt: 1 }}>
+                {catalog?.modules.flatMap((module) =>
+                  module.sections.map((section) => (
+                    <Box
+                      key={section.id}
+                      component="a"
+                      href={`#section-${section.id}`}
+                      sx={{
+                        display: "block",
+                        padding: "8px 10px",
+                        borderRadius: 2,
+                        border: "1px solid transparent",
+                        color: "text.secondary",
+                        transition: "0.15s ease",
+                        "&:hover": {
+                          color: "text.primary",
+                          borderColor: "divider",
+                          backgroundColor: "background.default",
+                        },
+                      }}
+                    >
+                      <Typography variant="body2">
+                        {module.title} / {section.title}
+                      </Typography>
+                    </Box>
+                  ))
+                ) ?? (
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    Loading sections...
+                  </Typography>
+                )}
+              </Stack>
+            </Box>
+          </Stack>
+
+          <Stack spacing={4} component="main" sx={{ maxWidth: 1200, mx: "auto" }}>
             <TrainingsIntro />
             {loading && <CircularProgress />}
             {error && <Typography color="error">{error}</Typography>}

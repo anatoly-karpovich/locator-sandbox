@@ -34,6 +34,8 @@ export function TrainingCard({
     <Box
       sx={{
         minWidth: 240,
+        maxWidth: { xs: "100%", sm: 360 },
+        width: { xs: "100%", sm: "auto" },
         borderRadius: 3,
         border: "1px solid",
         borderColor: "divider",

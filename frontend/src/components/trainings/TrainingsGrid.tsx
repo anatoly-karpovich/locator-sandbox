@@ -23,8 +23,12 @@ export function TrainingsGrid({ trainings, onStart }: TrainingsGridProps) {
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gridTemplateColumns: {
+          xs: "1fr",
+          sm: "repeat(auto-fit, minmax(260px, 360px))",
+        },
         gap: 2.5,
+        justifyContent: { xs: "stretch", sm: "start" },
       }}
     >
       {trainings.map((training) => (

@@ -23,7 +23,7 @@ export default function HomePage({ themeMode, onToggleTheme }: BasePageProps) {
               display: { xs: "none", md: "flex" },
               position: "absolute",
               top: 0,
-              left: "calc(50% - 600px - 260px - 24px)",
+              left: "max(16px, calc(25% - 420px))",
             }}
           >
             <ToolsPanel />
