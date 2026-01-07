@@ -8,6 +8,7 @@ import PlaygroundPage from "./pages/playwright/PlaygroundPage";
 import PlaywrightTrainingsPage from "./pages/playwright/PlaywrightTrainingsPage";
 import type { PaletteMode } from "./types";
 import { createAppTheme } from "./theme";
+import { AppProvider } from "./providers/AppProvider/AppProvider";
 
 function App() {
   const [mode, setMode] = useState<PaletteMode>("light");
@@ -19,23 +20,24 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <SnackbarProvider maxSnack={3} autoHideDuration={5000} anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-        <CssBaseline />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage themeMode={mode} onToggleTheme={toggleTheme} />} />
-            <Route
-              path="/playwright/playground"
-              element={<PlaygroundPage themeMode={mode} onToggleTheme={toggleTheme} />}
-            />
-            <Route
-              path="/playwright/training-run/:trainingRunId"
-              element={<TrainingRunPage themeMode={mode} onToggleTheme={toggleTheme} />}
-            />
-            <Route
-              path="/playwright/trainings"
-              element={<PlaywrightTrainingsPage themeMode={mode} onToggleTheme={toggleTheme} />}
-            />
-            {/* <Route
+        <AppProvider>
+          <CssBaseline />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<HomePage themeMode={mode} onToggleTheme={toggleTheme} />} />
+              <Route
+                path="/playwright/playground"
+                element={<PlaygroundPage themeMode={mode} onToggleTheme={toggleTheme} />}
+              />
+              <Route
+                path="/playwright/training-run/:trainingRunId"
+                element={<TrainingRunPage themeMode={mode} onToggleTheme={toggleTheme} />}
+              />
+              <Route
+                path="/playwright/trainings"
+                element={<PlaywrightTrainingsPage themeMode={mode} onToggleTheme={toggleTheme} />}
+              />
+              {/* <Route
               path="/playwright/challenges"
               element={<ChallengesPage themeMode={mode} onToggleTheme={toggleTheme} />}
             />
@@ -43,9 +45,10 @@ function App() {
               path="/playwright/custom"
               element={<CustomTrainingPage themeMode={mode} onToggleTheme={toggleTheme} />}
             /> */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </BrowserRouter>
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </BrowserRouter>
+        </AppProvider>
       </SnackbarProvider>
     </ThemeProvider>
   );

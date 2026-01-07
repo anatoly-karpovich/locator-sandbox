@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Accordion,
   AccordionDetails,
@@ -25,7 +25,6 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../../components/HeaderBar";
 import { TaskInfoBar } from "../../components/tasks/TaskInfoBar";
-import { useErrorSnackbar } from "../../hooks/useErrorSnackbar";
 import type {
   BasePageProps,
   SolutionResponse,
@@ -35,6 +34,7 @@ import type {
   TrainingRunTopic,
 } from "../../types";
 import { submitTrainingRunSolution, fetchTask, fetchTrainingRun } from "../../api";
+import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 
 const CHECK_STATUS = {
   Pending: "Pending",
@@ -53,8 +53,7 @@ type CheckState = {
 
 export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePageProps) {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
-  const navigate = useNavigate();
-  const showError = useErrorSnackbar();
+  const { showError } = useApp();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [run, setRun] = useState<TrainingRun | null>(null);
@@ -416,15 +415,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
 
   return (
     <Box minHeight="100vh">
-      <HeaderBar
-        themeMode={themeMode}
-        onToggleTheme={onToggleTheme}
-        rightSlot={
-          <Button variant="text" color="inherit" onClick={() => navigate("/")}>
-            Home
-          </Button>
-        }
-      />
+      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
 
       <Box display="grid" gridTemplateColumns="280px 1fr" height="calc(100vh - 64px)">
         <Box

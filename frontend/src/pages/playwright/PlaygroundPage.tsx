@@ -1,15 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Button, Chip, CircularProgress, Divider, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Divider,
+  Paper,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../../components/HeaderBar";
-import { useErrorSnackbar } from "../../hooks/useErrorSnackbar";
 import { submitPlayground } from "../../api";
 import type { BasePageProps, PlaygroundElement, PlaygroundSubmitResponse } from "../../types";
+import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 
 export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePageProps) {
-  const showError = useErrorSnackbar();
-  const navigate = useNavigate();
+  const { showError } = useApp();
   const [html, setHtml] = useState("");
   const [payload, setPayload] = useState("");
   const [isRunning, setIsRunning] = useState(false);
@@ -65,23 +74,23 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
     return (
       <Stack spacing={1}>
         {elements.map((el, idx) => (
-            <Paper
-              key={`${el.tagName}-${idx}`}
-              variant="outlined"
-              sx={{ padding: 1.5, bgcolor: "background.paper", borderColor: "divider" }}
-            >
-              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                <Chip label={el.tagName} size="small" />
-                <Tooltip title={el.text ?? "-"} disableInteractive>
-                  <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: { xs: "100%", md: "70%" } }}>
-                    text: {el.text ?? "-"}
-                  </Typography>
-                </Tooltip>
-                {Object.entries(el.attributes).map(([k, v]) => (
-                  <Chip key={k} label={`${k}=${v}`} size="small" variant="outlined" />
-                ))}
-              </Stack>
-            </Paper>
+          <Paper
+            key={`${el.tagName}-${idx}`}
+            variant="outlined"
+            sx={{ padding: 1.5, bgcolor: "background.paper", borderColor: "divider" }}
+          >
+            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+              <Chip label={el.tagName} size="small" />
+              <Tooltip title={el.text ?? "-"} disableInteractive>
+                <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: { xs: "100%", md: "70%" } }}>
+                  text: {el.text ?? "-"}
+                </Typography>
+              </Tooltip>
+              {Object.entries(el.attributes).map(([k, v]) => (
+                <Chip key={k} label={`${k}=${v}`} size="small" variant="outlined" />
+              ))}
+            </Stack>
+          </Paper>
         ))}
       </Stack>
     );
@@ -127,15 +136,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
 
   return (
     <Box minHeight="100vh">
-      <HeaderBar
-        themeMode={themeMode}
-        onToggleTheme={onToggleTheme}
-        rightSlot={
-          <Button variant="text" color="inherit" onClick={() => navigate("/")}>
-            Home
-          </Button>
-        }
-      />
+      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
 
       <Box sx={{ width: "100%", paddingX: 3, paddingY: 4 }}>
         <Stack spacing={2} marginBottom={3}>
@@ -321,7 +322,12 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
             {result?.explanation && result.explanation.length > 0 && (
               <Paper
                 variant="outlined"
-                sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider", boxShadow: { xs: "none", md: 0 } }}
+                sx={{
+                  padding: 2,
+                  bgcolor: "background.paper",
+                  borderColor: "divider",
+                  boxShadow: { xs: "none", md: 0 },
+                }}
               >
                 <Typography variant="h6" gutterBottom>
                   Explanation

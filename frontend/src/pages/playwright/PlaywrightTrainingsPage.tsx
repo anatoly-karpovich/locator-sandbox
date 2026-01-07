@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, CircularProgress, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { fetchTrainingsCatalog, startTrainingRun } from "../../api";
 import type { BasePageProps, TrainingCatalogResponse } from "../../types";
 import { HeaderBar } from "../../components/HeaderBar";
 import { WhatsNextBlock } from "../../components/common/WhatsNextBlock";
 import { TrainingsIntro } from "../../components/trainings/TrainingsIntro";
 import { TrainingsGrid } from "../../components/trainings/TrainingsGrid";
-import { useErrorSnackbar } from "../../hooks/useErrorSnackbar";
 import { CenteredLayout } from "../../components/layout/CenteredLayout";
+import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
+import { APP_ROUTES } from "../../constants/routes";
 
 export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProps) {
   const navigate = useNavigate();
   const [catalog, setCatalog] = useState<TrainingCatalogResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const showError = useErrorSnackbar();
+  const { showError } = useApp();
 
   useEffect(() => {
     fetchTrainingsCatalog()
@@ -39,15 +40,7 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
 
   return (
     <Box minHeight="100vh">
-      <HeaderBar
-        themeMode={themeMode}
-        onToggleTheme={onToggleTheme}
-        rightSlot={
-          <Button variant="text" color="inherit" onClick={() => navigate("/")}>
-            Home
-          </Button>
-        }
-      />
+      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
 
       <CenteredLayout
         sidebarWidth={240}
@@ -131,13 +124,14 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
                 title: "Challenges",
                 description: "No hints. Ambiguous DOMs. Multiple valid locators. Train decision-making, not syntax.",
                 actionLabel: "Go to challenges",
-                href: "/playwright/challenges",
+                route: APP_ROUTES.PLAYWRIGHT_CHALLENGES,
+                disabled: true,
               },
               {
                 title: "Playground",
                 description: "Paste your own HTML and test locators instantly. Validate matches and visibility.",
                 actionLabel: "Open playground",
-                href: "/playwright/playground",
+                route: APP_ROUTES.PLAYWRIGHT_PLAYGROUND,
               },
             ]}
           />

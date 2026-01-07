@@ -1,25 +1,32 @@
 import { AppBar, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import { useNavigate } from "react-router-dom";
 
 type HeaderBarProps = {
-  rightSlot?: React.ReactNode;
   themeMode?: "light" | "dark";
   onToggleTheme?: () => void;
 };
 
-export function HeaderBar({ rightSlot, themeMode, onToggleTheme }: HeaderBarProps) {
+export function HeaderBar({ themeMode, onToggleTheme }: HeaderBarProps) {
   const ThemeIcon = themeMode === "light" ? LightModeIcon : DarkModeIcon;
+  const navigate = useNavigate();
 
   return (
     <AppBar
       position="static"
       color="transparent"
-      sx={{ height: 64, justifyContent: "center", boxShadow: "none", color: "text.primary" }}
+      sx={{ height: 64, justifyContent: "center", boxShadow: "none", color: "text.primary", borderRadius: "0px" }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Stack direction="row" alignItems="center" spacing={1.5}>
-          <Typography variant="h6" component="div" fontWeight={600}>
+          <Typography
+            variant="h6"
+            component="div"
+            fontWeight={600}
+            onClick={() => navigate("/")}
+            sx={{ cursor: "pointer" }}
+          >
             Locator Sandbox
           </Typography>
           {onToggleTheme && themeMode && (
@@ -30,7 +37,6 @@ export function HeaderBar({ rightSlot, themeMode, onToggleTheme }: HeaderBarProp
             </Tooltip>
           )}
         </Stack>
-        <div>{rightSlot}</div>
       </Toolbar>
     </AppBar>
   );
