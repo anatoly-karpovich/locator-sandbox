@@ -20,7 +20,13 @@ function mapDifficulty(difficulty: "beginner" | "intermediate" | "advanced"): "B
 
 export function TrainingsGrid({ trainings, onStart }: TrainingsGridProps) {
   return (
-    <Box display="flex" flexWrap="wrap" gap={2.5}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: 2.5,
+      }}
+    >
       {trainings.map((training) => (
         <TrainingCard
           key={training.id}

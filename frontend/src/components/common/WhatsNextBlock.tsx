@@ -12,7 +12,7 @@ type WhatsNextBlockProps = {
   items: WhatsNextItem[];
 };
 
-export function WhatsNextBlock({ title = "What’s next", items }: WhatsNextBlockProps) {
+export function WhatsNextBlock({ title = "What's next", items }: WhatsNextBlockProps) {
   return (
     <Box
       sx={{
@@ -33,11 +33,12 @@ export function WhatsNextBlock({ title = "What’s next", items }: WhatsNextBloc
             <Box
               key={item.title}
               sx={{
-                flex: "1 1 360px",
+                flex: "1 1 320px",
                 borderRadius: 2,
                 border: "1px solid",
                 borderColor: "divider",
                 p: 3,
+                bgcolor: "background.default",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",

@@ -1,4 +1,5 @@
 import { Box, Button, Stack, Typography, Chip } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 
 type TrainingCardProps = {
   id: string;
@@ -32,19 +33,19 @@ export function TrainingCard({
   return (
     <Box
       sx={{
-        flex: "1 1 320px",
-        minWidth: 210,
-        maxWidth: 250,
+        minWidth: 240,
         borderRadius: 3,
         border: "1px solid",
         borderColor: "divider",
         p: 3,
-        bgcolor: "background.paper",
+        bgcolor: "background.default",
         display: "flex",
         flexDirection: "column",
-        boxShadow: 1,
+        minHeight: 220,
+        boxShadow: 0,
         transition: "0.15s ease",
         "&:hover": {
+          borderColor: "primary.main",
           boxShadow: 4,
         },
       }}
@@ -54,11 +55,32 @@ export function TrainingCard({
           {title}
         </Typography>
 
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} flexWrap="wrap">
           <Chip
             size="small"
             label={difficulty}
-            color={difficulty === "Beginner" ? "success" : difficulty === "Intermediate" ? "warning" : "error"}
+            sx={{
+              borderRadius: 999,
+              border: "1px solid",
+              borderColor:
+                difficulty === "Beginner"
+                  ? alpha("#3ddc97", 0.6)
+                  : difficulty === "Intermediate"
+                  ? alpha("#ffcc66", 0.6)
+                  : alpha("#ff6b6b", 0.6),
+              color:
+                difficulty === "Beginner"
+                  ? "#baf2dd"
+                  : difficulty === "Intermediate"
+                  ? "#ffe3a6"
+                  : "#ffb3b3",
+              backgroundColor:
+                difficulty === "Beginner"
+                  ? alpha("#3ddc97", 0.1)
+                  : difficulty === "Intermediate"
+                  ? alpha("#ffcc66", 0.1)
+                  : alpha("#ff6b6b", 0.1),
+            }}
           />
           <Chip size="small" label={`~${tasksCount} tasks`} />
         </Stack>
