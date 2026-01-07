@@ -1,10 +1,12 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 type WhatsNextItem = {
   title: string;
   description: string;
   actionLabel: string;
-  href: string;
+  route: string;
+  disabled?: boolean;
 };
 
 type WhatsNextBlockProps = {
@@ -12,7 +14,8 @@ type WhatsNextBlockProps = {
   items: WhatsNextItem[];
 };
 
-export function WhatsNextBlock({ title = "What’s next", items }: WhatsNextBlockProps) {
+export function WhatsNextBlock({ title = "What's next", items }: WhatsNextBlockProps) {
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -33,11 +36,12 @@ export function WhatsNextBlock({ title = "What’s next", items }: WhatsNextBloc
             <Box
               key={item.title}
               sx={{
-                flex: "1 1 360px",
+                flex: "1 1 320px",
                 borderRadius: 2,
                 border: "1px solid",
                 borderColor: "divider",
                 p: 3,
+                bgcolor: "background.default",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -50,7 +54,12 @@ export function WhatsNextBlock({ title = "What’s next", items }: WhatsNextBloc
                 </Typography>
               </Stack>
 
-              <Button variant="outlined" sx={{ mt: 2, alignSelf: "flex-start" }} href={item.href}>
+              <Button
+                variant="outlined"
+                sx={{ mt: 2, alignSelf: "flex-start" }}
+                onClick={() => navigate(item.route)}
+                disabled={item.disabled}
+              >
                 {item.actionLabel}
               </Button>
             </Box>

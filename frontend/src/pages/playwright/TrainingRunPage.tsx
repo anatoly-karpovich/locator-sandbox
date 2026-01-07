@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Accordion,
   AccordionDetails,
@@ -25,7 +25,6 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../../components/HeaderBar";
 import { TaskInfoBar } from "../../components/tasks/TaskInfoBar";
-import { useErrorSnackbar } from "../../hooks/useErrorSnackbar";
 import type {
   BasePageProps,
   SolutionResponse,
@@ -35,6 +34,7 @@ import type {
   TrainingRunTopic,
 } from "../../types";
 import { submitTrainingRunSolution, fetchTask, fetchTrainingRun } from "../../api";
+import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 
 const CHECK_STATUS = {
   Pending: "Pending",
@@ -53,8 +53,7 @@ type CheckState = {
 
 export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePageProps) {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
-  const navigate = useNavigate();
-  const showError = useErrorSnackbar();
+  const { showError } = useApp();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [run, setRun] = useState<TrainingRun | null>(null);
@@ -315,7 +314,16 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   );
 
   const renderChecksPanel = () => (
-    <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, border: 1, borderColor: "divider" }}>
+    <Box
+      sx={{
+        bgcolor: "background.paper",
+        borderRadius: 2,
+        padding: 2,
+        border: 1,
+        borderColor: "divider",
+        boxShadow: { xs: "none", md: 0 },
+      }}
+    >
       <Stack direction="row" alignItems="center" spacing={2} marginBottom={1}>
         <Typography variant="h6">Checks</Typography>
       </Stack>
@@ -372,7 +380,16 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
         : []) || [];
 
     return (
-      <Box sx={{ bgcolor: "background.paper", borderRadius: 2, padding: 2, border: 1, borderColor: "divider" }}>
+      <Box
+        sx={{
+          bgcolor: "background.paper",
+          borderRadius: 2,
+          padding: 2,
+          border: 1,
+          borderColor: "divider",
+          boxShadow: { xs: "none", md: 0 },
+        }}
+      >
         <Typography variant="h6" gutterBottom>
           Explanation
         </Typography>
@@ -397,16 +414,8 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   const currentTaskLabel = currentTaskData?.title ?? "No task";
 
   return (
-    <Box minHeight="100vh" sx={{ bgcolor: "background.default" }}>
-      <HeaderBar
-        themeMode={themeMode}
-        onToggleTheme={onToggleTheme}
-        rightSlot={
-          <Button variant="text" color="inherit" onClick={() => navigate("/")}>
-            Home
-          </Button>
-        }
-      />
+    <Box minHeight="100vh">
+      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
 
       <Box display="grid" gridTemplateColumns="280px 1fr" height="calc(100vh - 64px)">
         <Box
@@ -456,6 +465,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                     border: 1,
                     borderColor: "divider",
                     overflow: "hidden",
+                    boxShadow: { xs: "none", md: 0 },
                   }}
                 >
                   <Typography variant="h6" gutterBottom>
@@ -465,14 +475,16 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                   <Box
                     component="pre"
                     sx={{
-                      background: "#0b1021",
-                      color: "#e3e8ff",
+                      background: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#f3f5fa"),
+                      color: (theme) => (theme.palette.mode === "dark" ? "#e3e8ff" : "#1f2937"),
                       borderRadius: 1,
                       padding: 2,
                       fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
                       whiteSpace: "pre-wrap",
                       maxHeight: 420,
                       overflow: "auto",
+                      border: "1px solid",
+                      borderColor: "divider",
                     }}
                   >
                     {currentTaskData.html}
@@ -518,6 +530,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
+                    boxShadow: { xs: "none", md: 0 },
                   }}
                 >
                   <Typography variant="h6" gutterBottom>
@@ -527,7 +540,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                   <Box
                     sx={{
                       padding: 1,
-                      bgcolor: "background.default",
+                      bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#edf0f7"),
                       borderRadius: 1,
                       border: "1px dashed",
                       borderColor: "divider",

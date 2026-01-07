@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { TrainingCard } from "./TrainingCard";
 import type { TrainingCatalogItem } from "../../types";
+import { APP_ROUTES } from "../../constants/routes";
 
 type TrainingsGridProps = {
   trainings: TrainingCatalogItem[];
@@ -20,7 +21,17 @@ function mapDifficulty(difficulty: "beginner" | "intermediate" | "advanced"): "B
 
 export function TrainingsGrid({ trainings, onStart }: TrainingsGridProps) {
   return (
-    <Box display="flex" flexWrap="wrap" gap={2.5}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "1fr",
+          sm: "repeat(auto-fit, minmax(260px, 360px))",
+        },
+        gap: 2.5,
+        justifyContent: { xs: "stretch", sm: "start" },
+      }}
+    >
       {trainings.map((training) => (
         <TrainingCard
           key={training.id}
@@ -29,7 +40,7 @@ export function TrainingsGrid({ trainings, onStart }: TrainingsGridProps) {
           description={training.description ?? ""}
           difficulty={mapDifficulty(training.difficulty)}
           tasksCount={training.taskCount}
-          href={`/playwright/training-run/${training.id}`}
+          href={APP_ROUTES.PLAYWRIGHT_TRAINING_RUN(training.id)}
           isAdvanced={training.difficulty === "advanced"}
           onStart={onStart}
         />

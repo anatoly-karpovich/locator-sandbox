@@ -1,15 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Button, Chip, CircularProgress, Divider, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Divider,
+  Paper,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { HeaderBar } from "../../components/HeaderBar";
-import { useErrorSnackbar } from "../../hooks/useErrorSnackbar";
 import { submitPlayground } from "../../api";
 import type { BasePageProps, PlaygroundElement, PlaygroundSubmitResponse } from "../../types";
+import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 
 export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePageProps) {
-  const showError = useErrorSnackbar();
-  const navigate = useNavigate();
+  const { showError } = useApp();
   const [html, setHtml] = useState("");
   const [payload, setPayload] = useState("");
   const [isRunning, setIsRunning] = useState(false);
@@ -65,23 +74,23 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
     return (
       <Stack spacing={1}>
         {elements.map((el, idx) => (
-            <Paper
-              key={`${el.tagName}-${idx}`}
-              variant="outlined"
-              sx={{ padding: 1.5, bgcolor: "background.paper", borderColor: "divider" }}
-            >
-              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                <Chip label={el.tagName} size="small" />
-                <Tooltip title={el.text ?? "-"} disableInteractive>
-                  <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: { xs: "100%", md: "70%" } }}>
-                    text: {el.text ?? "-"}
-                  </Typography>
-                </Tooltip>
-                {Object.entries(el.attributes).map(([k, v]) => (
-                  <Chip key={k} label={`${k}=${v}`} size="small" variant="outlined" />
-                ))}
-              </Stack>
-            </Paper>
+          <Paper
+            key={`${el.tagName}-${idx}`}
+            variant="outlined"
+            sx={{ padding: 1.5, bgcolor: "background.paper", borderColor: "divider" }}
+          >
+            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+              <Chip label={el.tagName} size="small" />
+              <Tooltip title={el.text ?? "-"} disableInteractive>
+                <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: { xs: "100%", md: "70%" } }}>
+                  text: {el.text ?? "-"}
+                </Typography>
+              </Tooltip>
+              {Object.entries(el.attributes).map(([k, v]) => (
+                <Chip key={k} label={`${k}=${v}`} size="small" variant="outlined" />
+              ))}
+            </Stack>
+          </Paper>
         ))}
       </Stack>
     );
@@ -126,16 +135,8 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
   };
 
   return (
-    <Box minHeight="100vh" sx={{ bgcolor: "background.default" }}>
-      <HeaderBar
-        themeMode={themeMode}
-        onToggleTheme={onToggleTheme}
-        rightSlot={
-          <Button variant="text" color="inherit" onClick={() => navigate("/")}>
-            Home
-          </Button>
-        }
-      />
+    <Box minHeight="100vh">
+      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
 
       <Box sx={{ width: "100%", paddingX: 3, paddingY: 4 }}>
         <Stack spacing={2} marginBottom={3}>
@@ -171,6 +172,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 minHeight: 320,
                 maxHeight: 520,
                 overflow: "hidden",
+                boxShadow: { xs: "none", md: 0 },
               }}
             >
               <Typography variant="h6" gutterBottom>
@@ -188,6 +190,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 InputProps={{
                   sx: {
                     fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
+                    bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#f3f5fa"),
                     "& textarea": {
                       whiteSpace: "pre",
                       overflow: "auto",
@@ -237,6 +240,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
+                boxShadow: { xs: "none", md: 0 },
               }}
             >
               <Typography variant="h6" gutterBottom>
@@ -246,7 +250,7 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
               <Box
                 sx={{
                   padding: 1,
-                  bgcolor: "background.default",
+                  bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#edf0f7"),
                   borderRadius: 1,
                   border: "1px dashed",
                   borderColor: "divider",
@@ -260,7 +264,10 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
             </Paper>
           </Box>
 
-          <Paper variant="outlined" sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider" }}>
+          <Paper
+            variant="outlined"
+            sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider", boxShadow: { xs: "none", md: 0 } }}
+          >
             <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="flex-start">
               <TextField
                 fullWidth
@@ -286,7 +293,10 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
           </Paper>
 
           <Stack spacing={2} marginBottom={4}>
-            <Paper variant="outlined" sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider" }}>
+            <Paper
+              variant="outlined"
+              sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider", boxShadow: { xs: "none", md: 0 } }}
+            >
               <Stack direction="row" alignItems="center" spacing={1} marginBottom={1}>
                 <Typography variant="h6">Result</Typography>
                 <Chip
@@ -310,7 +320,15 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
             {renderChecks()}
 
             {result?.explanation && result.explanation.length > 0 && (
-              <Paper variant="outlined" sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider" }}>
+              <Paper
+                variant="outlined"
+                sx={{
+                  padding: 2,
+                  bgcolor: "background.paper",
+                  borderColor: "divider",
+                  boxShadow: { xs: "none", md: 0 },
+                }}
+              >
                 <Typography variant="h6" gutterBottom>
                   Explanation
                 </Typography>
