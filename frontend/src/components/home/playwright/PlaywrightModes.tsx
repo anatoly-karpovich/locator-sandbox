@@ -25,7 +25,7 @@ export default function PlaywrightModes() {
         <PlaywrightModeCard
           title="Challenges"
           subtitle="No hints. Real trade-offs"
-          description="Realistic DOMs with multiple valid solutions. Your goal is to choose a locator you’d be proud to commit."
+          description="Realistic DOMs with multiple valid solutions. Your goal is to choose a locator you would be proud to commit."
           badges={["Advanced", "No hints", "Reasoning-focused"]}
           actionLabel="Enter challenges"
           isDisabled={true}

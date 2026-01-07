@@ -1,5 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import { useMemo, useState } from "react";
 import HomePage from "./pages/HomePage";
@@ -7,32 +7,12 @@ import TrainingRunPage from "./pages/playwright/TrainingRunPage";
 import PlaygroundPage from "./pages/playwright/PlaygroundPage";
 import PlaywrightTrainingsPage from "./pages/playwright/PlaywrightTrainingsPage";
 import type { PaletteMode } from "./types";
+import { createAppTheme } from "./theme";
 
 function App() {
   const [mode, setMode] = useState<PaletteMode>("light");
 
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode,
-          background: {
-            default: mode === "light" ? "#f5f5f5" : "#0f1116",
-            paper: mode === "light" ? "#fff" : "#1b1f26",
-          },
-        },
-        components: {
-          MuiCssBaseline: {
-            styleOverrides: (themeParam) => ({
-              html: { backgroundColor: themeParam.palette.background.default },
-              body: { backgroundColor: themeParam.palette.background.default, overflowX: "hidden" },
-              "#root": { backgroundColor: themeParam.palette.background.default, overflowX: "hidden" },
-            }),
-          },
-        },
-      }),
-    [mode]
-  );
+  const theme = useMemo(() => createAppTheme(mode), [mode]);
 
   const toggleTheme = () => setMode((prev) => (prev === "light" ? "dark" : "light"));
 

@@ -29,13 +29,14 @@ export default function PlaywrightModeCard({
         flexDirection: "column",
         padding: 3,
         borderRadius: 3,
-        backgroundColor: "background.paper",
+        backgroundColor: "background.default",
         border: "1px solid",
         borderColor: highlight ? "primary.main" : "divider",
-        boxShadow: highlight ? 6 : 1,
+        boxShadow: highlight ? 8 : 0,
         transition: "0.15s ease",
         "&:hover": {
-          boxShadow: 8,
+          boxShadow: 4,
+          borderColor: "primary.main",
         },
       }}
     >

@@ -1,14 +1,17 @@
-import { Box, Typography, Stack, Paper } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import PlaywrightModes from "./PlaywrightModes";
+import { PlaywrightExamples } from "./PlaywrightExamples";
 
 export function PlaywrightSection() {
+  const navigate = useNavigate();
+
   return (
-    <Paper
-      elevation={0}
+    <Box
+      id="playwright"
       sx={{
         width: "100%",
         margin: 0,
-        mt: 6,
         p: { xs: 3, md: 5 },
         borderRadius: 3,
         border: "1px solid",
@@ -16,43 +19,53 @@ export function PlaywrightSection() {
         backgroundColor: "background.paper",
       }}
     >
-      <Box component="section" sx={{ width: "100%" }}>
-        {/* Header */}
-        <Stack spacing={2} sx={{ marginBottom: 4 }}>
-          <Typography variant="h3" fontWeight={800}>
-            Playwright
-          </Typography>
+      <Stack spacing={4}>
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={2}
+          alignItems={{ xs: "flex-start", md: "center" }}
+          justifyContent="space-between"
+        >
+          <Box>
+            <Typography variant="h3">Playwright</Typography>
+            <Typography variant="body1" color="text.secondary" maxWidth={900} sx={{ mt: 1 }}>
+              Locator thinking, not selector guessing. Train getBy*, locator(), filtering and chaining - from beginner
+              drills to real-world challenges.
+            </Typography>
+          </Box>
 
-          <Typography variant="body1" color="text.secondary" maxWidth={900}>
-            Train locator thinking, not selector guessing. Practice Playwright’s locator API from guided beginner drills
-            to real-world challenges and free exploration.
-          </Typography>
+          <Stack direction="row" spacing={1} flexWrap="wrap">
+            <Button variant="contained" onClick={() => navigate("/playwright/trainings")}>
+              Beginner trainings
+            </Button>
+            <Button variant="outlined" onClick={() => navigate("/playwright/playground")}>
+              Playground
+            </Button>
+          </Stack>
         </Stack>
 
-        {/* Examples / tips placeholder */}
+        <PlaywrightExamples />
+
         <Box
           sx={{
             borderRadius: 3,
-            padding: 3,
-            marginBottom: 5,
-            backgroundColor: "background.paper",
+            padding: 2,
+            backgroundColor: "background.default",
             border: "1px solid",
             borderColor: "divider",
           }}
         >
           <Typography variant="subtitle1" fontWeight={600}>
-            What you’ll practice
+            What you'll practice
           </Typography>
-
           <Typography variant="body2" color="text.secondary" sx={{ marginTop: 1 }}>
-            Semantic locators, strictness, partial vs exact matching, regex, filtering, collections, and choosing
-            trade-offs you can maintain in real projects.
+            Strictness, exact vs partial, regex edge cases, filtering, has/hasText, collections, and choosing between
+            readable and stable solutions depending on constraints.
           </Typography>
         </Box>
 
-        {/* Modes */}
         <PlaywrightModes />
-      </Box>
-    </Paper>
+      </Stack>
+    </Box>
   );
 }
