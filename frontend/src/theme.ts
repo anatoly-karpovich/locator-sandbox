@@ -3,15 +3,20 @@ import type { PaletteMode } from "./types";
 
 export function createAppTheme(mode: PaletteMode) {
   const isDark = mode === "dark";
-  const backgroundDefault = isDark ? "#0f1116" : "#f5f7fb";
-  const backgroundPaper = isDark ? "#151a26" : "#ffffff";
-  const divider = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(15, 23, 42, 0.08)";
+  const backgroundDefault = isDark ? "#0f1116" : "#eef1f6";
+  const backgroundPaper = isDark ? "#151a26" : "#f6f8fc";
+  const backgroundAlt = isDark ? "#121827" : "#edf0f7";
+  const divider = isDark ? "rgba(255, 255, 255, 0.08)" : "#d8deea";
 
   return createTheme({
     palette: {
       mode,
       primary: {
-        main: isDark ? "#5b6bff" : "#3f51ff",
+        main: isDark ? "#5b6bff" : "#4f5dff",
+      },
+      text: {
+        primary: isDark ? "#e6e9f2" : "#1f2937",
+        secondary: isDark ? "#b6bed1" : "#5f6b7a",
       },
       background: {
         default: backgroundDefault,
@@ -47,8 +52,8 @@ export function createAppTheme(mode: PaletteMode) {
           body: {
             background: isDark
               ? "radial-gradient(900px 500px at 20% -10%, rgba(91, 107, 255, 0.18), transparent 60%), radial-gradient(900px 500px at 80% 0%, rgba(61, 220, 151, 0.08), transparent 55%), #0f1116"
-              : "radial-gradient(900px 500px at 20% -10%, rgba(79, 93, 255, 0.12), transparent 60%), radial-gradient(900px 500px at 80% 0%, rgba(61, 220, 151, 0.06), transparent 55%), #f5f7fb",
-            color: isDark ? "#e6e9f2" : "#121826",
+              : "radial-gradient(1200px 700px at 25% -10%, rgba(79, 93, 255, 0.14), transparent 60%), radial-gradient(1000px 600px at 80% 0%, rgba(34, 197, 94, 0.08), transparent 55%), #eef1f6",
+            color: isDark ? "#e6e9f2" : "#1f2937",
             margin: 0,
             minHeight: "100%",
             overflowX: "hidden",
@@ -76,6 +81,15 @@ export function createAppTheme(mode: PaletteMode) {
           root: {
             backgroundImage: "none",
             borderRadius: 16,
+            boxShadow: isDark ? "none" : "0 10px 24px rgba(17, 24, 39, 0.06)",
+          },
+        },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            backgroundImage: "none",
+            borderRadius: 16,
           },
         },
       },
@@ -89,6 +103,9 @@ export function createAppTheme(mode: PaletteMode) {
           contained: {
             boxShadow: "none",
           },
+          outlined: {
+            borderColor: divider,
+          },
         },
       },
       MuiChip: {
@@ -96,7 +113,7 @@ export function createAppTheme(mode: PaletteMode) {
           root: {
             borderRadius: 999,
             border: `1px solid ${divider}`,
-            background: isDark ? "rgba(255, 255, 255, 0.04)" : "rgba(15, 23, 42, 0.04)",
+            background: isDark ? "rgba(255, 255, 255, 0.04)" : backgroundAlt,
             fontSize: 11,
             height: 24,
           },

@@ -1,5 +1,5 @@
 import { Box, Button, Stack, Typography, Chip } from "@mui/material";
-import { alpha } from "@mui/material/styles";
+import { alpha, useTheme } from "@mui/material/styles";
 
 type TrainingCardProps = {
   id: string;
@@ -24,6 +24,8 @@ export function TrainingCard({
   isAdvanced,
   onStart,
 }: TrainingCardProps) {
+  const theme = useTheme();
+  const isLight = theme.palette.mode === "light";
   const handleClick = () => {
     if (onStart) {
       onStart(id);
@@ -72,16 +74,22 @@ export function TrainingCard({
                   : alpha("#ff6b6b", 0.6),
               color:
                 difficulty === "Beginner"
-                  ? "#baf2dd"
+                  ? isLight
+                    ? "#065f46"
+                    : "#baf2dd"
                   : difficulty === "Intermediate"
-                  ? "#ffe3a6"
+                  ? isLight
+                    ? "#92400e"
+                    : "#ffe3a6"
+                  : isLight
+                  ? "#991b1b"
                   : "#ffb3b3",
               backgroundColor:
                 difficulty === "Beginner"
-                  ? alpha("#3ddc97", 0.1)
+                  ? alpha("#3ddc97", isLight ? 0.14 : 0.1)
                   : difficulty === "Intermediate"
-                  ? alpha("#ffcc66", 0.1)
-                  : alpha("#ff6b6b", 0.1),
+                  ? alpha("#ffcc66", isLight ? 0.16 : 0.1)
+                  : alpha("#ff6b6b", isLight ? 0.16 : 0.1),
             }}
           />
           <Chip size="small" label={`~${tasksCount} tasks`} />

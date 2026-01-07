@@ -1,4 +1,4 @@
-import { alpha } from "@mui/material/styles";
+import { alpha, useTheme } from "@mui/material/styles";
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -23,13 +23,26 @@ const quickActions: QuickAction[] = [
   { label: "Playground", to: "/playwright/playground" },
 ];
 
-const statusStyles = {
-  live: { color: "#baf2dd", borderColor: alpha("#3ddc97", 0.5), backgroundColor: alpha("#3ddc97", 0.08) },
-  soon: { color: "#ffe3a6", borderColor: alpha("#ffcc66", 0.5), backgroundColor: alpha("#ffcc66", 0.08) },
-  info: { color: "#cbd5f5", borderColor: alpha("#94a3b8", 0.5), backgroundColor: alpha("#94a3b8", 0.08) },
-} as const;
-
 export function ToolsPanel() {
+  const theme = useTheme();
+  const statusStyles = {
+    live: {
+      color: theme.palette.text.primary,
+      borderColor: alpha("#3ddc97", 0.5),
+      backgroundColor: alpha("#3ddc97", 0.08),
+    },
+    soon: {
+      color: theme.palette.text.primary,
+      borderColor: alpha("#ffcc66", 0.5),
+      backgroundColor: alpha("#ffcc66", 0.08),
+    },
+    info: {
+      color: theme.palette.text.primary,
+      borderColor: alpha("#94a3b8", 0.5),
+      backgroundColor: alpha("#94a3b8", 0.08),
+    },
+  } as const;
+
   return (
     <Box
       sx={{
