@@ -13,32 +13,29 @@ export default function HomePage({ themeMode, onToggleTheme }: BasePageProps) {
     <Box minHeight="100vh">
       <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
 
-      <Container maxWidth="xl" sx={{ py: 6 }}>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              md: "minmax(260px, 1fr) minmax(0, 1200px) minmax(0, 1fr)",
-            },
-            gap: 3,
-            alignItems: "start",
-          }}
-        >
+      <Container maxWidth={false} sx={{ py: 6 }}>
+        <Box sx={{ position: "relative" }}>
           <Stack
             spacing={2}
             component="aside"
             sx={{
-              gridColumn: { xs: "1 / -1", md: "1 / 2" },
-              justifySelf: { md: "end" },
-              width: { md: 260 },
+              width: 260,
+              display: { xs: "none", md: "flex" },
+              position: "absolute",
+              top: 0,
+              left: "calc(50% - 600px - 260px - 24px)",
             }}
           >
             <ToolsPanel />
             <TipPanel />
           </Stack>
 
-          <Stack spacing={4} component="main" sx={{ gridColumn: { xs: "1 / -1", md: "2 / 3" } }}>
+          <Stack spacing={2} component="aside" sx={{ display: { xs: "flex", md: "none" }, mb: 4 }}>
+            <ToolsPanel />
+            <TipPanel />
+          </Stack>
+
+          <Stack spacing={4} component="main" sx={{ maxWidth: 1200, mx: "auto" }}>
             <HeroSection />
             <PlaywrightSection />
             <FormsSection />
