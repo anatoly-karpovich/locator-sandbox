@@ -19,6 +19,8 @@ export type StartTrainingResponseDTO = ITrainingRun;
 
 export type StartTrainingRequestDTO = StartFixedTrainingRequest | StartCustomTrainingRequest;
 
+export type GetTrainingRunResponseDTO = ITrainingRun;
+
 export interface ITrainingSubmitSolutionRequestDTO {
   taskId: TaskId;
   payload: string;

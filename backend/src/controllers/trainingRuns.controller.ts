@@ -9,6 +9,7 @@ import {
   StartTrainingRequestDTO,
   StartTrainingResponseDTO,
   ITrainingsRunSubmitSolutionResponseDTO,
+  GetTrainingRunResponseDTO,
 } from "@dto/trainingRuns.dto.js";
 import { ErrorResponseDTO } from "@dto/common.dto.js";
 import { TrainingCatalogResponseDTO } from "@dto/trainings.dto.js";
@@ -53,7 +54,7 @@ export class TrainingRunsController {
     }
   }
 
-  async getRunById(req: Request<{ trainingRunId: string }, {}, {}>, res: Response) {
+  async getRunById(req: Request<{ trainingRunId: string }, {}, {}>, res: Response<GetTrainingRunResponseDTO | ErrorResponseDTO>) {
     const trainingRunId = req.params.trainingRunId;
     try {
       const result = await this.trainingsRunService.getRunById(trainingRunId);

@@ -50,6 +50,7 @@ export class TrainingsRunService implements ITrainingsRunService {
           result: {
             status: TRAINING_RUN_TASK_STATUS.NOT_STARTED,
             attempts: 0,
+            lastAttempt: null,
           },
         })),
       };
@@ -83,13 +84,29 @@ export class TrainingsRunService implements ITrainingsRunService {
 
     const execution = await this.locatorExecutionService.execute(task, dto.payload);
     const passed = Boolean(execution.result?.passed);
+    const hasNotes = Boolean(execution.explanation && execution.explanation.length > 0);
+    const previousStatus = taskEntry.result.status;
+    const alreadyPassed =
+      previousStatus === TRAINING_RUN_TASK_STATUS.PASSED ||
+      previousStatus === TRAINING_RUN_TASK_STATUS.PASSED_WITH_NOTES;
 
     taskEntry.result.attempts += 1;
+    taskEntry.result.lastAttempt = {
+      result: execution.result,
+      explanation: execution.explanation,
+      payload: dto.payload,
+      createdAt: new Date().toISOString(),
+    };
+
     if (passed) {
-      taskEntry.result.status = TRAINING_RUN_TASK_STATUS.PASSED;
-    } else {
-      taskEntry.result.status =
-        taskEntry.result.attempts === 1 ? TRAINING_RUN_TASK_STATUS.IN_PROGRESS : TRAINING_RUN_TASK_STATUS.FAILED;
+      const nextStatus = hasNotes
+        ? TRAINING_RUN_TASK_STATUS.PASSED_WITH_NOTES
+        : TRAINING_RUN_TASK_STATUS.PASSED;
+      if (previousStatus !== TRAINING_RUN_TASK_STATUS.PASSED) {
+        taskEntry.result.status = nextStatus;
+      }
+    } else if (!alreadyPassed) {
+      taskEntry.result.status = TRAINING_RUN_TASK_STATUS.IN_PROGRESS;
     }
     this.updateRunStatus(run);
     this.trainingRunsRepository.update(trainingRunIn, run);
@@ -113,7 +130,13 @@ export class TrainingsRunService implements ITrainingsRunService {
   private updateRunStatus(run: ITrainingRun) {
     const allTasks = run.topics.flatMap((t) => t.tasks);
 
-    if (allTasks.every((t) => t.result.status === TRAINING_RUN_TASK_STATUS.PASSED)) {
+    if (
+      allTasks.every(
+        (t) =>
+          t.result.status === TRAINING_RUN_TASK_STATUS.PASSED ||
+          t.result.status === TRAINING_RUN_TASK_STATUS.PASSED_WITH_NOTES
+      )
+    ) {
       run.status = TRAINING_RUN_STATUS.COMPLETED;
     } else {
       run.status = TRAINING_RUN_STATUS.IN_PROGRESS;

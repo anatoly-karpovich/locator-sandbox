@@ -5,10 +5,11 @@ export interface PlaygroundSubmitRequestDTO {
   payload: string;
 }
 
-export interface IPlaygroundSubmitResponseDTO extends ITrainingsRunSubmitSolutionResponseDTO {
+export interface IPlaygroundSubmitResponseDTO extends Pick<ITrainingsRunSubmitSolutionResponseDTO, "explanation"> {
   elements: {
     tagName: string;
     text: string | null;
     attributes: Record<string, string>;
+    visible: boolean;
   }[];
 }

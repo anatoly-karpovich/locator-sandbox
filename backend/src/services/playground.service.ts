@@ -1,7 +1,6 @@
 import { Locator } from "playwright";
 import { inject, injectable } from "inversify";
 import { LocatorHandler } from "@core/locator/locatorHandler.js";
-import { ExpectationCheck, CompareResult } from "@core/tasks/types.js";
 import { PlaygroundSubmitRequestDTO, IPlaygroundSubmitResponseDTO } from "@dto/playground.dto.js";
 import { AstParser } from "@core/ast-parser/index.js";
 import { TYPES } from "../container/types.js";
@@ -24,66 +23,21 @@ export class PlaygroundService implements IPlaygroundService {
 
       const count = await locator.count();
 
-      // 🔴 NOT FOUND
       if (count === 0) {
         return this.buildNotFoundResult();
       }
 
-      // 🟢 FOUND
-      const visible = await locator.first().isVisible();
       const elements = await this.buildElementsInfo(locator, count);
-
-      const checks: ExpectationCheck[] = [
-        {
-          key: "count",
-          expected: undefined,
-          actual: count,
-          passed: true,
-        },
-        {
-          key: "visible",
-          expected: undefined,
-          actual: visible,
-          passed: true,
-        },
-      ];
-
-      const result: CompareResult = {
-        passed: true,
-        checks,
-      };
 
       return {
         elements,
-        result,
       };
     });
   }
 
   private buildNotFoundResult(): IPlaygroundSubmitResponseDTO {
-    const checks: ExpectationCheck[] = [
-      {
-        key: "count",
-        expected: undefined,
-        actual: 0,
-        passed: false,
-      },
-      {
-        key: "visible",
-        expected: undefined,
-        actual: false,
-        passed: false,
-      },
-    ];
-
-    const result: CompareResult = {
-      passed: false,
-      checks,
-    };
-
     return {
       elements: [],
-      result,
       explanation: ["Element not found"],
     };
   }
@@ -96,7 +50,8 @@ export class PlaygroundService implements IPlaygroundService {
     const elements: IPlaygroundSubmitResponseDTO["elements"] = [];
 
     for (let i = 0; i < limit; i++) {
-      const info = await locator.nth(i).evaluate((el) => {
+      const nth = locator.nth(i);
+      const info = await nth.evaluate((el) => {
         const allowedAttrs = ["id", "class", "role", "data-testid", "name"];
         const attributes: Record<string, string> = {};
 
@@ -113,7 +68,12 @@ export class PlaygroundService implements IPlaygroundService {
         };
       });
 
-      elements.push(info);
+      const visible = await nth.isVisible();
+
+      elements.push({
+        ...info,
+        visible,
+      });
     }
 
     return elements;

@@ -101,7 +101,7 @@ export type TrainingCatalogItem = {
 };
 
 export type TrainingRunStatus = "not_started" | "in_progress" | "completed";
-export type TrainingRunTaskStatus = "not_started" | "in_progress" | "passed" | "failed";
+export type TrainingRunTaskStatus = "not_started" | "in_progress" | "passed" | "passed_with_notes" | "failed";
 
 export type TrainingRunTask = {
   id: string;
@@ -109,6 +109,12 @@ export type TrainingRunTask = {
   result: {
     status: TrainingRunTaskStatus;
     attempts: number;
+    lastAttempt: {
+      result: TaskResultPayload;
+      explanation?: string[];
+      payload?: string;
+      createdAt: string;
+    } | null;
   };
 };
 
@@ -138,10 +144,10 @@ export type PlaygroundElement = {
   tagName: string;
   text: string | null;
   attributes: Record<string, string>;
+  visible: boolean;
 };
 
 export type PlaygroundSubmitResponse = {
-  result: TaskResultPayload;
   explanation?: string[];
   elements: PlaygroundElement[];
 };
@@ -152,3 +158,4 @@ export type BasePageProps = {
   themeMode: PaletteMode;
   onToggleTheme: () => void;
 };
+

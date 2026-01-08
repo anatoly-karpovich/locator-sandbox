@@ -1,28 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Stack,
-  TextField,
-  Typography,
-  Chip,
-  Paper,
-} from "@mui/material";
-import ListItemButton from "@mui/material/ListItemButton";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import { Box, Stack, Typography } from "@mui/material";
 import { HeaderBar } from "../../components/HeaderBar";
 import { TaskInfoBar } from "../../components/tasks/TaskInfoBar";
 import type {
@@ -31,25 +9,19 @@ import type {
   Task,
   TaskResultPayload,
   TrainingRun,
+  TrainingRunTaskStatus,
   TrainingRunTopic,
 } from "../../types";
 import { submitTrainingRunSolution, fetchTask, fetchTrainingRun } from "../../api";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
-
-const CHECK_STATUS = {
-  Pending: "Pending",
-  Pass: "Passed",
-  Fail: "Failed",
-} as const;
-
-type CheckStatus = (typeof CHECK_STATUS)[keyof typeof CHECK_STATUS];
-
-type CheckState = {
-  key: string;
-  expected: unknown;
-  actual: unknown;
-  status: CheckStatus;
-};
+import { CHECK_STATUS } from "../../components/training-run/types";
+import type { CheckState } from "../../components/training-run/types";
+import { TrainingRunSidebar } from "../../components/training-run/TrainingRunSidebar";
+import { TrainingRunHeader } from "../../components/training-run/TrainingRunHeader";
+import { TrainingRunWorkspace } from "../../components/training-run/TrainingRunWorkspace";
+import { LocatorInput } from "../../components/common/LocatorInput";
+import { TrainingRunChecksPanel } from "../../components/training-run/TrainingRunChecksPanel";
+import { TrainingRunExplanationPanel } from "../../components/training-run/TrainingRunExplanationPanel";
 
 export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePageProps) {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
@@ -63,6 +35,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   const [locatorInput, setLocatorInput] = useState("");
   const [solutionResult, setSolutionResult] = useState<SolutionResponse | null>(null);
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
+  const [tasksWithNotes, setTasksWithNotes] = useState<Set<string>>(new Set());
   const [checksState, setChecksState] = useState<CheckState[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [taskLoading, setTaskLoading] = useState(false);
@@ -70,36 +43,25 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   const [currentTaskData, setCurrentTaskData] = useState<Task | null>(null);
   const [runLoading, setRunLoading] = useState(true);
   const [runLoadError, setRunLoadError] = useState<string | null>(null);
-  const [splitPercent, setSplitPercent] = useState(50);
-  const isDraggingRef = useRef(false);
-  const splitContainerRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDraggingRef.current || !splitContainerRef.current) return;
-      const rect = splitContainerRef.current.getBoundingClientRect();
-      const relativeX = e.clientX - rect.left;
-      const percent = (relativeX / rect.width) * 100;
-      const clamped = Math.min(70, Math.max(30, percent));
-      setSplitPercent(clamped);
-    };
-
-    const handleMouseUp = () => {
-      isDraggingRef.current = false;
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, []);
+  const getExplanations = (result: SolutionResponse | null) =>
+    (result && "explanation" in result && Array.isArray((result as any).explanation) ? (result as any).explanation : []) ||
+    [];
+  const isPassedStatus = (status: TrainingRunTaskStatus) => status === "passed" || status === "passed_with_notes";
+  const getRunTaskEntry = (taskId: string | null) => {
+    if (!taskId) return null;
+    for (const topic of topics) {
+      const taskEntry = topic.tasks.find((t) => t.id === taskId);
+      if (taskEntry) return taskEntry;
+    }
+    return null;
+  };
 
   // Fetch training run data
   useEffect(() => {
     if (!trainingRunId) return;
     setRunLoading(true);
+    setTasksWithNotes(new Set());
     fetchTrainingRun(trainingRunId)
       .then((data) => {
         setRun(data);
@@ -111,11 +73,11 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
         } else {
           setCurrentTaskId(null);
         }
-        const passed = data.topics
-          .flatMap((t) => t.tasks)
-          .filter((t) => t.result.status === "passed")
-          .map((t) => t.id);
+        const tasks = data.topics.flatMap((t) => t.tasks);
+        const passed = tasks.filter((t) => isPassedStatus(t.result.status)).map((t) => t.id);
+        const withNotes = tasks.filter((t) => t.result.status === "passed_with_notes").map((t) => t.id);
         setCompletedTasks(new Set(passed));
+        setTasksWithNotes(new Set(withNotes));
         setRunLoadError(null);
       })
       .catch((err: any) => {
@@ -168,20 +130,48 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
     };
   }, [currentTaskId]);
 
-  // Initialize checks from expectations
+  const currentRunTask = useMemo(() => getRunTaskEntry(currentTaskId), [topics, currentTaskId]);
+
+  // Initialize checks and hydrate from lastAttempt if present
   useEffect(() => {
     if (!currentTaskData) {
       setChecksState([]);
       return;
     }
+
     const baseChecks: CheckState[] = Object.entries(currentTaskData.expectations).map(([key, expected]) => ({
       key,
       expected,
       actual: null,
       status: CHECK_STATUS.Pending,
     }));
-    setChecksState(baseChecks);
-  }, [currentTaskData]);
+
+    const lastAttempt = currentRunTask?.result.lastAttempt ?? null;
+    if (lastAttempt) {
+      const checksPayload = lastAttempt.result?.checks ?? [];
+      const mergedChecks = baseChecks.map((check) => {
+        const found = checksPayload.find((c) => c.key === check.key);
+        if (!found) return { ...check, status: CHECK_STATUS.Fail, actual: null };
+        return {
+          ...check,
+          actual: found.actual ?? null,
+          status: found.passed ? CHECK_STATUS.Pass : CHECK_STATUS.Fail,
+        };
+      });
+      setChecksState(mergedChecks);
+
+      setSolutionResult({
+        isSuccess: lastAttempt.result?.passed ?? false,
+        result: lastAttempt.result,
+        explanation: lastAttempt.explanation,
+      });
+      setLocatorInput(lastAttempt.payload ?? "");
+    } else {
+      setChecksState(baseChecks);
+      setSolutionResult(null);
+      setLocatorInput("");
+    }
+  }, [currentTaskData, currentRunTask]);
 
   const handleSelectTask = (taskId: string) => {
     setCurrentTaskId(taskId);
@@ -195,11 +185,11 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
       const updated = await fetchTrainingRun(trainingRunId);
       setRun(updated);
       setTopics(updated.topics);
-      const passed = updated.topics
-        .flatMap((t) => t.tasks)
-        .filter((t) => t.result.status === "passed")
-        .map((t) => t.id);
+      const tasks = updated.topics.flatMap((t) => t.tasks);
+      const passed = tasks.filter((t) => isPassedStatus(t.result.status)).map((t) => t.id);
+      const withNotes = tasks.filter((t) => t.result.status === "passed_with_notes").map((t) => t.id);
       setCompletedTasks(new Set(passed));
+      setTasksWithNotes(new Set(withNotes));
     } catch {
       // silently ignore refresh errors
     }
@@ -216,8 +206,21 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
 
       const passed =
         ("taskResult" in result && result.taskResult?.passed) || ("result" in result && result.result?.passed) || false;
+      const explanations = getExplanations(result);
       if (passed) {
+        const alreadyPassed = completedTasks.has(currentTaskId);
         setCompletedTasks((prev) => new Set([...prev, currentTaskId]));
+        if (!alreadyPassed) {
+          setTasksWithNotes((prev) => {
+            const next = new Set(prev);
+            if (explanations.length > 0) {
+              next.add(currentTaskId);
+            } else {
+              next.delete(currentTaskId);
+            }
+            return next;
+          });
+        }
         refreshRun();
       }
     } catch (e: any) {
@@ -267,151 +270,19 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
     handleSelectTask(prevTaskId);
   };
 
-  const renderSidebarContent = () => (
-    <Box sx={{ width: 280, padding: 2 }}>
-      {topics.map((topic, topicIdx) => {
-        const isCurrentTopic = (topic.tasks || []).some((t) => t.id === currentTaskId);
-        return (
-          <Accordion key={topic.id} defaultExpanded={topicIdx === 0 || isCurrentTopic}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography fontWeight={600}>{topic.title}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <List dense>
-                {(topic.tasks || []).map((task) => {
-                  const isDone = completedTasks.has(task.id);
-                  const isActive = task.id === currentTaskId;
-                  return (
-                    <ListItem key={task.id} disablePadding>
-                      <ListItemButton
-                        selected={isActive}
-                        onClick={() => handleSelectTask(task.id)}
-                        sx={{ borderRadius: 1 }}
-                      >
-                        <ListItemIcon sx={{ minWidth: 32 }}>
-                          {isDone ? (
-                            <CheckCircleIcon color="success" fontSize="small" />
-                          ) : (
-                            <RadioButtonUncheckedIcon fontSize="small" />
-                          )}
-                        </ListItemIcon>
-                        <ListItemText primary={task.title} />
-                      </ListItemButton>
-                    </ListItem>
-                  );
-                })}
-                {(topic.tasks || []).length === 0 && (
-                  <ListItem>
-                    <ListItemText primary="No tasks in this topic" primaryTypographyProps={{ variant: "body2" }} />
-                  </ListItem>
-                )}
-              </List>
-            </AccordionDetails>
-          </Accordion>
-        );
-      })}
-    </Box>
-  );
-
-  const renderChecksPanel = () => (
-    <Box
-      sx={{
-        bgcolor: "background.paper",
-        borderRadius: 2,
-        padding: 2,
-        border: 1,
-        borderColor: "divider",
-        boxShadow: { xs: "none", md: 0 },
-      }}
-    >
-      <Stack direction="row" alignItems="center" spacing={2} marginBottom={1}>
-        <Typography variant="h6">Checks</Typography>
-      </Stack>
-      <Stack spacing={1}>
-        {checksState.map((check, idx) => (
-          <Paper
-            variant="outlined"
-            key={`${check.key}-${idx}`}
-            sx={{ padding: 1.5, display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}
-          >
-            <Chip
-              label={
-                check.status === CHECK_STATUS.Pass
-                  ? CHECK_STATUS.Pass
-                  : check.status === CHECK_STATUS.Fail
-                  ? CHECK_STATUS.Fail
-                  : CHECK_STATUS.Pending
-              }
-              color={
-                check.status === CHECK_STATUS.Pass
-                  ? "success"
-                  : check.status === CHECK_STATUS.Fail
-                  ? "error"
-                  : "default"
-              }
-              size="small"
-            />
-            <Typography variant="body2" sx={{ minWidth: 100 }}>
-              {check.key}
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography variant="body2" color="text.secondary">
-                expected: {String(check.expected)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                actual: {check.actual === null || check.actual === undefined ? "-" : String(check.actual)}
-              </Typography>
-            </Box>
-          </Paper>
-        ))}
-        {checksState.length === 0 && (
-          <Typography variant="body2" color="text.secondary">
-            No checks for current task.
-          </Typography>
-        )}
-      </Stack>
-    </Box>
-  );
-
-  const renderExplanationPanel = () => {
-    const explanations =
-      (solutionResult && "explanation" in solutionResult && Array.isArray((solutionResult as any).explanation)
-        ? (solutionResult as any).explanation
-        : []) || [];
-
-    return (
-      <Box
-        sx={{
-          bgcolor: "background.paper",
-          borderRadius: 2,
-          padding: 2,
-          border: 1,
-          borderColor: "divider",
-          boxShadow: { xs: "none", md: 0 },
-        }}
-      >
-        <Typography variant="h6" gutterBottom>
-          Explanation
-        </Typography>
-        {explanations.length > 0 ? (
-          <Stack spacing={0.5}>
-            {explanations.map((line: string, idx: number) => (
-              <Typography key={idx} variant="body2">
-                {line}
-              </Typography>
-            ))}
-          </Stack>
-        ) : (
-          <Typography variant="body2" color="text.secondary">
-            No explanations yet.
-          </Typography>
-        )}
-      </Box>
-    );
-  };
-
   const totalTasks = flatTaskIds.length;
   const currentTaskLabel = currentTaskData?.title ?? "No task";
+  const explanations = getExplanations(solutionResult);
+  const summaryStatus = (() => {
+    if (isRunning) return "Pending" as const;
+    if (!solutionResult) return undefined;
+    const passed =
+      ("taskResult" in solutionResult && solutionResult.taskResult?.passed) ||
+      ("result" in solutionResult && solutionResult.result?.passed) ||
+      false;
+    if (!passed) return "Failed" as const;
+    return explanations.length > 0 ? ("Passed with notes" as const) : ("Passed" as const);
+  })();
 
   return (
     <Box minHeight="100vh">
@@ -422,17 +293,29 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
           component="aside"
           sx={{ borderRight: 1, borderColor: "divider", bgcolor: "background.paper", overflow: "auto" }}
         >
-          {renderSidebarContent()}
+          <TrainingRunSidebar
+            runTitle={run?.title}
+            isCompleted={run?.status === "completed"}
+            hasNotes={tasksWithNotes.size > 0}
+            topics={topics}
+            currentTaskId={currentTaskId}
+            completedTasks={completedTasks}
+            tasksWithNotes={tasksWithNotes}
+            isRunning={isRunning}
+            onSelectTask={handleSelectTask}
+          />
         </Box>
 
         <Box component="main" sx={{ padding: 3, overflow: "auto" }}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" marginBottom={3} spacing={2}>
-            <Button variant="outlined" onClick={handlePrevTask} disabled={!prevTaskId}>{`< Previous`}</Button>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ textAlign: "center", flexGrow: 1 }}>
-              Task {currentTaskIndex >= 0 ? currentTaskIndex + 1 : "-"} / {totalTasks || "-"} - {currentTaskLabel}
-            </Typography>
-            <Button variant="outlined" onClick={handleNextTask} disabled={!nextTaskId}>{`Next >`}</Button>
-          </Stack>
+          <TrainingRunHeader
+            currentTaskIndex={currentTaskIndex}
+            totalTasks={totalTasks}
+            currentTaskLabel={currentTaskLabel}
+            hasPrev={!!prevTaskId}
+            hasNext={!!nextTaskId}
+            onPrev={handlePrevTask}
+            onNext={handleNextTask}
+          />
 
           {(runLoading || taskLoading) && <Typography>Loading task...</Typography>}
           {(taskLoadError || runLoadError) && (
@@ -443,145 +326,22 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
 
           {currentTaskData && !taskLoading && (
             <Stack spacing={3}>
-              <Box
-                ref={splitContainerRef}
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: {
-                    xs: "1fr",
-                    md: `${splitPercent}% 10px ${100 - splitPercent}%`,
-                  },
-                  gap: { xs: 2, md: 0 },
-                  alignItems: "stretch",
-                }}
-              >
-                <Box
-                  sx={{
-                    bgcolor: "background.paper",
-                    borderRadius: 2,
-                    padding: 2,
-                    minHeight: 320,
-                    maxHeight: 520,
-                    border: 1,
-                    borderColor: "divider",
-                    overflow: "hidden",
-                    boxShadow: { xs: "none", md: 0 },
-                  }}
-                >
-                  <Typography variant="h6" gutterBottom>
-                    HTML code
-                  </Typography>
-                  <Divider sx={{ marginBottom: 2 }} />
-                  <Box
-                    component="pre"
-                    sx={{
-                      background: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#f3f5fa"),
-                      color: (theme) => (theme.palette.mode === "dark" ? "#e3e8ff" : "#1f2937"),
-                      borderRadius: 1,
-                      padding: 2,
-                      fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
-                      whiteSpace: "pre-wrap",
-                      maxHeight: 420,
-                      overflow: "auto",
-                      border: "1px solid",
-                      borderColor: "divider",
-                    }}
-                  >
-                    {currentTaskData.html}
-                  </Box>
-                </Box>
-
-                <Box
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    isDraggingRef.current = true;
-                  }}
-                  sx={{
-                    display: { xs: "none", md: "flex" },
-                    alignItems: "stretch",
-                    justifyContent: "center",
-                    cursor: "col-resize",
-                    px: 0.5,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 4,
-                      bgcolor: "divider",
-                      borderRadius: 2,
-                      alignSelf: "stretch",
-                      transition: "background-color 0.2s ease",
-                      "&:hover": {
-                        bgcolor: "text.secondary",
-                      },
-                    }}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    bgcolor: "background.paper",
-                    borderRadius: 2,
-                    padding: 2,
-                    minHeight: 320,
-                    maxHeight: 520,
-                    border: 1,
-                    borderColor: "divider",
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                    boxShadow: { xs: "none", md: 0 },
-                  }}
-                >
-                  <Typography variant="h6" gutterBottom>
-                    UI preview
-                  </Typography>
-                  <Divider sx={{ marginBottom: 2 }} />
-                  <Box
-                    sx={{
-                      padding: 1,
-                      bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#edf0f7"),
-                      borderRadius: 1,
-                      border: "1px dashed",
-                      borderColor: "divider",
-                      minHeight: 250,
-                      maxHeight: 420,
-                      overflow: "auto",
-                      flex: 1,
-                    }}
-                    dangerouslySetInnerHTML={{ __html: currentTaskData.html }}
-                  />
-                </Box>
-              </Box>
+              <TrainingRunWorkspace html={currentTaskData.html} />
 
               <TaskInfoBar description={currentTaskData.description} studyMaterials={currentTaskData.studyMaterials} />
 
-              <Stack spacing={2}>
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="flex-start">
-                  <TextField
-                    fullWidth
-                    multiline
-                    minRows={3}
-                    placeholder="page.getByRole('heading', { name: 'Task 1' })"
-                    value={locatorInput}
-                    onChange={(e) => setLocatorInput(e.target.value)}
-                  />
-                  <Stack spacing={1} alignItems="flex-start">
-                    <Button
-                      variant="contained"
-                      startIcon={isRunning ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}
-                      sx={{ minWidth: 140 }}
-                      onClick={handleRun}
-                      disabled={!locatorInput.trim() || isRunning || taskLoading || !currentTaskId}
-                    >
-                      {isRunning ? "Running..." : "Run"}
-                    </Button>
-                  </Stack>
-                </Stack>
-              </Stack>
+              <LocatorInput
+                value={locatorInput}
+                onChange={setLocatorInput}
+                onRun={handleRun}
+                isRunning={isRunning}
+                isDisabled={!locatorInput.trim() || isRunning || taskLoading || !currentTaskId}
+                placeholder="page.getByRole('heading', { name: 'Task 1' })"
+                minRows={1}
+              />
 
-              {renderChecksPanel()}
-              {renderExplanationPanel()}
+              <TrainingRunChecksPanel checks={checksState} summaryStatus={summaryStatus} isRunning={isRunning} />
+              <TrainingRunExplanationPanel explanations={explanations} />
             </Stack>
           )}
 
