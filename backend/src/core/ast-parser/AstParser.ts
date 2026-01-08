@@ -1,4 +1,4 @@
-import { parseExpression } from "@babel/parser";
+import { parseExpression, ParseResult } from "@babel/parser";
 import * as t from "@babel/types";
 import { AstError } from "../../error/astError.js";
 import {
@@ -26,10 +26,17 @@ export class AstParser {
    * Parse a Playwright locator string into a ParsedPlan
    */
   static parse(input: string): ParsedPlan {
-    const expr = parseExpression(input, {
-      sourceType: "module",
-      plugins: ["typescript"],
-    });
+    let expr: ParseResult<t.Expression>;
+    try {
+      expr = parseExpression(input, {
+        sourceType: "module",
+        plugins: ["typescript"],
+      });
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw new AstError("Syntax error. Please verify your expression is properly formatted.");
+      }
+    }
 
     return AstParser.parseFromAst(expr);
   }
