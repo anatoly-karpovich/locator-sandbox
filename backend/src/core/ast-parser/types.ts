@@ -68,6 +68,7 @@ export type Literal =
   | boolean
   | null
   | Literal[]
+  | RegExp
   | { [k: string]: Literal };
 
 export type AllowedType =
