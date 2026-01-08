@@ -1,9 +1,10 @@
 import { inject, injectable } from "inversify";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Module } from "@core/tasks/types.js";
 import { HTTP_CODES } from "@core/httpCodes.js";
 import { ITaskAggregatedService, ITaskService } from "@services/index.js";
 import { TYPES } from "../container/types.js";
+import { ResponseError } from "@errors/index.js";
 
 @injectable()
 export class TasksController {
@@ -11,12 +12,12 @@ export class TasksController {
     @inject(TYPES.TaskAggregatedService) private taskAggregatedService: ITaskAggregatedService,
     @inject(TYPES.TaskService) private taskService: ITaskService
   ) {}
-  getById(req: Request, res: Response) {
+  getById(req: Request, res: Response, next: NextFunction) {
     const id = req.params.id;
 
     const task = this.taskService.getById(id);
 
-    if (!task) return res.status(HTTP_CODES.NOT_FOUND).json({ error: "Task not found" });
+    if (!task) return next(new ResponseError(HTTP_CODES.NOT_FOUND, "Task not found"));
 
     return res.status(HTTP_CODES.OK).json({ task });
   }
@@ -33,3 +34,4 @@ export class TasksController {
     return res.status(HTTP_CODES.OK).json(tasks);
   }
 }
+

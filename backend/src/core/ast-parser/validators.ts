@@ -1,6 +1,6 @@
 import * as t from "@babel/types";
 import { AllowedType, KeySchema, Literal } from "@core/ast-parser/types.js";
-import { AstError } from "../../error/astError.js";
+import { AstError } from "@errors/index.js";
 
 export function assertArgCount(method: string, args: unknown[], countConstraint: [number, number] | number) {
   if (!isValidArgumentCount(args, countConstraint)) {
@@ -13,25 +13,25 @@ const isValidArgumentCount = (args: unknown[], countConstraint: [number, number]
   if (Array.isArray(countConstraint)) {
     const [min, max] = countConstraint;
     if (!Number.isInteger(min) || !Number.isInteger(max)) throw new Error("Invalid count constraint");
-    if(min > max) throw new Error("Invalid count constraint");
+    if (min > max) throw new Error("Invalid count constraint");
 
     return args.length >= min && args.length <= max;
   }
   return args.length === countConstraint;
-}
+};
 
 export const MAP_ERROR_MESSAGE_TO_LOCATOR_BASED_METHOD = {
-  "getByText": "getByText(text, options?) expects 1 or 2 args",
-  "getByRole": "getByRole(role, options?) expects 1 or 2 args",
-  "getByAltText": "getByAltText(altText, options?) expects 1 or 2 args",
-  "getByLabel": "getByLabel(label, options?) expects 1 or 2 args",
-  "getByPlaceholder": "getByPlaceholder(placeholder, options?) expects 1 or 2 args",
-  "getByTestId": "getByTestId(testId) expects 1 argument",
-  "locator": "locator(selector, options?) expects 1 or 2 args",
-  "first": "first() expects 0 arguments",
-  "last": "last() expects 0 arguments",
-  "nth": "nth(index) expects 1 argument",
-}
+  getByText: "getByText(text, options?) expects 1 or 2 args",
+  getByRole: "getByRole(role, options?) expects 1 or 2 args",
+  getByAltText: "getByAltText(altText, options?) expects 1 or 2 args",
+  getByLabel: "getByLabel(label, options?) expects 1 or 2 args",
+  getByPlaceholder: "getByPlaceholder(placeholder, options?) expects 1 or 2 args",
+  getByTestId: "getByTestId(testId) expects 1 argument",
+  locator: "locator(selector, options?) expects 1 or 2 args",
+  first: "first() expects 0 arguments",
+  last: "last() expects 0 arguments",
+  nth: "nth(index) expects 1 argument",
+};
 
 export function readString(node: t.Expression, ctx: string): string {
   if (t.isStringLiteral(node)) return node.value;
@@ -58,22 +58,26 @@ export function readNonNegativeInt(node: t.Expression, ctx: string): number {
 
 export function isTypeMatch(v: Literal, expected: AllowedType): boolean {
   switch (expected) {
-    case "string": return typeof v === "string";
-    case "string|regex": return typeof v === "string" || v instanceof RegExp;
-    case "number": return typeof v === "number";
-    case "boolean": return typeof v === "boolean";
-    case "null": return v === null;
-    case "array": return Array.isArray(v);
-    case "object": return typeof v === "object" && v !== null && !Array.isArray(v);
-    default: return false;
+    case "string":
+      return typeof v === "string";
+    case "string|regex":
+      return typeof v === "string" || v instanceof RegExp;
+    case "number":
+      return typeof v === "number";
+    case "boolean":
+      return typeof v === "boolean";
+    case "null":
+      return v === null;
+    case "array":
+      return Array.isArray(v);
+    case "object":
+      return typeof v === "object" && v !== null && !Array.isArray(v);
+    default:
+      return false;
   }
 }
 
-export function readObjectLiteral<T extends object>(
-  node: t.Expression,
-  schema: KeySchema,
-  ctx: string
-): T {
+export function readObjectLiteral<T extends object>(node: t.Expression, schema: KeySchema, ctx: string): T {
   const lit = readLiteral(node);
   if (lit === null || Array.isArray(lit) || typeof lit !== "object") {
     throw new AstError(`${ctx} must be an object literal`);
@@ -121,10 +125,13 @@ function readLiteral(node: t.Expression): Literal {
       if (prop.computed) throw new AstError("Computed keys are not allowed");
       if (t.isSpreadElement(prop)) throw new AstError("Object spread is not allowed");
 
-      const key =
-        t.isIdentifier(prop.key) ? prop.key.name :
-        t.isStringLiteral(prop.key) ? prop.key.value :
-        (() => { throw new AstError("Object key must be identifier or string literal"); })();
+      const key = t.isIdentifier(prop.key)
+        ? prop.key.name
+        : t.isStringLiteral(prop.key)
+        ? prop.key.value
+        : (() => {
+            throw new AstError("Object key must be identifier or string literal");
+          })();
 
       if (!t.isExpression(prop.value)) throw new AstError("Unsupported object value");
       obj[key] = readLiteral(prop.value);

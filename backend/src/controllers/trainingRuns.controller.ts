@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 import { ITrainingsRunService, ITrainingTemplateService } from "@services/index.js";
 import { HTTP_CODES } from "@core/httpCodes.js";
@@ -14,6 +14,7 @@ import {
 import { ErrorResponseDTO } from "@dto/common.dto.js";
 import { TrainingCatalogResponseDTO } from "@dto/trainings.dto.js";
 import { TYPES } from "../container/types.js";
+import { ResponseError } from "@errors/index.js";
 
 @injectable()
 export class TrainingRunsController {
@@ -23,7 +24,8 @@ export class TrainingRunsController {
   ) {}
   startTraining(
     req: Request<{}, {}, StartTrainingRequestDTO>,
-    res: Response<StartTrainingResponseDTO | ErrorResponseDTO>
+    res: Response<StartTrainingResponseDTO | ErrorResponseDTO>,
+    next: NextFunction
   ) {
     const dto = req.body;
     try {
@@ -31,18 +33,19 @@ export class TrainingRunsController {
         const result = this.trainingsRunService.startFixedTraining(dto.trainingTemplateId);
         return res.status(HTTP_CODES.OK).json(result);
       } else {
-        return res.status(HTTP_CODES.BAD_REQUEST).json({ error: "Not implemented" });
+        return next(new ResponseError(HTTP_CODES.BAD_REQUEST, "Not implemented"));
       }
 
       // return this.trainingService.startCustomTraining(dto);
     } catch (err) {
-      return res.status(HTTP_CODES.BAD_REQUEST).json({ error: (err as Error).message });
+      return next(new ResponseError(HTTP_CODES.BAD_REQUEST, (err as Error).message));
     }
   }
 
   async submitSolution(
     req: Request<{ trainingRunId: string }, {}, ITrainingSubmitSolutionRequestDTO>,
-    res: Response<ITrainingsRunSubmitSolutionResponseDTO | ErrorResponseDTO>
+    res: Response<ITrainingsRunSubmitSolutionResponseDTO | ErrorResponseDTO>,
+    next: NextFunction
   ) {
     const dto = req.body;
     const trainingRunId = req.params.trainingRunId;
@@ -50,26 +53,35 @@ export class TrainingRunsController {
       const result = await this.trainingsRunService.handleSolution(trainingRunId, dto);
       return res.status(HTTP_CODES.OK).json(result);
     } catch (err) {
-      return res.status(HTTP_CODES.BAD_REQUEST).json({ error: (err as Error).message });
+      return next(new ResponseError(HTTP_CODES.BAD_REQUEST, (err as Error).message));
     }
   }
 
-  async getRunById(req: Request<{ trainingRunId: string }, {}, {}>, res: Response<GetTrainingRunResponseDTO | ErrorResponseDTO>) {
+  async getRunById(
+    req: Request<{ trainingRunId: string }, {}, {}>,
+    res: Response<GetTrainingRunResponseDTO | ErrorResponseDTO>,
+    next: NextFunction
+  ) {
     const trainingRunId = req.params.trainingRunId;
     try {
       const result = await this.trainingsRunService.getRunById(trainingRunId);
       return res.status(HTTP_CODES.OK).json(result);
     } catch (err) {
-      return res.status(HTTP_CODES.BAD_REQUEST).json({ error: (err as Error).message });
+      return next(new ResponseError(HTTP_CODES.BAD_REQUEST, (err as Error).message));
     }
   }
 
-  getCatalog(req: Request, res: Response<TrainingCatalogResponseDTO>) {
-    const catalog = this.trainingTemplateService.getCatalogView();
-    return res.status(HTTP_CODES.OK).json(catalog);
+  getCatalog(req: Request, res: Response<TrainingCatalogResponseDTO>, next: NextFunction) {
+    try {
+      const catalog = this.trainingTemplateService.getCatalogView();
+      return res.status(HTTP_CODES.OK).json(catalog);
+    } catch (err) {
+      return next(new ResponseError(HTTP_CODES.SERVER_ERROR, (err as Error).message));
+    }
   }
 
   private isFixedTrainingDTO(dto: StartTrainingRequestDTO): dto is StartFixedTrainingRequest {
     return "trainingTemplateId" in dto;
   }
 }
+
