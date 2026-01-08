@@ -110,25 +110,7 @@ export function LocatorInput({
   const highlighted = useMemo(() => highlightLocator(value), [value]);
   const lineHeightPx = 24;
   const minHeightPx = Math.max(minRows, 1) * lineHeightPx + 32;
-  const isDark = theme.palette.mode === "dark";
-  const palette = useMemo(
-    () => ({
-      background: isDark ? "#1e1e1e" : "#f8fafc",
-      border: isDark ? "#333333" : "#d3dbe7",
-      text: isDark ? "#d4d4d4" : "#1f2937",
-      placeholder: isDark ? "#7a7a7a" : "#94a3b8",
-      caret: isDark ? "#d4d4d4" : "#111827",
-      keyword: isDark ? "#c586c0" : "#7c3aed",
-      page: isDark ? "#569cd6" : "#2563eb",
-      method: isDark ? "#dcdcaa" : "#b45309",
-      string: isDark ? "#ce9178" : "#b91c1c",
-      regex: isDark ? "#d16969" : "#ef4444",
-      number: isDark ? "#b5cea8" : "#15803d",
-      comment: isDark ? "#6a9955" : "#64748b",
-      punctuation: isDark ? "#d4d4d4" : "#1f2937",
-    }),
-    [isDark],
-  );
+  const palette = theme.palette.code;
 
   const handleScroll = () => {
     if (!textareaRef.current || !preRef.current) return;
