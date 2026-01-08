@@ -2,6 +2,7 @@ import { useMemo, useRef } from "react";
 import { Box, Button, CircularProgress, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import { highlightLocatorSyntax } from "../../utils/syntaxHighlighter";
 
 type LocatorInputProps = {
   value: string;
@@ -13,87 +14,6 @@ type LocatorInputProps = {
   minRows?: number;
 };
 
-const METHOD_NAMES = [
-  "locator",
-  "getByRole",
-  "getByText",
-  "getByLabel",
-  "getByAltText",
-  "getByPlaceholder",
-  "getByTestId",
-  "getByTitle",
-  "count",
-  "nth",
-  "first",
-  "last",
-  "filter",
-];
-
-const NUMBER_REGEX = /^\d+\.?\d*$/;
-const METHOD_PATTERN = `\\.(?:${METHOD_NAMES.join("|")})\\b`;
-// Order matters: earlier patterns win when tokens overlap (comments/strings before regex)
-const TOKEN_REGEX = new RegExp(
-  [
-    /\/\/[^\n]*/.source,
-    /\/\*[\s\S]*?\*\//.source,
-    /(["'`])(?:\\[\s\S]|.)*?\1/.source,
-    /\/(?![*/])(?:\\[\s\S]|[^\\/\n])+\/[gimsuy]*/.source,
-    METHOD_PATTERN,
-    /\bpage\b/.source,
-    /\b\d+\.?\d*\b/.source,
-    /[{}[\]();,]/.source,
-  ].join("|"),
-  "g",
-);
-
-const escapeHtml = (text: string) =>
-  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-const wrapToken = (className: string, text: string) =>
-  `<span class="${className}">${escapeHtml(text)}</span>`;
-
-const highlightLocator = (codeText: string) => {
-  if (!codeText) return "";
-  TOKEN_REGEX.lastIndex = 0;
-
-  let result = "";
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = TOKEN_REGEX.exec(codeText)) !== null) {
-    // Emit plain text between tokens, then wrap the matched token.
-    const token = match[0];
-    const matchIndex = match.index ?? 0;
-
-    if (matchIndex > lastIndex) {
-      result += escapeHtml(codeText.slice(lastIndex, matchIndex));
-    }
-
-    if (token.startsWith("//") || token.startsWith("/*")) {
-      result += wrapToken("token-comment", token);
-    } else if (token.startsWith('"') || token.startsWith("'") || token.startsWith("`")) {
-      result += wrapToken("token-string", token);
-    } else if (token.startsWith("/")) {
-      result += wrapToken("token-regex", token);
-    } else if (token.startsWith(".")) {
-      result += `.${wrapToken("token-method", token.slice(1))}`;
-    } else if (token === "page") {
-      result += wrapToken("token-page", token);
-    } else if (NUMBER_REGEX.test(token)) {
-      result += wrapToken("token-number", token);
-    } else {
-      result += wrapToken("token-punctuation", token);
-    }
-
-    lastIndex = matchIndex + token.length;
-  }
-
-  if (lastIndex < codeText.length) {
-    result += escapeHtml(codeText.slice(lastIndex));
-  }
-
-  return result;
-};
 
 export function LocatorInput({
   value,
@@ -107,7 +27,7 @@ export function LocatorInput({
   const theme = useTheme();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const preRef = useRef<HTMLPreElement | null>(null);
-  const highlighted = useMemo(() => highlightLocator(value), [value]);
+  const highlighted = useMemo(() => highlightLocatorSyntax(value), [value]);
   const lineHeightPx = 24;
   const minHeightPx = Math.max(minRows, 1) * lineHeightPx + 32;
   const palette = theme.palette.code;
