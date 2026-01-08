@@ -3,7 +3,7 @@ import { CompareResult, ExpectationCheck, Expectations, Task } from "@core/tasks
 import { LocatorHandler } from "@core/locator/locatorHandler.js";
 import { ITrainingsRunSubmitSolutionResponseDTO } from "@dto/trainingRuns.dto.js";
 import { AstParser } from "@core/ast-parser/AstParser.js";
-import { AstError } from "../../error/astError.js";
+import { AstError } from "@errors/index.js";
 import { ParsedPlan } from "@core/ast-parser/index.js";
 import { TYPES } from "../../container/types.js";
 import { ILocatorExecutor, IPlaywrightRunner, IUsageSpecification, ISolutionsHandler } from "@core/types.js";
@@ -105,3 +105,4 @@ export class LocatorExecutor implements ILocatorExecutor {
     };
   }
 }
+

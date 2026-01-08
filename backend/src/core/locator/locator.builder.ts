@@ -1,6 +1,6 @@
 import { Page, Locator } from "playwright";
 import { LocatorOptions, ParsedPlan, Step } from "@core/ast-parser/index.js";
-import { LocatorBuilderError } from "../../error/locatorBuild.error.js";
+import { LocatorBuilderError } from "@errors/index.js";
 
 export class LocatorBuilder {
   constructor(private readonly page: Page) {}
@@ -82,3 +82,4 @@ export class LocatorBuilder {
     return typeof (obj as Locator).first === "function";
   }
 }
+

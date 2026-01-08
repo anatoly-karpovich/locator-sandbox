@@ -1,14 +1,15 @@
 import "reflect-metadata";
 import express from "express";
-import { solutionsRouter, tasksRouter, trainingsRouter, trainingsRunsRouter, playgroundRouter } from "./router/index.js";
+import { tasksRouter, trainingsRouter, trainingsRunsRouter, playgroundRouter } from "./router/index.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 const app = express();
 app.use(express.json());
-app.use("/api", solutionsRouter);
 app.use("/api", tasksRouter);
 app.use("/api", trainingsRunsRouter);
 app.use("/api", trainingsRouter);
 app.use("/api", playgroundRouter);
+app.use(errorMiddleware);
 
 async function startApp() {
   const PORT = 3333;

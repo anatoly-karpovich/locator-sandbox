@@ -1,6 +1,6 @@
 import { parseExpression } from "@babel/parser";
 import * as t from "@babel/types";
-import { AstError } from "../../error/astError.js";
+import { AstError } from "@errors/index.js";
 import {
   ParsedPlan,
   ReceiverKind,
@@ -138,10 +138,13 @@ export class AstParser {
       if (prop.computed) throw new AstError(`${ctx}: computed keys are not allowed`);
       if (t.isSpreadElement(prop)) throw new AstError(`${ctx}: object spread is not allowed`);
 
-      const key =
-        t.isIdentifier(prop.key) ? prop.key.name :
-        t.isStringLiteral(prop.key) ? prop.key.value :
-        (() => { throw new AstError(`${ctx}: key must be identifier or string literal`); })();
+      const key = t.isIdentifier(prop.key)
+        ? prop.key.name
+        : t.isStringLiteral(prop.key)
+        ? prop.key.value
+        : (() => {
+            throw new AstError(`${ctx}: key must be identifier or string literal`);
+          })();
 
       if (!t.isExpression(prop.value)) throw new AstError(`${ctx}: unsupported value`);
 
@@ -194,7 +197,8 @@ export class AstParser {
     ctx: string
   ): ParsedPlan {
     const unwrapped = AstParser.unwrap(node);
-    if (!t.isCallExpression(unwrapped)) throw new AstError(`${ctx}: argument must be a locator expression like page.locator("...")`);
+    if (!t.isCallExpression(unwrapped))
+      throw new AstError(`${ctx}: argument must be a locator expression like page.locator("...")`);
 
     const plan = parseFromAst(unwrapped);
     if (plan.steps.length === 0) throw new AstError(`${ctx}: argument must produce a locator`);
@@ -213,9 +217,7 @@ export class AstParser {
         assertArgCount("locator", args, [1, 2]);
 
         const selector = readString(args[0], "locator(selector)");
-        const options = args[1]
-          ? AstParser.readLocatorOptions(args[1], parseFromAst, "locator(options)")
-          : undefined;
+        const options = args[1] ? AstParser.readLocatorOptions(args[1], parseFromAst, "locator(options)") : undefined;
 
         return { receiver, method: "locator", args: [selector, options] };
       },

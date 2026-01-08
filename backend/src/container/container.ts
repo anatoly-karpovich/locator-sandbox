@@ -33,7 +33,7 @@ import { LocatorExecutor } from "@core/locator/locatorExecutor.js";
 import { LocatorStateHandler } from "@core/locator/locatorStateHandler.js";
 import { SolutionsHandler } from "@core/tasks/solutionsHandler.js";
 import { IPlaywrightRunner, IUsageSpecification, ILocatorExecutor, ILocatorStateHandler, ISolutionsHandler } from "@core/types.js";
-import { TasksController, TrainingsController, TrainingRunsController, PlaygroundController, SolutionController } from "@controllers/index.js";
+import { TasksController, TrainingsController, TrainingRunsController, PlaygroundController } from "@controllers/index.js";
 
 const container = new Container({
   defaultScope: "Singleton",
@@ -66,6 +66,5 @@ container.bind<TasksController>(TYPES.TasksController).to(TasksController);
 container.bind<TrainingsController>(TYPES.TrainingsController).to(TrainingsController);
 container.bind<TrainingRunsController>(TYPES.TrainingRunsController).to(TrainingRunsController);
 container.bind<PlaygroundController>(TYPES.PlaygroundController).to(PlaygroundController);
-container.bind<SolutionController>(TYPES.SolutionController).to(SolutionController);
 
 export { container };

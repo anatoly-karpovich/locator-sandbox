@@ -24,5 +24,4 @@ export const TYPES = {
   TrainingsController: Symbol.for("TrainingsController"),
   TrainingRunsController: Symbol.for("TrainingRunsController"),
   PlaygroundController: Symbol.for("PlaygroundController"),
-  SolutionController: Symbol.for("SolutionController"),
 } as const;

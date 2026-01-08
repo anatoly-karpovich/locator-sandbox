@@ -4,6 +4,7 @@ import { LocatorPayloadValidationError, validateLocatorPayload } from "@core/val
 import { HTTP_CODES } from "@core/httpCodes.js";
 import { ITrainingSubmitSolutionRequestDTO } from "@dto/trainingRuns.dto.js";
 import { PlaygroundSubmitRequestDTO } from "@dto/playground.dto.js";
+import { ResponseError } from "@errors/index.js";
 
 export function validateLocatorPayloadMiddleware(
   req: Request<{}, {}, PlaygroundSubmitRequestDTO | ITrainingSubmitSolutionRequestDTO>,
@@ -17,13 +18,10 @@ export function validateLocatorPayloadMiddleware(
     next();
   } catch (err) {
     if (err instanceof LocatorPayloadValidationError) {
-      return res.status(HTTP_CODES.BAD_REQUEST).json({
-        error: err.message,
-      });
+      return next(new ResponseError(HTTP_CODES.BAD_REQUEST, err.message));
     }
 
-    return res.status(HTTP_CODES.SERVER_ERROR).json({
-      error: "Unexpected locator validation error",
-    });
+    return next(new ResponseError(HTTP_CODES.SERVER_ERROR, "Unexpected locator validation error"));
   }
 }
+

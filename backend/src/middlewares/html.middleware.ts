@@ -3,6 +3,7 @@ import { ErrorResponseDTO } from "@dto/common.dto.js";
 import { HTTP_CODES } from "@core/httpCodes.js";
 import { validateHtmlContent, HtmlValidationError } from "@core/validation/htmlValidator.js";
 import { PlaygroundSubmitRequestDTO } from "@dto/playground.dto.js";
+import { ResponseError } from "@errors/index.js";
 
 export function validateHtmlContentMiddleware(
   req: Request<{}, {}, PlaygroundSubmitRequestDTO>,
@@ -16,13 +17,10 @@ export function validateHtmlContentMiddleware(
     next();
   } catch (err) {
     if (err instanceof HtmlValidationError) {
-      return res.status(HTTP_CODES.BAD_REQUEST).json({
-        error: err.message,
-      });
+      return next(new ResponseError(HTTP_CODES.BAD_REQUEST, err.message));
     }
 
-    return res.status(HTTP_CODES.SERVER_ERROR).json({
-      error: "Unexpected HTML validation error",
-    });
+    return next(new ResponseError(HTTP_CODES.SERVER_ERROR, "Unexpected HTML validation error"));
   }
 }
+
