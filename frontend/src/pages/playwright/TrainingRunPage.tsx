@@ -11,7 +11,7 @@ import type { CheckState } from "../../components/training-run/types";
 import { TrainingRunSidebar } from "../../components/training-run/TrainingRunSidebar";
 import { TrainingRunHeader } from "../../components/training-run/TrainingRunHeader";
 import { TrainingRunWorkspace } from "../../components/training-run/TrainingRunWorkspace";
-import { TrainingRunLocatorInput } from "../../components/training-run/TrainingRunLocatorInput";
+import { LocatorInput } from "../../components/common/LocatorInput";
 import { TrainingRunChecksPanel } from "../../components/training-run/TrainingRunChecksPanel";
 import { TrainingRunExplanationPanel } from "../../components/training-run/TrainingRunExplanationPanel";
 
@@ -254,12 +254,14 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
 
               <TaskInfoBar description={currentTaskData.description} studyMaterials={currentTaskData.studyMaterials} />
 
-              <TrainingRunLocatorInput
-                locatorInput={locatorInput}
+              <LocatorInput
+                value={locatorInput}
                 onChange={setLocatorInput}
                 onRun={handleRun}
                 isRunning={isRunning}
                 isDisabled={!locatorInput.trim() || isRunning || taskLoading || !currentTaskId}
+                placeholder="page.getByRole('heading', { name: 'Task 1' })"
+                minRows={1}
               />
 
               <TrainingRunChecksPanel checks={checksState} />

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Box, Button, CircularProgress, Paper, Stack, TextField, Typography } from "@mui/material";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import { Box, Paper, Stack, Typography } from "@mui/material";
 import { HeaderBar } from "../../components/HeaderBar";
 import { submitPlayground } from "../../api";
 import type { BasePageProps, PlaygroundSubmitResponse } from "../../types";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 import { ResultSection } from "../../components/playground/ResultSection";
 import { PlaygroundWorkspace } from "../../components/playground/PlaygroundWorkspace";
+import { LocatorInput } from "../../components/common/LocatorInput";
 
 export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePageProps) {
   const { showError } = useApp();
@@ -50,28 +50,15 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
             variant="outlined"
             sx={{ padding: 2, bgcolor: "background.paper", borderColor: "divider", boxShadow: { xs: "none", md: 0 } }}
           >
-            <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="flex-start">
-              <TextField
-                fullWidth
-                multiline
-                minRows={1}
-                placeholder="page.getByRole('button', { name: 'Submit' })"
-                value={payload}
-                onChange={(e) => setPayload(e.target.value)}
-                sx={{ flex: 1 }}
-              />
-              <Stack spacing={1} justifyContent="flex-start" alignItems={{ xs: "stretch", md: "flex-start" }}>
-                <Button
-                  variant="contained"
-                  startIcon={isRunning ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}
-                  sx={{ minWidth: 140 }}
-                  onClick={handleRun}
-                  disabled={!html.trim() || !payload.trim() || isRunning}
-                >
-                  {isRunning ? "Running..." : "Run"}
-                </Button>
-              </Stack>
-            </Stack>
+            <LocatorInput
+              value={payload}
+              onChange={setPayload}
+              onRun={handleRun}
+              isRunning={isRunning}
+              isDisabled={!html.trim() || !payload.trim() || isRunning}
+              placeholder="page.getByRole('button', { name: 'Submit' })"
+              minRows={1}
+            />
           </Paper>
 
           <Stack spacing={2} marginBottom={4}>

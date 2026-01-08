@@ -1,30 +1,34 @@
 import { Button, CircularProgress, Stack, TextField } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
-type TrainingRunLocatorInputProps = {
-  locatorInput: string;
+type LocatorInputProps = {
+  value: string;
   onChange: (value: string) => void;
   onRun: () => void;
   isRunning: boolean;
   isDisabled: boolean;
+  placeholder?: string;
+  minRows?: number;
 };
 
-export function TrainingRunLocatorInput({
-  locatorInput,
+export function LocatorInput({
+  value,
   onChange,
   onRun,
   isRunning,
   isDisabled,
-}: TrainingRunLocatorInputProps) {
+  placeholder = "page.getByRole('heading', { name: 'Task 1' })",
+  minRows = 1,
+}: LocatorInputProps) {
   return (
     <Stack spacing={2}>
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="flex-start">
         <TextField
           fullWidth
           multiline
-          minRows={1}
-          placeholder="page.getByRole('heading', { name: 'Task 1' })"
-          value={locatorInput}
+          minRows={minRows}
+          placeholder={placeholder}
+          value={value}
           onChange={(e) => onChange(e.target.value)}
         />
         <Stack spacing={1} alignItems="flex-start">
