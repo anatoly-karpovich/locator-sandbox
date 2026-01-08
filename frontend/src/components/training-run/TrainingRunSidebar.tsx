@@ -3,6 +3,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Chip,
   List,
   ListItem,
   ListItemIcon,
@@ -17,6 +18,9 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import type { TrainingRunTopic } from "../../types";
 
 type TrainingRunSidebarProps = {
+  runTitle?: string;
+  isCompleted: boolean;
+  hasNotes: boolean;
   topics: TrainingRunTopic[];
   currentTaskId: string | null;
   completedTasks: Set<string>;
@@ -26,6 +30,9 @@ type TrainingRunSidebarProps = {
 };
 
 export function TrainingRunSidebar({
+  runTitle,
+  isCompleted,
+  hasNotes,
   topics,
   currentTaskId,
   completedTasks,
@@ -35,12 +42,32 @@ export function TrainingRunSidebar({
 }: TrainingRunSidebarProps) {
   return (
     <Box sx={{ width: 280, padding: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginBottom: 2 }}>
+        <Typography fontWeight={700} variant="subtitle1">
+          {runTitle || "Training Run"}
+        </Typography>
+        {isCompleted && <Chip label="Completed" color={hasNotes ? "warning" : "success"} size="small" />}
+      </Box>
       {topics.map((topic, topicIdx) => {
         const isCurrentTopic = (topic.tasks || []).some((t) => t.id === currentTaskId);
+        const allPassedLike = (topic.tasks || []).length > 0
+          ? (topic.tasks || []).every((t) => t.result.status === "passed" || t.result.status === "passed_with_notes")
+          : false;
+        const hasNotes = (topic.tasks || []).some((t) => t.result.status === "passed_with_notes");
+        const topicStatus = allPassedLike ? (hasNotes ? "Passed with notes" : "Passed") : null;
         return (
           <Accordion key={topic.id} defaultExpanded={topicIdx === 0 || isCurrentTopic}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography fontWeight={600}>{topic.title}</Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography fontWeight={600}>{topic.title}</Typography>
+                {topicStatus && (
+                  <Tooltip title={topicStatus} placement="right" arrow disableInteractive>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <CheckCircleIcon color={topicStatus === "Passed" ? "success" : "warning"} fontSize="small" />
+                    </Box>
+                  </Tooltip>
+                )}
+              </Box>
             </AccordionSummary>
             <AccordionDetails>
               <List dense>

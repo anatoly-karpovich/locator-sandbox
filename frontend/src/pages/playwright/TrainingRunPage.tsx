@@ -48,6 +48,14 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
     (result && "explanation" in result && Array.isArray((result as any).explanation) ? (result as any).explanation : []) ||
     [];
   const isPassedStatus = (status: TrainingRunTaskStatus) => status === "passed" || status === "passed_with_notes";
+  const getRunTaskEntry = (taskId: string | null) => {
+    if (!taskId) return null;
+    for (const topic of topics) {
+      const taskEntry = topic.tasks.find((t) => t.id === taskId);
+      if (taskEntry) return taskEntry;
+    }
+    return null;
+  };
 
   // Fetch training run data
   useEffect(() => {
@@ -122,20 +130,48 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
     };
   }, [currentTaskId]);
 
-  // Initialize checks from expectations
+  const currentRunTask = useMemo(() => getRunTaskEntry(currentTaskId), [topics, currentTaskId]);
+
+  // Initialize checks and hydrate from lastAttempt if present
   useEffect(() => {
     if (!currentTaskData) {
       setChecksState([]);
       return;
     }
+
     const baseChecks: CheckState[] = Object.entries(currentTaskData.expectations).map(([key, expected]) => ({
       key,
       expected,
       actual: null,
       status: CHECK_STATUS.Pending,
     }));
-    setChecksState(baseChecks);
-  }, [currentTaskData]);
+
+    const lastAttempt = currentRunTask?.result.lastAttempt ?? null;
+    if (lastAttempt) {
+      const checksPayload = lastAttempt.result?.checks ?? [];
+      const mergedChecks = baseChecks.map((check) => {
+        const found = checksPayload.find((c) => c.key === check.key);
+        if (!found) return { ...check, status: CHECK_STATUS.Fail, actual: null };
+        return {
+          ...check,
+          actual: found.actual ?? null,
+          status: found.passed ? CHECK_STATUS.Pass : CHECK_STATUS.Fail,
+        };
+      });
+      setChecksState(mergedChecks);
+
+      setSolutionResult({
+        isSuccess: lastAttempt.result?.passed ?? false,
+        result: lastAttempt.result,
+        explanation: lastAttempt.explanation,
+      });
+      setLocatorInput(lastAttempt.payload ?? "");
+    } else {
+      setChecksState(baseChecks);
+      setSolutionResult(null);
+      setLocatorInput("");
+    }
+  }, [currentTaskData, currentRunTask]);
 
   const handleSelectTask = (taskId: string) => {
     setCurrentTaskId(taskId);
@@ -258,6 +294,9 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
           sx={{ borderRight: 1, borderColor: "divider", bgcolor: "background.paper", overflow: "auto" }}
         >
           <TrainingRunSidebar
+            runTitle={run?.title}
+            isCompleted={run?.status === "completed"}
+            hasNotes={tasksWithNotes.size > 0}
             topics={topics}
             currentTaskId={currentTaskId}
             completedTasks={completedTasks}
