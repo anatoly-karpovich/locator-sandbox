@@ -23,12 +23,10 @@ export class PlaygroundService implements IPlaygroundService {
 
       const count = await locator.count();
 
-      // 🔴 NOT FOUND
       if (count === 0) {
         return this.buildNotFoundResult();
       }
 
-      // 🟢 FOUND
       const elements = await this.buildElementsInfo(locator, count);
 
       return {
@@ -38,29 +36,8 @@ export class PlaygroundService implements IPlaygroundService {
   }
 
   private buildNotFoundResult(): IPlaygroundSubmitResponseDTO {
-    // const checks: ExpectationCheck[] = [
-    //   {
-    //     key: "count",
-    //     expected: undefined,
-    //     actual: 0,
-    //     passed: false,
-    //   },
-    //   {
-    //     key: "visible",
-    //     expected: undefined,
-    //     actual: false,
-    //     passed: false,
-    //   },
-    // ];
-
-    // const result: CompareResult = {
-    //   passed: false,
-    //   checks,
-    // };
-
     return {
       elements: [],
-      // result,
       explanation: ["Element not found"],
     };
   }
