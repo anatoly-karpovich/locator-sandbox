@@ -27,6 +27,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   const [locatorInput, setLocatorInput] = useState("");
   const [solutionResult, setSolutionResult] = useState<SolutionResponse | null>(null);
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
+  const [tasksWithNotes, setTasksWithNotes] = useState<Set<string>>(new Set());
   const [checksState, setChecksState] = useState<CheckState[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [taskLoading, setTaskLoading] = useState(false);
@@ -35,10 +36,15 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   const [runLoading, setRunLoading] = useState(true);
   const [runLoadError, setRunLoadError] = useState<string | null>(null);
 
+  const getExplanations = (result: SolutionResponse | null) =>
+    (result && "explanation" in result && Array.isArray((result as any).explanation) ? (result as any).explanation : []) ||
+    [];
+
   // Fetch training run data
   useEffect(() => {
     if (!trainingRunId) return;
     setRunLoading(true);
+    setTasksWithNotes(new Set());
     fetchTrainingRun(trainingRunId)
       .then((data) => {
         setRun(data);
@@ -155,8 +161,18 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
 
       const passed =
         ("taskResult" in result && result.taskResult?.passed) || ("result" in result && result.result?.passed) || false;
+      const explanations = getExplanations(result);
       if (passed) {
         setCompletedTasks((prev) => new Set([...prev, currentTaskId]));
+        setTasksWithNotes((prev) => {
+          const next = new Set(prev);
+          if (explanations.length > 0) {
+            next.add(currentTaskId);
+          } else {
+            next.delete(currentTaskId);
+          }
+          return next;
+        });
         refreshRun();
       }
     } catch (e: any) {
@@ -208,10 +224,17 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
 
   const totalTasks = flatTaskIds.length;
   const currentTaskLabel = currentTaskData?.title ?? "No task";
-  const explanations =
-    (solutionResult && "explanation" in solutionResult && Array.isArray((solutionResult as any).explanation)
-      ? (solutionResult as any).explanation
-      : []) || [];
+  const explanations = getExplanations(solutionResult);
+  const summaryStatus = (() => {
+    if (isRunning) return "Pending" as const;
+    if (!solutionResult) return undefined;
+    const passed =
+      ("taskResult" in solutionResult && solutionResult.taskResult?.passed) ||
+      ("result" in solutionResult && solutionResult.result?.passed) ||
+      false;
+    if (!passed) return "Failed" as const;
+    return explanations.length > 0 ? ("Passed with notes" as const) : ("Passed" as const);
+  })();
 
   return (
     <Box minHeight="100vh">
@@ -226,6 +249,8 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
             topics={topics}
             currentTaskId={currentTaskId}
             completedTasks={completedTasks}
+            tasksWithNotes={tasksWithNotes}
+            isRunning={isRunning}
             onSelectTask={handleSelectTask}
           />
         </Box>
@@ -264,7 +289,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                 minRows={1}
               />
 
-              <TrainingRunChecksPanel checks={checksState} />
+              <TrainingRunChecksPanel checks={checksState} summaryStatus={summaryStatus} isRunning={isRunning} />
               <TrainingRunExplanationPanel explanations={explanations} />
             </Stack>
           )}

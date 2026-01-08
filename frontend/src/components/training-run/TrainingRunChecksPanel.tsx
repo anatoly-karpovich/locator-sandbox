@@ -2,11 +2,22 @@ import { Box, Chip, Paper, Stack, Typography } from "@mui/material";
 import { CHECK_STATUS } from "./types";
 import type { CheckState } from "./types";
 
+type ChecksSummaryStatus = "Passed" | "Passed with notes" | "Failed" | "Pending";
+
 type TrainingRunChecksPanelProps = {
   checks: CheckState[];
+  summaryStatus?: ChecksSummaryStatus;
+  isRunning: boolean;
 };
 
-export function TrainingRunChecksPanel({ checks }: TrainingRunChecksPanelProps) {
+const getSummaryColor = (status: ChecksSummaryStatus) => {
+  if (status === "Pending") return "default" as const;
+  if (status === "Passed") return "success" as const;
+  if (status === "Passed with notes") return "warning" as const;
+  return "error" as const;
+};
+
+export function TrainingRunChecksPanel({ checks, summaryStatus, isRunning }: TrainingRunChecksPanelProps) {
   return (
     <Box
       sx={{
@@ -20,6 +31,7 @@ export function TrainingRunChecksPanel({ checks }: TrainingRunChecksPanelProps) 
     >
       <Stack direction="row" alignItems="center" spacing={2} marginBottom={1}>
         <Typography variant="h6">Checks</Typography>
+        {summaryStatus && <Chip label={summaryStatus} color={getSummaryColor(summaryStatus)} size="small" />}
       </Stack>
       <Stack spacing={1}>
         {checks.map((check, idx) => (
@@ -30,14 +42,18 @@ export function TrainingRunChecksPanel({ checks }: TrainingRunChecksPanelProps) 
           >
             <Chip
               label={
-                check.status === CHECK_STATUS.Pass
+                isRunning
+                  ? CHECK_STATUS.Pending
+                  : check.status === CHECK_STATUS.Pass
                   ? CHECK_STATUS.Pass
                   : check.status === CHECK_STATUS.Fail
                   ? CHECK_STATUS.Fail
                   : CHECK_STATUS.Pending
               }
               color={
-                check.status === CHECK_STATUS.Pass
+                isRunning
+                  ? "default"
+                  : check.status === CHECK_STATUS.Pass
                   ? "success"
                   : check.status === CHECK_STATUS.Fail
                   ? "error"
