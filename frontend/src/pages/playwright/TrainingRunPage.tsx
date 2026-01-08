@@ -3,7 +3,15 @@ import { useParams } from "react-router-dom";
 import { Box, Stack, Typography } from "@mui/material";
 import { HeaderBar } from "../../components/HeaderBar";
 import { TaskInfoBar } from "../../components/tasks/TaskInfoBar";
-import type { BasePageProps, SolutionResponse, Task, TaskResultPayload, TrainingRun, TrainingRunTopic } from "../../types";
+import type {
+  BasePageProps,
+  SolutionResponse,
+  Task,
+  TaskResultPayload,
+  TrainingRun,
+  TrainingRunTaskStatus,
+  TrainingRunTopic,
+} from "../../types";
 import { submitTrainingRunSolution, fetchTask, fetchTrainingRun } from "../../api";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 import { CHECK_STATUS } from "../../components/training-run/types";
@@ -39,6 +47,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   const getExplanations = (result: SolutionResponse | null) =>
     (result && "explanation" in result && Array.isArray((result as any).explanation) ? (result as any).explanation : []) ||
     [];
+  const isPassedStatus = (status: TrainingRunTaskStatus) => status === "passed" || status === "passed_with_notes";
 
   // Fetch training run data
   useEffect(() => {
@@ -56,11 +65,11 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
         } else {
           setCurrentTaskId(null);
         }
-        const passed = data.topics
-          .flatMap((t) => t.tasks)
-          .filter((t) => t.result.status === "passed")
-          .map((t) => t.id);
+        const tasks = data.topics.flatMap((t) => t.tasks);
+        const passed = tasks.filter((t) => isPassedStatus(t.result.status)).map((t) => t.id);
+        const withNotes = tasks.filter((t) => t.result.status === "passed_with_notes").map((t) => t.id);
         setCompletedTasks(new Set(passed));
+        setTasksWithNotes(new Set(withNotes));
         setRunLoadError(null);
       })
       .catch((err: any) => {
@@ -140,11 +149,11 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
       const updated = await fetchTrainingRun(trainingRunId);
       setRun(updated);
       setTopics(updated.topics);
-      const passed = updated.topics
-        .flatMap((t) => t.tasks)
-        .filter((t) => t.result.status === "passed")
-        .map((t) => t.id);
+      const tasks = updated.topics.flatMap((t) => t.tasks);
+      const passed = tasks.filter((t) => isPassedStatus(t.result.status)).map((t) => t.id);
+      const withNotes = tasks.filter((t) => t.result.status === "passed_with_notes").map((t) => t.id);
       setCompletedTasks(new Set(passed));
+      setTasksWithNotes(new Set(withNotes));
     } catch {
       // silently ignore refresh errors
     }
@@ -163,16 +172,19 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
         ("taskResult" in result && result.taskResult?.passed) || ("result" in result && result.result?.passed) || false;
       const explanations = getExplanations(result);
       if (passed) {
+        const alreadyPassed = completedTasks.has(currentTaskId);
         setCompletedTasks((prev) => new Set([...prev, currentTaskId]));
-        setTasksWithNotes((prev) => {
-          const next = new Set(prev);
-          if (explanations.length > 0) {
-            next.add(currentTaskId);
-          } else {
-            next.delete(currentTaskId);
-          }
-          return next;
-        });
+        if (!alreadyPassed) {
+          setTasksWithNotes((prev) => {
+            const next = new Set(prev);
+            if (explanations.length > 0) {
+              next.add(currentTaskId);
+            } else {
+              next.delete(currentTaskId);
+            }
+            return next;
+          });
+        }
         refreshRun();
       }
     } catch (e: any) {

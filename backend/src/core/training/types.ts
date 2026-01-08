@@ -1,4 +1,4 @@
-import { Difficulty, ModuleId, SectionId, TaskId, TopicId } from "@core/tasks/types.js";
+import { CompareResult, Difficulty, ModuleId, SectionId, TaskId, TopicId } from "@core/tasks/types.js";
 import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "@core/training/enums.js";
 
 export type TrainingRunId = string; // UUID
@@ -11,6 +11,12 @@ export interface TrainingTaskResult {
   status: TRAINING_RUN_TASK_STATUS;
   attempts: number;
   // lastSubmittedAt?: string;
+  lastAttempt: {
+    result: CompareResult;
+    explanation?: string[];
+    payload?: string;
+    createdAt: string;
+  } | null;
 
   // опционально, но очень полезно
   // lastResult?: {
