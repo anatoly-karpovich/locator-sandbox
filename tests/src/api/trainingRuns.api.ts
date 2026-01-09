@@ -1,4 +1,4 @@
-import { apiConfig } from "../apiConfig.js";
+import { apiConfig } from "../config/api.config.js";
 import { IApiClient, IRequestOptions } from "../core/types.js";
 import type { TrainingRunResponse, TrainingRunSubmitResponse } from "../data/types.js";
 

@@ -1,11 +1,11 @@
-import { test, expect } from "../fixtures.js";
+import { test, expect } from "../../fixtures/index.js";
 import {
   validateJsonSchema,
   trainingRunResponseSchema,
   trainingRunSubmitSchema,
   errorResponseSchema,
   TestTag,
-} from "../data/index.js";
+} from "../../data/index.js";
 
 test.describe("[API] [TrainingRuns]", () => {
   test("POST /training-runs/start returns run for template id", { tag: [TestTag.POSITIVE, TestTag.SMOKE] }, async ({ trainingRunsApi, testContext }) => {

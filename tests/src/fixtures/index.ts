@@ -1,12 +1,12 @@
 import { test as base, expect } from "@playwright/test";
-import { PlaywrightApiClient } from "./core/playwrightApiClient.js";
-import { TasksApi } from "./apis/tasks.api.js";
-import { TrainingsApi } from "./apis/trainings.api.js";
-import { TrainingRunsApi } from "./apis/trainingRuns.api.js";
-import { PlaygroundApi } from "./apis/playground.api.js";
-import { registerApiSchemas } from "./data/index.js";
-import { callTestManager } from "./support/callTestManager.js";
-import type { TestContext } from "./support/testManager.js";
+import { PlaywrightApiClient } from "../core/playwrightApiClient.js";
+import { TasksApi } from "../api/tasks.api.js";
+import { TrainingsApi } from "../api/trainings.api.js";
+import { TrainingRunsApi } from "../api/trainingRuns.api.js";
+import { PlaygroundApi } from "../api/playground.api.js";
+import { registerApiSchemas } from "../data/index.js";
+import { dataManagerFixture } from "./dataManager.fixture.js";
+import type { TestContext } from "../core/dataManager.js";
 
 type ApiFixtures = {
   apiClient: PlaywrightApiClient;
@@ -38,7 +38,7 @@ const test = base.extend<ApiFixtures>({
   playgroundApi: async ({ apiClient }, use) => {
     await use(new PlaygroundApi(apiClient));
   },
-  testContext: callTestManager,
+  testContext: dataManagerFixture,
 });
 
 export { test, expect };

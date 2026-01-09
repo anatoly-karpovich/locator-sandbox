@@ -8,14 +8,14 @@ export default defineConfig({
   projects: [
     {
       name: "api",
-      testDir: "./api",
+      testDir: "./src/tests/api",
       use: {
         baseURL: process.env.API_BASE_URL ?? "http://localhost:3333/api",
       },
     },
     {
       name: "ui",
-      testDir: "./ui",
+      testDir: "./src/tests/ui",
       use: {
         baseURL: process.env.UI_BASE_URL ?? "http://localhost:5173",
       },

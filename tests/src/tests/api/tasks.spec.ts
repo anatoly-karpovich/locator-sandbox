@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures.js";
-import { validateJsonSchema, tasksCatalogSchema, taskResponseSchema, errorResponseSchema, TestTag } from "../data/index.js";
+import { test, expect } from "../../fixtures/index.js";
+import { validateJsonSchema, tasksCatalogSchema, taskResponseSchema, errorResponseSchema, TestTag } from "../../data/index.js";
 
 test.describe("[API] [Tasks]", () => {
   test("GET /tasks returns catalog list", { tag: [TestTag.POSITIVE, TestTag.SMOKE] }, async ({ tasksApi }) => {

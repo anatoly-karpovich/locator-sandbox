@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures.js";
-import { validateJsonSchema, playgroundSubmitSchema, errorResponseSchema, TestTag } from "../data/index.js";
+import { test, expect } from "../../fixtures/index.js";
+import { validateJsonSchema, playgroundSubmitSchema, errorResponseSchema, TestTag } from "../../data/index.js";
 
 test.describe("[API] [Playground]", () => {
   test("POST /playground/submit valid html returns elements", { tag: [TestTag.POSITIVE, TestTag.SMOKE] }, async ({ playgroundApi }) => {
