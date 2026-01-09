@@ -1,0 +1,16 @@
+{
+  "name": "tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:api": "playwright test --project=api",
+    "test:ui": "playwright test --project=ui"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
+  }
+}
