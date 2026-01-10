@@ -27,8 +27,9 @@ export class AstParser {
    */
   static parse(input: string): ParsedPlan {
     let expr: ParseResult<t.Expression>;
+    const normalize = input.trimEnd().replace(/;$/, "");
     try {
-      expr = parseExpression(input, {
+      expr = parseExpression(normalize, {
         sourceType: "module",
         plugins: ["typescript"],
       });
