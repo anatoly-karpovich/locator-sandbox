@@ -22,7 +22,7 @@ export class TrainingRunsController {
     @inject(TYPES.TrainingTemplateService) private trainingTemplateService: ITrainingTemplateService,
     @inject(TYPES.TrainingsRunService) private trainingsRunService: ITrainingsRunService
   ) {}
-  startTraining(
+  async startTraining(
     req: Request<{}, {}, StartTrainingRequestDTO>,
     res: Response<StartTrainingResponseDTO | ErrorResponseDTO>,
     next: NextFunction
@@ -84,4 +84,3 @@ export class TrainingRunsController {
     return "trainingTemplateId" in dto;
   }
 }
-

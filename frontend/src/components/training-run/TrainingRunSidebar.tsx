@@ -15,6 +15,8 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
+import type { TrainingRunTaskStatus } from "../../types";
 import type { TrainingRunTopic } from "../../types";
 
 type TrainingRunSidebarProps = {
@@ -23,9 +25,6 @@ type TrainingRunSidebarProps = {
   hasNotes: boolean;
   topics: TrainingRunTopic[];
   currentTaskId: string | null;
-  completedTasks: Set<string>;
-  tasksWithNotes: Set<string>;
-  isRunning: boolean;
   onSelectTask: (taskId: string) => void;
 };
 
@@ -35,9 +34,6 @@ export function TrainingRunSidebar({
   hasNotes,
   topics,
   currentTaskId,
-  completedTasks,
-  tasksWithNotes,
-  isRunning,
   onSelectTask,
 }: TrainingRunSidebarProps) {
   return (
@@ -72,10 +68,11 @@ export function TrainingRunSidebar({
             <AccordionDetails>
               <List dense>
                 {(topic.tasks || []).map((task) => {
-                  const isDone = completedTasks.has(task.id);
-                  const hasNotes = tasksWithNotes.has(task.id);
+                  const status: TrainingRunTaskStatus = task.result.status;
+                  const isDone = status === "passed" || status === "passed_with_notes";
+                  const hasNotes = status === "passed_with_notes";
                   const isActive = task.id === currentTaskId;
-                  const isPending = isActive && isRunning;
+                  const isPending = status === "in_progress";
                   const statusLabel = isPending
                     ? "Pending"
                     : isDone
@@ -90,7 +87,7 @@ export function TrainingRunSidebar({
                           <Tooltip title={statusLabel} placement="right" arrow disableInteractive>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                               {isPending ? (
-                                <CheckCircleIcon sx={{ color: "text.disabled" }} fontSize="small" />
+                                <RadioButtonCheckedIcon sx={{ color: "text.disabled" }} fontSize="small" />
                               ) : isDone ? (
                                 <CheckCircleIcon color={hasNotes ? "warning" : "success"} fontSize="small" />
                               ) : (
