@@ -1,4 +1,5 @@
 import { Box, Divider, Typography } from "@mui/material";
+import { PreviewFrame } from "../common/PreviewFrame";
 
 type TrainingRunPreviewSectionProps = {
   html: string;
@@ -34,14 +35,12 @@ export function TrainingRunPreviewSection({ html }: TrainingRunPreviewSectionPro
           borderColor: "divider",
           minHeight: 250,
           maxHeight: 420,
-          overflow: "auto",
+          overflow: "hidden",
           flex: 1,
-          "& *": {
-            pointerEvents: "none",
-          },
         }}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      >
+        <PreviewFrame html={html} title="UI preview" />
+      </Box>
     </Box>
   );
 }

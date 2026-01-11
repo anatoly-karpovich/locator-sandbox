@@ -1,4 +1,5 @@
 import { Box, Divider, Paper, Typography } from "@mui/material";
+import { PreviewFrame } from "../common/PreviewFrame";
 
 type PlaygroundPreviewSectionProps = {
   html: string;
@@ -34,14 +35,12 @@ export function PlaygroundPreviewSection({ html }: PlaygroundPreviewSectionProps
           borderColor: "divider",
           minHeight: 250,
           maxHeight: 420,
-          overflow: "auto",
+          overflow: "hidden",
           flex: 1,
-          "& *": {
-            pointerEvents: "none",
-          },
         }}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      >
+        <PreviewFrame html={html} title="UI preview" />
+      </Box>
     </Paper>
   );
 }
