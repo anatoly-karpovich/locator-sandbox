@@ -28,7 +28,7 @@ export class AstParser {
   static parse(input: string): ParsedPlan {
     let expr: ParseResult<t.Expression>;
     try {
-      expr = parseExpression(input, {
+      expr = parseExpression(input.replace(/;$/, ""), {
         sourceType: "module",
         plugins: ["typescript"],
       });

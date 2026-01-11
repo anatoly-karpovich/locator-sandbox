@@ -200,7 +200,8 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
     setSolutionResult(null);
     setIsRunning(true);
     try {
-      const result = await submitTrainingRunSolution(trainingRunId, { taskId: currentTaskId, payload: locatorInput });
+      const payload = locatorInput.replace(/;$/, "");
+      const result = await submitTrainingRunSolution(trainingRunId, { taskId: currentTaskId, payload });
       setSolutionResult(result);
       updateChecksFromResult(result);
 
