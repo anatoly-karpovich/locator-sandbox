@@ -12,7 +12,7 @@ import type {
   TrainingRunTaskStatus,
   TrainingRunTopic,
 } from "../../types";
-import { submitTrainingRunSolution, fetchTask, fetchTrainingRun } from "../../api";
+import { submitTrainingRunSolution, fetchTask, fetchTrainingRun, HttpError } from "../../api";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 import { CHECK_STATUS } from "../../components/training-run/types";
 import type { CheckState } from "../../components/training-run/types";
@@ -87,6 +87,11 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
       })
       .catch((err: any) => {
         setRunLoadError(err?.message ?? "Failed to load training run");
+        if (err instanceof HttpError && err.status === 404) {
+          showError(err, "Training run not found.");
+          navigate(APP_ROUTES.PLAYWRIGHT_TRAININGS);
+          return;
+        }
         showError(err, "Server error. Please try again later.");
         setRun(null);
         setTopics([]);
@@ -229,6 +234,11 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
       }
       await refreshRun();
     } catch (e: any) {
+      if (e instanceof HttpError && e.status === 404) {
+        showError(e, "Training run not found.");
+        navigate(APP_ROUTES.PLAYWRIGHT_TRAININGS);
+        return;
+      }
       showError(e, "Failed to run locator. Please try again");
     } finally {
       setIsRunning(false);
