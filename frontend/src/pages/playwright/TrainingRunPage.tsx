@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Stack, Typography } from "@mui/material";
-import { HeaderBar } from "../../components/HeaderBar";
 import { TaskInfoBar } from "../../components/tasks/TaskInfoBar";
 import type {
-  BasePageProps,
   SolutionResponse,
   Task,
   TaskResultPayload,
@@ -24,7 +22,7 @@ import { TrainingRunChecksPanel } from "../../components/training-run/TrainingRu
 import { TrainingRunExplanationPanel } from "../../components/training-run/TrainingRunExplanationPanel";
 import { APP_ROUTES } from "../../constants/routes";
 
-export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePageProps) {
+export default function TrainingRunPage() {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
   const navigate = useNavigate();
   const { showError } = useApp();
@@ -300,8 +298,6 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
 
   return (
     <Box minHeight="100vh">
-      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
-
       <Box display="grid" gridTemplateColumns="280px 1fr" height="calc(100vh - 64px)">
         <Box
           component="aside"

@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Box, Paper, Stack, Typography } from "@mui/material";
-import { HeaderBar } from "../../components/HeaderBar";
 import { submitPlayground } from "../../api";
-import type { BasePageProps, PlaygroundSubmitResponse } from "../../types";
+import type { PlaygroundSubmitResponse } from "../../types";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 import { ResultSection } from "../../components/playground/ResultSection";
 import { PlaygroundWorkspace } from "../../components/playground/PlaygroundWorkspace";
 import { LocatorInput } from "../../components/common/LocatorInput";
 
-export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePageProps) {
+export default function PlaygroundPage() {
   const { showError } = useApp();
   const [html, setHtml] = useState("");
   const [payload, setPayload] = useState("");
@@ -31,8 +30,6 @@ export default function PlaygroundPage({ themeMode, onToggleTheme }: BasePagePro
 
   return (
     <Box minHeight="100vh">
-      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
-
       <Box sx={{ width: "100%", paddingX: 3, paddingY: 4 }}>
         <Stack spacing={2} marginBottom={3}>
           <Typography variant="h4" fontWeight={700}>
