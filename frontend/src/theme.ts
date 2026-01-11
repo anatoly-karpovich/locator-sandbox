@@ -138,6 +138,23 @@ export function createAppTheme(mode: PaletteMode) {
           },
         },
       },
+      MuiSnackbarContent: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            width: "100%",
+            maxWidth: "100%",
+            boxSizing: "border-box",
+            [theme.breakpoints.up("md")]: {
+              width: "70vw",
+              maxWidth: "70vw",
+            },
+            [theme.breakpoints.up("lg")]: {
+              width: "45vw",
+              maxWidth: "45vw",
+            },
+          }),
+        },
+      },
     },
   });
 }

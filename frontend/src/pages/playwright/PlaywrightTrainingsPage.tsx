@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, CircularProgress, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { fetchTrainingsCatalog, startTrainingRun } from "../../api";
 import type { BasePageProps, TrainingCatalogResponse } from "../../types";
 import { HeaderBar } from "../../components/HeaderBar";
@@ -23,7 +23,7 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
       .then(setCatalogData)
       .catch((e) => {
         setError(e.message);
-        showError(e, "Failed to load trainings");
+        showError(e, "Failed to receive trainings. Please try again later.");
       })
       .finally(() => setLoading(false));
   }, [showError]);
@@ -37,6 +37,9 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
       showError(e, "Failed to start training");
     }
   };
+
+  const sections = catalogData?.catalog ?? [];
+  const showEmptyState = useMemo(() => loading || Boolean(error) || sections.length === 0, [loading, error, sections]);
 
   return (
     <Box minHeight="100vh">
@@ -59,31 +62,33 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
               BEGINNER PATH
             </Typography>
             <Stack spacing={1} sx={{ mt: 1 }}>
-              {catalogData?.catalog.map((section) => (
-                <Box
-                  key={section.id}
-                  component="a"
-                  href={`#section-${section.id}`}
-                  sx={{
-                    display: "block",
-                    padding: "8px 10px",
-                    borderRadius: 2,
-                    border: "1px solid transparent",
-                    color: "text.secondary",
-                    transition: "0.15s ease",
-                    "&:hover": {
-                      color: "text.primary",
-                      borderColor: "divider",
-                      backgroundColor: "background.default",
-                    },
-                  }}
-                >
-                  <Typography variant="body2">{section.title}</Typography>
-                </Box>
-              )) ?? (
+              {showEmptyState ? (
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  Loading sections...
+                  No trainings available.
                 </Typography>
+              ) : (
+                sections.map((section) => (
+                  <Box
+                    key={section.id}
+                    component="a"
+                    href={`#section-${section.id}`}
+                    sx={{
+                      display: "block",
+                      padding: "8px 10px",
+                      borderRadius: 2,
+                      border: "1px solid transparent",
+                      color: "text.secondary",
+                      transition: "0.15s ease",
+                      "&:hover": {
+                        color: "text.primary",
+                        borderColor: "divider",
+                        backgroundColor: "background.default",
+                      },
+                    }}
+                  >
+                    <Typography variant="body2">{section.title}</Typography>
+                  </Box>
+                ))
               )}
             </Stack>
           </Box>
@@ -91,27 +96,41 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
       >
         <Stack spacing={4}>
           <TrainingsIntro />
-          {loading && <CircularProgress />}
-          {error && <Typography color="error">{error}</Typography>}
 
-          {catalogData?.catalog.map((section) => (
-            <Box key={section.id} id={`section-${section.id}`} sx={{ mb: 2, scrollMarginTop: 96 }}>
-              <Box
-                sx={{
-                  borderRadius: 3,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  bgcolor: "background.paper",
-                  p: { xs: 2, md: 3 },
-                }}
-              >
-                <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
-                  {section.title}
-                </Typography>
-                <TrainingsGrid trainings={section.trainings} onStart={handleStart} />
-              </Box>
+          {showEmptyState ? (
+            <Box
+              sx={{
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "divider",
+                bgcolor: "background.paper",
+                p: { xs: 2, md: 3 },
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                No trainings available.
+              </Typography>
             </Box>
-          ))}
+          ) : (
+            sections.map((section) => (
+              <Box key={section.id} id={`section-${section.id}`} sx={{ mb: 2, scrollMarginTop: 96 }}>
+                <Box
+                  sx={{
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    bgcolor: "background.paper",
+                    p: { xs: 2, md: 3 },
+                  }}
+                >
+                  <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
+                    {section.title}
+                  </Typography>
+                  <TrainingsGrid trainings={section.trainings} onStart={handleStart} />
+                </Box>
+              </Box>
+            ))
+          )}
           <WhatsNextBlock
             items={[
               {
