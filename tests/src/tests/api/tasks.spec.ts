@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/index.js";
+import { test, expect } from "../../fixtures/api.fixture.js";
 import { validateJsonSchema, tasksCatalogSchema, taskResponseSchema, errorResponseSchema, TestTag } from "../../data/index.js";
 
 test.describe("[API] [Tasks]", () => {
