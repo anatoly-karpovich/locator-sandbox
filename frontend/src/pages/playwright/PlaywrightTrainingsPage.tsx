@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Stack, Typography } from "@mui/material";
 import { fetchTrainingsCatalog, startTrainingRun } from "../../api";
@@ -15,31 +15,49 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
   const navigate = useNavigate();
   const [catalogData, setCatalogData] = useState<TrainingCatalogResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [startingId, setStartingId] = useState<string | null>(null);
   const { showError } = useApp();
 
-  useEffect(() => {
-    fetchTrainingsCatalog()
-      .then(setCatalogData)
+  const fetchCatalog = useCallback(() => {
+    setLoading(true);
+    return fetchTrainingsCatalog()
+      .then((data) => {
+        setCatalogData(data);
+        setCatalogError(null);
+      })
       .catch((e) => {
-        setError(e.message);
+        setCatalogError(e.message);
         showError(e, "Failed to receive trainings. Please try again later.");
       })
       .finally(() => setLoading(false));
   }, [showError]);
 
+  useEffect(() => {
+    const timerId = window.setTimeout(() => {
+      fetchCatalog();
+    }, 0);
+    return () => window.clearTimeout(timerId);
+  }, [fetchCatalog]);
+
   const handleStart = async (templateId: string) => {
+    if (startingId) return;
+    setStartingId(templateId);
     try {
       const run = await startTrainingRun(templateId);
       navigate(APP_ROUTES.PLAYWRIGHT_TRAINING_RUN(run.id));
     } catch (e: any) {
-      setError(e?.message ?? "Failed to start training");
+      setStartingId(null);
       showError(e, "Failed to start training");
+      void fetchCatalog();
     }
   };
 
   const sections = catalogData?.catalog ?? [];
-  const showEmptyState = useMemo(() => loading || Boolean(error) || sections.length === 0, [loading, error, sections]);
+  const showEmptyState = useMemo(
+    () => loading || Boolean(catalogError) || sections.length === 0,
+    [loading, catalogError, sections]
+  );
 
   return (
     <Box minHeight="100vh">
@@ -126,7 +144,12 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
                   <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
                     {section.title}
                   </Typography>
-                  <TrainingsGrid trainings={section.trainings} onStart={handleStart} />
+                <TrainingsGrid
+                  trainings={section.trainings}
+                  onStart={handleStart}
+                  startingId={startingId}
+                  isStarting={Boolean(startingId)}
+                />
                 </Box>
               </Box>
             ))

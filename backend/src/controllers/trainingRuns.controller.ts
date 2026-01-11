@@ -22,7 +22,7 @@ export class TrainingRunsController {
     @inject(TYPES.TrainingTemplateService) private trainingTemplateService: ITrainingTemplateService,
     @inject(TYPES.TrainingsRunService) private trainingsRunService: ITrainingsRunService
   ) {}
-  startTraining(
+  async startTraining(
     req: Request<{}, {}, StartTrainingRequestDTO>,
     res: Response<StartTrainingResponseDTO | ErrorResponseDTO>,
     next: NextFunction
@@ -31,7 +31,7 @@ export class TrainingRunsController {
     try {
       if (this.isFixedTrainingDTO(dto)) {
         const result = this.trainingsRunService.startFixedTraining(dto.trainingTemplateId);
-        return res.status(HTTP_CODES.OK).json(result);
+        return res.status(HTTP_CODES.NOT_FOUND).json(result);
       } else {
         return next(new ResponseError(HTTP_CODES.BAD_REQUEST, "Not implemented"));
       }
@@ -84,4 +84,3 @@ export class TrainingRunsController {
     return "trainingTemplateId" in dto;
   }
 }
-
