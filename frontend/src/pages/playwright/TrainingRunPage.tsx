@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Box, Stack, Typography } from "@mui/material";
 import { HeaderBar } from "../../components/HeaderBar";
 import { TaskInfoBar } from "../../components/tasks/TaskInfoBar";
@@ -22,9 +22,11 @@ import { TrainingRunWorkspace } from "../../components/training-run/TrainingRunW
 import { LocatorInput } from "../../components/common/LocatorInput";
 import { TrainingRunChecksPanel } from "../../components/training-run/TrainingRunChecksPanel";
 import { TrainingRunExplanationPanel } from "../../components/training-run/TrainingRunExplanationPanel";
+import { APP_ROUTES } from "../../constants/routes";
 
 export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePageProps) {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
+  const navigate = useNavigate();
   const { showError } = useApp();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -45,8 +47,9 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   const [runLoadError, setRunLoadError] = useState<string | null>(null);
 
   const getExplanations = (result: SolutionResponse | null) =>
-    (result && "explanation" in result && Array.isArray((result as any).explanation) ? (result as any).explanation : []) ||
-    [];
+    (result && "explanation" in result && Array.isArray((result as any).explanation)
+      ? (result as any).explanation
+      : []) || [];
   const isPassedStatus = (status: TrainingRunTaskStatus) => status === "passed" || status === "passed_with_notes";
   const getRunTaskEntry = (taskId: string | null) => {
     if (!taskId) return null;
@@ -82,14 +85,15 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
       })
       .catch((err: any) => {
         setRunLoadError(err?.message ?? "Failed to load training run");
-        showError(err, "Failed to load training run");
+        showError(err, "Server error. Please try again later.");
         setRun(null);
         setTopics([]);
         setFlatTaskIds([]);
         setCurrentTaskId(null);
+        navigate(APP_ROUTES.PLAYWRIGHT_TRAININGS);
       })
       .finally(() => setRunLoading(false));
-  }, [trainingRunId]);
+  }, [trainingRunId, navigate, showError]);
 
   const currentTaskIndex = useMemo(() => {
     if (!currentTaskId) return -1;
@@ -197,7 +201,6 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
 
   const handleRun = async () => {
     if (!currentTaskId || taskLoading || taskLoadError || !trainingRunId) return;
-    setSolutionResult(null);
     setIsRunning(true);
     try {
       const result = await submitTrainingRunSolution(trainingRunId, { taskId: currentTaskId, payload: locatorInput });
@@ -221,11 +224,10 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
             return next;
           });
         }
-        refreshRun();
       }
+      await refreshRun();
     } catch (e: any) {
-      showError(e, "Failed to run locator");
-      markAllChecksFailed();
+      showError(e, "Failed to run locator. Please try again");
     } finally {
       setIsRunning(false);
     }
@@ -299,9 +301,6 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
             hasNotes={tasksWithNotes.size > 0}
             topics={topics}
             currentTaskId={currentTaskId}
-            completedTasks={completedTasks}
-            tasksWithNotes={tasksWithNotes}
-            isRunning={isRunning}
             onSelectTask={handleSelectTask}
           />
         </Box>
