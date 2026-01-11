@@ -301,7 +301,13 @@ export default function TrainingRunPage() {
       <Box display="grid" gridTemplateColumns="280px 1fr" height="calc(100vh - 64px)">
         <Box
           component="aside"
-          sx={{ borderRight: 1, borderColor: "divider", bgcolor: "background.paper", overflow: "auto" }}
+          sx={{
+            borderRight: 1,
+            borderColor: "divider",
+            bgcolor: "background.paper",
+            overflowY: "auto",
+            overflowX: "hidden",
+          }}
         >
           <TrainingRunSidebar
             runTitle={run?.title}

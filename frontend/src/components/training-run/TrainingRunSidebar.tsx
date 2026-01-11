@@ -37,7 +37,7 @@ export function TrainingRunSidebar({
   onSelectTask,
 }: TrainingRunSidebarProps) {
   return (
-    <Box sx={{ width: 280, padding: 2 }}>
+    <Box sx={{ width: 280, padding: 2, overflowX: "hidden" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginBottom: 2 }}>
         <Typography fontWeight={700} variant="subtitle1">
           {runTitle || "Training Run"}
@@ -96,7 +96,12 @@ export function TrainingRunSidebar({
                             </Box>
                           </Tooltip>
                         </ListItemIcon>
-                        <ListItemText primary={task.title} />
+                        <ListItemText
+                          primary={task.title}
+                          primaryTypographyProps={{
+                            noWrap: true,
+                          }}
+                        />
                       </ListItemButton>
                     </ListItem>
                   );
