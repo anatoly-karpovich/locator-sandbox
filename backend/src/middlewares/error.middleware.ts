@@ -11,4 +11,3 @@ export function errorMiddleware(err: unknown, req: Request, res: Response<ErrorR
 
   res.status(status).json({ error: message });
 }
-
