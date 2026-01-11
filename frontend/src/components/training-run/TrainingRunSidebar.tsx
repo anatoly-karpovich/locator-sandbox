@@ -72,7 +72,7 @@ export function TrainingRunSidebar({
                   const isDone = status === "passed" || status === "passed_with_notes";
                   const hasNotes = status === "passed_with_notes";
                   const isActive = task.id === currentTaskId;
-                  const isPending = isActive && status === "in_progress";
+                  const isPending = status === "in_progress";
                   const statusLabel = isPending
                     ? "Pending"
                     : isDone
