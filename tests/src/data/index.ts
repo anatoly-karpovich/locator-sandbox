@@ -18,6 +18,7 @@ import {
 } from "./schemas/trainingSchemas.js";
 import { playgroundSubmitSchema } from "./schemas/playgroundSchemas.js";
 import { TestTag } from "./tags.js";
+import { HTTP_CODES } from "./httpCodes.js";
 
 export function registerApiSchemas(): void {
   registerSchema(errorResponseSchema);
@@ -38,6 +39,7 @@ export function registerApiSchemas(): void {
 
 export { validateJsonSchema };
 export { TestTag };
+export { HTTP_CODES };
 export {
   errorResponseSchema,
   taskResponseSchema,

@@ -1,5 +1,5 @@
 import { test, expect } from "../../fixtures/api.fixture.js";
-import { validateJsonSchema, playgroundSubmitSchema, errorResponseSchema, TestTag } from "../../data/index.js";
+import { validateJsonSchema, playgroundSubmitSchema, errorResponseSchema, TestTag, HTTP_CODES } from "../../data/index.js";
 import { forbiddenTagCases, externalResourceCases, invalidPayloadCases } from "../../data/cases/playgroundCases.js";
 
 test.describe("[API] [Playground]", () => {
@@ -9,7 +9,7 @@ test.describe("[API] [Playground]", () => {
       payload: "page.getByText('Title')",
     });
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(HTTP_CODES.OK);
     validateJsonSchema(response.body, playgroundSubmitSchema);
   });
 
@@ -23,7 +23,7 @@ test.describe("[API] [Playground]", () => {
           payload: "page.getByText('x')",
         });
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(HTTP_CODES.BAD_REQUEST);
         validateJsonSchema(response.body, errorResponseSchema);
       },
     );
@@ -38,7 +38,7 @@ test.describe("[API] [Playground]", () => {
         payload: "page.getByText('Click')",
       });
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(HTTP_CODES.BAD_REQUEST);
       validateJsonSchema(response.body, errorResponseSchema);
     },
   );
@@ -53,7 +53,7 @@ test.describe("[API] [Playground]", () => {
           payload: "page.getByText('x')",
         });
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(HTTP_CODES.BAD_REQUEST);
         validateJsonSchema(response.body, errorResponseSchema);
       },
     );
@@ -69,7 +69,7 @@ test.describe("[API] [Playground]", () => {
           payload,
         });
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(HTTP_CODES.BAD_REQUEST);
         validateJsonSchema(response.body, errorResponseSchema);
       },
     );

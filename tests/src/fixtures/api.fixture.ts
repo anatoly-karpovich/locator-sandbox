@@ -15,13 +15,11 @@ type ApiFixtures = {
   trainingRunsApi: TrainingRunsApi;
   playgroundApi: PlaygroundApi;
   testContext: TestContext;
-  useFreshContext: boolean;
 };
 
 registerApiSchemas();
 
 const test = base.extend<ApiFixtures>({
-  useFreshContext: [false, { option: true }],
   apiClient: async ({ request }, use) => {
     const client = new PlaywrightApiClient(request);
     await use(client);
