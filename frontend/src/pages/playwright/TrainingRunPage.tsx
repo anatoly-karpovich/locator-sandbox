@@ -69,10 +69,12 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
       .then((data) => {
         setRun(data);
         setTopics(data.topics);
-        const orderedTaskIds = data.topics.flatMap((topic) => topic.tasks.map((t) => t.id));
+        const orderedTasks = data.topics.flatMap((topic) => topic.tasks);
+        const orderedTaskIds = orderedTasks.map((t) => t.id);
         setFlatTaskIds(orderedTaskIds);
         if (orderedTaskIds.length > 0) {
-          setCurrentTaskId(orderedTaskIds[0]);
+          const lastInProgress = [...orderedTasks].reverse().find((task) => task.result.status === "in_progress");
+          setCurrentTaskId(lastInProgress?.id ?? orderedTaskIds[0]);
         } else {
           setCurrentTaskId(null);
         }
