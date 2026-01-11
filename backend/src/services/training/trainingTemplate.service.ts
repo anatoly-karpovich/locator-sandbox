@@ -37,7 +37,7 @@ export class TrainingTemplateService implements ITrainingTemplateService {
     const templates = this.trainingTemplatesRepository.getAll();
 
     return {
-      trainings: sections.map((section) => {
+      catalog: sections.map((section) => {
         const sectionTemplates = templates.filter((t) => t.sectionId === section.id);
 
         return {

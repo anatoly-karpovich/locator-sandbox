@@ -13,14 +13,14 @@ import { APP_ROUTES } from "../../constants/routes";
 
 export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProps) {
   const navigate = useNavigate();
-  const [catalog, setCatalog] = useState<TrainingCatalogResponse | null>(null);
+  const [catalogData, setCatalogData] = useState<TrainingCatalogResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { showError } = useApp();
 
   useEffect(() => {
     fetchTrainingsCatalog()
-      .then(setCatalog)
+      .then(setCatalogData)
       .catch((e) => {
         setError(e.message);
         showError(e, "Failed to load trainings");
@@ -59,32 +59,28 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
               BEGINNER PATH
             </Typography>
             <Stack spacing={1} sx={{ mt: 1 }}>
-              {catalog?.modules.flatMap((module) =>
-                module.sections.map((section) => (
-                  <Box
-                    key={section.id}
-                    component="a"
-                    href={`#section-${section.id}`}
-                    sx={{
-                      display: "block",
-                      padding: "8px 10px",
-                      borderRadius: 2,
-                      border: "1px solid transparent",
-                      color: "text.secondary",
-                      transition: "0.15s ease",
-                      "&:hover": {
-                        color: "text.primary",
-                        borderColor: "divider",
-                        backgroundColor: "background.default",
-                      },
-                    }}
-                  >
-                    <Typography variant="body2">
-                      {module.title} / {section.title}
-                    </Typography>
-                  </Box>
-                ))
-              ) ?? (
+              {catalogData?.catalog.map((section) => (
+                <Box
+                  key={section.id}
+                  component="a"
+                  href={`#section-${section.id}`}
+                  sx={{
+                    display: "block",
+                    padding: "8px 10px",
+                    borderRadius: 2,
+                    border: "1px solid transparent",
+                    color: "text.secondary",
+                    transition: "0.15s ease",
+                    "&:hover": {
+                      color: "text.primary",
+                      borderColor: "divider",
+                      backgroundColor: "background.default",
+                    },
+                  }}
+                >
+                  <Typography variant="body2">{section.title}</Typography>
+                </Box>
+              )) ?? (
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                   Loading sections...
                 </Typography>
@@ -98,26 +94,24 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
           {loading && <CircularProgress />}
           {error && <Typography color="error">{error}</Typography>}
 
-          {catalog?.modules.map((module) =>
-            module.sections.map((section) => (
-              <Box key={section.id} id={`section-${section.id}`} sx={{ mb: 2, scrollMarginTop: 96 }}>
-                <Box
-                  sx={{
-                    borderRadius: 3,
-                    border: "1px solid",
-                    borderColor: "divider",
-                    bgcolor: "background.paper",
-                    p: { xs: 2, md: 3 },
-                  }}
-                >
-                  <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
-                    {module.title} / {section.title}
-                  </Typography>
-                  <TrainingsGrid trainings={section.trainings} onStart={handleStart} />
-                </Box>
+          {catalogData?.catalog.map((section) => (
+            <Box key={section.id} id={`section-${section.id}`} sx={{ mb: 2, scrollMarginTop: 96 }}>
+              <Box
+                sx={{
+                  borderRadius: 3,
+                  border: "1px solid",
+                  borderColor: "divider",
+                  bgcolor: "background.paper",
+                  p: { xs: 2, md: 3 },
+                }}
+              >
+                <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
+                  {section.title}
+                </Typography>
+                <TrainingsGrid trainings={section.trainings} onStart={handleStart} />
               </Box>
-            ))
-          )}
+            </Box>
+          ))}
           <WhatsNextBlock
             items={[
               {

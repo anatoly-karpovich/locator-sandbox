@@ -7,5 +7,5 @@ export interface TrainingCatalogSectionDTO {
 }
 
 export interface TrainingCatalogResponseDTO {
-  trainings: TrainingCatalogSectionDTO[];
+  catalog: TrainingCatalogSectionDTO[];
 }
