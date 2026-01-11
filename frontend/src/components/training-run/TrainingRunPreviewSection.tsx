@@ -36,6 +36,9 @@ export function TrainingRunPreviewSection({ html }: TrainingRunPreviewSectionPro
           maxHeight: 420,
           overflow: "auto",
           flex: 1,
+          "& *": {
+            pointerEvents: "none",
+          },
         }}
         dangerouslySetInnerHTML={{ __html: html }}
       />
