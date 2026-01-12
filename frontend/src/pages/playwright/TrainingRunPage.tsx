@@ -11,6 +11,7 @@ import type {
   TrainingRun,
   TrainingRunTaskStatus,
   TrainingRunTopic,
+  UsageSpec,
 } from "../../types";
 import { submitTrainingRunSolution, fetchTask, fetchTrainingRun } from "../../api";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
@@ -22,6 +23,18 @@ import { TrainingRunWorkspace } from "../../components/training-run/TrainingRunW
 import { LocatorInput } from "../../components/common/LocatorInput";
 import { TrainingRunChecksPanel } from "../../components/training-run/TrainingRunChecksPanel";
 import { TrainingRunExplanationPanel } from "../../components/training-run/TrainingRunExplanationPanel";
+
+const DEFAULT_LOCATOR_PLACEHOLDER = "page.getByRole('heading', { name: 'Task 1' })";
+const LOCATOR_PLACEHOLDER_BY_METHOD: Record<UsageSpec["method"], string> = {
+  locator: "page.locator('css=...')",
+  getByRole: "page.getByRole('heading', { name: 'Task 1' })",
+  getByText: "page.getByText('Hello')",
+  getByLabel: "page.getByLabel('Label text')",
+  getByAltText: "page.getByAltText('Image description')",
+  getByPlaceholder: "page.getByPlaceholder('Placeholder text')",
+  getByTestId: "page.getByTestId('example-id')",
+  getByTitle: "page.getByTitle('Title text')",
+};
 
 export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePageProps) {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
@@ -284,6 +297,12 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
     return explanations.length > 0 ? ("Passed with notes" as const) : ("Passed" as const);
   })();
 
+  const locatorPlaceholder = (() => {
+    const method = currentTaskData?.usageSpec?.method;
+    if (!method) return DEFAULT_LOCATOR_PLACEHOLDER;
+    return LOCATOR_PLACEHOLDER_BY_METHOD[method] ?? DEFAULT_LOCATOR_PLACEHOLDER;
+  })();
+
   return (
     <Box minHeight="100vh">
       <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
@@ -336,7 +355,7 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
                 onRun={handleRun}
                 isRunning={isRunning}
                 isDisabled={!locatorInput.trim() || isRunning || taskLoading || !currentTaskId}
-                placeholder="page.getByRole('heading', { name: 'Task 1' })"
+                placeholder={locatorPlaceholder}
                 minRows={1}
               />
 
