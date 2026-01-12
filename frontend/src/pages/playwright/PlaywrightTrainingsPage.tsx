@@ -2,8 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Stack, Typography } from "@mui/material";
 import { fetchTrainingsCatalog, startTrainingRun } from "../../api";
-import type { BasePageProps, TrainingCatalogResponse } from "../../types";
-import { HeaderBar } from "../../components/HeaderBar";
+import type { TrainingCatalogResponse } from "../../types";
 import { WhatsNextBlock } from "../../components/common/WhatsNextBlock";
 import { TrainingsIntro } from "../../components/trainings/TrainingsIntro";
 import { TrainingsGrid } from "../../components/trainings/TrainingsGrid";
@@ -11,7 +10,7 @@ import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 import { APP_ROUTES } from "../../constants/routes";
 
-export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProps) {
+export default function TrainingsPage() {
   const navigate = useNavigate();
   const [catalogData, setCatalogData] = useState<TrainingCatalogResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -61,15 +60,13 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
 
   return (
     <Box minHeight="100vh">
-      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
-
       <CenteredLayout
         sidebarWidth={240}
         contentWidth={1200}
         sidebar={
           <Box
             sx={{
-              borderRadius: 3,
+              borderRadius: "var(--radius-lg)",
               border: "1px solid",
               borderColor: "divider",
               bgcolor: "background.paper",
@@ -93,7 +90,7 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
                     sx={{
                       display: "block",
                       padding: "8px 10px",
-                      borderRadius: 2,
+                      borderRadius: "var(--radius-md)",
                       border: "1px solid transparent",
                       color: "text.secondary",
                       transition: "0.15s ease",
@@ -118,7 +115,7 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
           {showEmptyState ? (
             <Box
               sx={{
-                borderRadius: 3,
+                borderRadius: "var(--radius-lg)",
                 border: "1px solid",
                 borderColor: "divider",
                 bgcolor: "background.paper",
@@ -134,7 +131,7 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
               <Box key={section.id} id={`section-${section.id}`} sx={{ mb: 2, scrollMarginTop: 96 }}>
                 <Box
                   sx={{
-                    borderRadius: 3,
+                    borderRadius: "var(--radius-lg)",
                     border: "1px solid",
                     borderColor: "divider",
                     bgcolor: "background.paper",

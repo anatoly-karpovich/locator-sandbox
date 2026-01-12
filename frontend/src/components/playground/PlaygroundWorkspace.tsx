@@ -67,7 +67,7 @@ export function PlaygroundWorkspace({ html, onHtmlChange }: PlaygroundWorkspaceP
           sx={{
             width: 4,
             bgcolor: "divider",
-            borderRadius: 2,
+            borderRadius: "var(--radius-md)",
             alignSelf: "stretch",
             transition: "background-color 0.2s ease",
             "&:hover": {

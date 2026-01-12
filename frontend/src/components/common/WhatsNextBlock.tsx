@@ -19,7 +19,7 @@ export function WhatsNextBlock({ title = "What's next", items }: WhatsNextBlockP
   return (
     <Box
       sx={{
-        borderRadius: 3,
+        borderRadius: "var(--radius-lg)",
         border: "1px solid",
         borderColor: "divider",
         bgcolor: "background.paper",
@@ -37,7 +37,7 @@ export function WhatsNextBlock({ title = "What's next", items }: WhatsNextBlockP
               key={item.title}
               sx={{
                 flex: "1 1 320px",
-                borderRadius: 2,
+                borderRadius: "var(--radius-md)",
                 border: "1px solid",
                 borderColor: "divider",
                 p: 3,

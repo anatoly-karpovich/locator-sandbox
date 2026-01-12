@@ -40,7 +40,7 @@ export function createAppTheme(mode: PaletteMode) {
       },
     },
     shape: {
-      borderRadius: 14,
+      borderRadius: 18,
     },
     typography: {
       fontFamily: '"Inter", "Segoe UI", Arial, sans-serif',
@@ -60,6 +60,11 @@ export function createAppTheme(mode: PaletteMode) {
     components: {
       MuiCssBaseline: {
         styleOverrides: {
+          ":root": {
+            "--radius-lg": "42px",
+            "--radius-md": "18px",
+            "--radius-sm": "16px",
+          },
           html: {
             height: "100%",
             backgroundColor: backgroundDefault,
@@ -95,7 +100,7 @@ export function createAppTheme(mode: PaletteMode) {
         styleOverrides: {
           root: {
             backgroundImage: "none",
-            borderRadius: 16,
+            borderRadius: "var(--radius-md)",
             boxShadow: isDark ? "none" : "0 10px 24px rgba(17, 24, 39, 0.06)",
           },
         },
@@ -104,7 +109,7 @@ export function createAppTheme(mode: PaletteMode) {
         styleOverrides: {
           root: {
             backgroundImage: "none",
-            borderRadius: 16,
+            borderRadius: "var(--radius-md)",
           },
         },
       },
@@ -112,7 +117,7 @@ export function createAppTheme(mode: PaletteMode) {
         styleOverrides: {
           root: {
             textTransform: "none",
-            borderRadius: 12,
+            borderRadius: "var(--radius-sm)",
             fontWeight: 600,
           },
           contained: {
