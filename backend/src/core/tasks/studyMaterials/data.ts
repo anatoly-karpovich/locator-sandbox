@@ -8,6 +8,10 @@ export const studyMaterials: Record<'locatorMethods', Record<string, { title: st
             title: "Locator method - getByRole()",
             url: "https://playwright.dev/docs/api/class-locator#locator-get-by-role",
         },
+        getByLabel: {
+            title: "Locator method - getByLabel()",
+            url: "https://playwright.dev/docs/api/class-locator#locator-get-by-label",
+        },
         getByPlaceholder: {
             title: "Locator method - getByPlaceholder()",
             url: "https://playwright.dev/docs/api/class-locator#locator-get-by-placeholder",
