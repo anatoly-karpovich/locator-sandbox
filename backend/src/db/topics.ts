@@ -18,7 +18,22 @@ export const topics: ITopic[] = [
   },
   {
     id: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    title: "Get by text",
+    title: "Get by label",
+    sectionId: "191fdd37-dcf3-4d88-bc2b-e2a5a7caf7e7",
+  },
+  {
+    id: "9063b40b-07af-4be9-abf8-e7b6a5fe5e5a",
+    title: "Get by alt text",
+    sectionId: "191fdd37-dcf3-4d88-bc2b-e2a5a7caf7e7",
+  },
+  {
+    id: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
+    title: "Get by test id",
+    sectionId: "191fdd37-dcf3-4d88-bc2b-e2a5a7caf7e7",
+  },
+  {
+    id: "31702f50-915c-40ce-8fd6-9d1fb6a38365",
+    title: "Get by title",
     sectionId: "191fdd37-dcf3-4d88-bc2b-e2a5a7caf7e7",
   },
 ];
