@@ -19,6 +19,10 @@ export function PreviewFrame({ html, title, minHeight = 250 }: PreviewFrameProps
       html, body { margin: 0; padding: 0; background: ${previewBg}; }
       body { font-family: ${theme.typography.fontFamily}; color: ${theme.palette.text.primary}; }
       .preview-root { padding: 8px; min-height: ${minHeight}px; }
+      .preview-root,
+      .preview-root * {
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
