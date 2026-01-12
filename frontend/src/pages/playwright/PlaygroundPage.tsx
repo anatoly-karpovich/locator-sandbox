@@ -19,7 +19,8 @@ export default function PlaygroundPage() {
     setIsRunning(true);
     setResult(null);
     try {
-      const data = await submitPlayground({ html, payload });
+      const normalizedPayload = payload.replace(/;$/, "");
+      const data = await submitPlayground({ html, payload: normalizedPayload });
       setResult(data);
     } catch (err) {
       showError(err, "Failed to run locator");

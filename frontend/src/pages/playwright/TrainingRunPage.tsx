@@ -208,7 +208,8 @@ export default function TrainingRunPage() {
     if (!currentTaskId || taskLoading || taskLoadError || !trainingRunId) return;
     setIsRunning(true);
     try {
-      const result = await submitTrainingRunSolution(trainingRunId, { taskId: currentTaskId, payload: locatorInput });
+      const payload = locatorInput.replace(/;$/, "");
+      const result = await submitTrainingRunSolution(trainingRunId, { taskId: currentTaskId, payload });
       setSolutionResult(result);
       updateChecksFromResult(result);
 
