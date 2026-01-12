@@ -26,6 +26,7 @@ export const MAP_ERROR_MESSAGE_TO_LOCATOR_BASED_METHOD = {
   getByAltText: "getByAltText(altText, options?) expects 1 or 2 args",
   getByLabel: "getByLabel(label, options?) expects 1 or 2 args",
   getByPlaceholder: "getByPlaceholder(placeholder, options?) expects 1 or 2 args",
+  getByTitle: "getByTitle(title, options?) expects 1 or 2 args",
   getByTestId: "getByTestId(testId) expects 1 argument",
   locator: "locator(selector, options?) expects 1 or 2 args",
   first: "first() expects 0 arguments",

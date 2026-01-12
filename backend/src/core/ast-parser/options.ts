@@ -16,6 +16,10 @@ export const GET_BY_PLACEHOLDER_KEYS: KeySchema = {
   exact: "boolean?",
 };
 
+export const GET_BY_TITLE_KEYS: KeySchema = {
+  exact: "boolean?",
+};
+
 export const GET_BY_ROLE_KEYS: KeySchema = {
   name: "string|regex?",
   exact: "boolean?",
