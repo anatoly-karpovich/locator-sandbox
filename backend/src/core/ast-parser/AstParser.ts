@@ -20,6 +20,7 @@ import {
   readObjectLiteral,
   readStringOrRegExp,
 } from "@core/ast-parser/validators.js";
+import { normalizeLocatorPayload } from "../../utils/normalizeLocatorPayload.js";
 
 export class AstParser {
   /**
@@ -28,7 +29,7 @@ export class AstParser {
   static parse(input: string): ParsedPlan {
     let expr: ParseResult<t.Expression>;
     try {
-      expr = parseExpression(input.replace(/;$/, ""), {
+      expr = parseExpression(normalizeLocatorPayload(input), {
         sourceType: "module",
         plugins: ["typescript"],
       });
@@ -282,4 +283,3 @@ export class AstParser {
     },
   };
 }
-
