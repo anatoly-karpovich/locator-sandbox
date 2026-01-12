@@ -42,7 +42,7 @@ export function TrainingCard({
         minWidth: 240,
         maxWidth: { xs: "100%", sm: 360 },
         width: { xs: "100%", sm: "auto" },
-        borderRadius: 3,
+        borderRadius: "var(--radius-md)",
         border: "1px solid",
         borderColor: "divider",
         p: 3,

@@ -66,7 +66,7 @@ export default function TrainingsPage() {
         sidebar={
           <Box
             sx={{
-              borderRadius: 3,
+              borderRadius: "var(--radius-lg)",
               border: "1px solid",
               borderColor: "divider",
               bgcolor: "background.paper",
@@ -90,7 +90,7 @@ export default function TrainingsPage() {
                     sx={{
                       display: "block",
                       padding: "8px 10px",
-                      borderRadius: 2,
+                      borderRadius: "var(--radius-md)",
                       border: "1px solid transparent",
                       color: "text.secondary",
                       transition: "0.15s ease",
@@ -115,7 +115,7 @@ export default function TrainingsPage() {
           {showEmptyState ? (
             <Box
               sx={{
-                borderRadius: 3,
+                borderRadius: "var(--radius-lg)",
                 border: "1px solid",
                 borderColor: "divider",
                 bgcolor: "background.paper",
@@ -131,7 +131,7 @@ export default function TrainingsPage() {
               <Box key={section.id} id={`section-${section.id}`} sx={{ mb: 2, scrollMarginTop: 96 }}>
                 <Box
                   sx={{
-                    borderRadius: 3,
+                    borderRadius: "var(--radius-lg)",
                     border: "1px solid",
                     borderColor: "divider",
                     bgcolor: "background.paper",

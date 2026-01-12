@@ -30,7 +30,7 @@ export function PlaygroundPreviewSection({ html }: PlaygroundPreviewSectionProps
         sx={{
           padding: 1,
           bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#edf0f7"),
-          borderRadius: 1,
+          borderRadius: "var(--radius-sm)",
           border: "1px dashed",
           borderColor: "divider",
           minHeight: 250,

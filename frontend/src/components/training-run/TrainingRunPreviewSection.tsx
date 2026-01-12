@@ -10,7 +10,7 @@ export function TrainingRunPreviewSection({ html }: TrainingRunPreviewSectionPro
     <Box
       sx={{
         bgcolor: "background.paper",
-        borderRadius: 2,
+        borderRadius: "var(--radius-md)",
         padding: 2,
         minHeight: 320,
         maxHeight: 520,
@@ -30,7 +30,7 @@ export function TrainingRunPreviewSection({ html }: TrainingRunPreviewSectionPro
         sx={{
           padding: 1,
           bgcolor: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#edf0f7"),
-          borderRadius: 1,
+          borderRadius: "var(--radius-sm)",
           border: "1px dashed",
           borderColor: "divider",
           minHeight: 250,

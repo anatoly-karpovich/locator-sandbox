@@ -2,7 +2,7 @@ import { Paper, Typography } from "@mui/material";
 
 export function FutureToolsSection() {
   return (
-    <Paper variant="outlined" sx={{ mt: 4, p: 4, borderRadius: 4 }}>
+    <Paper variant="outlined" sx={{ mt: 4, p: 4, borderRadius: "var(--radius-lg)" }}>
       <Typography variant="h5" fontWeight={700}>
         More tools coming
       </Typography>
