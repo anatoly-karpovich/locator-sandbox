@@ -7,6 +7,7 @@ import type {
   TrainingRun,
 } from "./types";
 import type { PlaygroundSubmitRequest, PlaygroundSubmitResponse } from "./types";
+import { getCorrelationId } from "./core/correlationId";
 
 export class HttpError extends Error {
   status: number;
@@ -32,20 +33,28 @@ async function handleJson<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+async function fetchApi(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+  const headers = new Headers(init.headers);
+  if (!headers.has("x-request-id")) {
+    headers.set("x-request-id", getCorrelationId());
+  }
+  return fetch(input, { ...init, headers });
+}
+
 export async function fetchTasks(): Promise<TaskMap> {
-  const res = await fetch("/api/tasks");
+  const res = await fetchApi("/api/tasks");
   const data = await handleJson<{ tasks: TaskMap }>(res);
   return data.tasks;
 }
 
 export async function fetchTask(id: string): Promise<Task> {
-  const res = await fetch(`/api/tasks/${id}`);
+  const res = await fetchApi(`/api/tasks/${id}`);
   const data = await handleJson<{ task: Task }>(res);
   return data.task;
 }
 
 export async function submitSolution(body: SubmitSolutionBody): Promise<SolutionResponse> {
-  const res = await fetch("/api/solutions", {
+  const res = await fetchApi("/api/solutions", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -60,12 +69,12 @@ export async function submitSolution(body: SubmitSolutionBody): Promise<Solution
 }
 
 export async function fetchTrainingsCatalog(): Promise<TrainingCatalogResponse> {
-  const res = await fetch("/api/trainings/catalog");
+  const res = await fetchApi("/api/trainings/catalog");
   return handleJson<TrainingCatalogResponse>(res);
 }
 
 export async function startTrainingRun(trainingTemplateId: string): Promise<TrainingRun> {
-  const res = await fetch("/api/training-runs/start", {
+  const res = await fetchApi("/api/training-runs/start", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ trainingTemplateId }),
@@ -74,7 +83,7 @@ export async function startTrainingRun(trainingTemplateId: string): Promise<Trai
 }
 
 export async function fetchTrainingRun(trainingRunId: string): Promise<TrainingRun> {
-  const res = await fetch(`/api/training-runs/${trainingRunId}`);
+  const res = await fetchApi(`/api/training-runs/${trainingRunId}`);
   return handleJson<TrainingRun>(res);
 }
 
@@ -82,7 +91,7 @@ export async function submitTrainingRunSolution(
   trainingRunId: string,
   body: SubmitSolutionBody
 ): Promise<SolutionResponse> {
-  const res = await fetch(`/api/training-runs/${trainingRunId}/submit`, {
+  const res = await fetchApi(`/api/training-runs/${trainingRunId}/submit`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -91,7 +100,7 @@ export async function submitTrainingRunSolution(
 }
 
 export async function submitPlayground(body: PlaygroundSubmitRequest): Promise<PlaygroundSubmitResponse> {
-  const res = await fetch("/api/playground/submit", {
+  const res = await fetchApi("/api/playground/submit", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
