@@ -275,10 +275,11 @@ export const tasks: Task[] = [
   },
   {
     id: "f6c1b5c0-8c0d-4bd4-bf52-15a7f7b88c01",
-    title: "Find input by label text",
+    title: "Find input by label text (string)",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
-    description: "Use getByLabel to find the email input by its label text.",
+    description:
+      "Use getByLabel when a control has an associated label; it is more stable than placeholders or CSS selectors. Here the label text is 'Email address'.",
     html: `
       <section class="profile-card">
         <header class="card-header">
@@ -326,74 +327,34 @@ export const tasks: Task[] = [
     studyMaterials: [studyMaterials.locatorMethods.getByLabel],
   },
   {
-    id: "6c60d755-8257-4b01-88eb-b53600fa56a3",
-    title: "Find required name input by label",
-    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    difficulty: "beginner",
-    description: "Use getByLabel to locate the required Full name input.",
-    html: `
-      <section class="signup-panel">
-        <header class="panel-header">
-          <h3>Create your account</h3>
-          <p class="panel-subtitle">Tell us who will own this workspace.</p>
-        </header>
-        <form class="signup-form">
-          <fieldset class="identity-block">
-            <legend>Identity</legend>
-            <div class="field">
-              <label for="full-name">Full name</label>
-              <span class="required-indicator" aria-hidden="true">*</span>
-              <input id="full-name" type="text" required />
-              <p class="hint">Use your legal name.</p>
-            </div>
-            <div class="field">
-              <label for="display-name">Display name</label>
-              <input id="display-name" type="text" />
-            </div>
-          </fieldset>
-        </form>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      visible: true,
-      editable: true,
-    },
-    usageSpec: {
-      method: "getByLabel",
-      argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
-  },
-  {
-    id: "e3a4d7b5-0ea0-4c50-a927-2049b73b106d",
-    title: "Find wrapped label input",
+    id: "6b7b2a1f-1c8b-4dcb-8d6a-5d7e9b3c11a4",
+    title: "Find input by label with regex",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
     description:
-      "Use getByLabel to find an input when the label wraps the control.",
+      "Use getByLabel with a RegExp when labels follow a pattern or shared prefix. Prefer an exact string when possible; here the regex targets 'Phone extension'.",
     html: `
-      <section class="account-card">
-        <header class="card-header">
-          <h3>Account basics</h3>
-          <p class="card-subtitle">Public details shown to teammates.</p>
-        </header>
-        <form class="account-form">
-          <div class="field">
-            <label>
-              <span class="label-text">Username</span>
-              <input type="text" name="username" />
-            </label>
-            <p class="hint">Lowercase letters and numbers only.</p>
-          </div>
-          <div class="field">
-            <label for="user-id">User ID</label>
-            <input id="user-id" type="text" readonly />
-          </div>
-        </form>
-      </section>
+      <form class="phones-form">
+        <div class="field">
+          <label for="phone-us">Phone +1</label>
+          <input id="phone-us" type="tel" />
+        </div>
+
+        <div class="field">
+          <label for="phone-uk">Phone +44</label>
+          <input id="phone-uk" type="tel" />
+        </div>
+
+        <div class="field">
+          <label for="phone-de">Phone +49</label>
+          <input id="phone-de" type="tel" />
+        </div>
+
+        <div class="field">
+          <label for="phone-ext">Phone extension</label>
+          <input id="phone-ext" type="text" />
+        </div>
+      </form>
     `,
     expectations: {
       count: 1,
@@ -403,289 +364,18 @@ export const tasks: Task[] = [
     usageSpec: {
       method: "getByLabel",
       argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
-  },
-  {
-    id: "0abf0f40-9ae7-448c-8b67-fa9150d56be2",
-    title: "Find select by label",
-    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    difficulty: "beginner",
-    description: "Use getByLabel to find the Country select element.",
-    html: `
-      <section class="shipping-panel">
-        <header class="panel-header">
-          <h3>Shipping details</h3>
-          <p class="panel-subtitle">Where should we deliver your order?</p>
-        </header>
-        <form class="shipping-form">
-          <div class="field">
-            <label for="country-select">Country</label>
-            <select id="country-select">
-              <option>USA</option>
-              <option>Canada</option>
-              <option>Mexico</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="region-select">Region</label>
-            <select id="region-select">
-              <option>West</option>
-              <option>Central</option>
-              <option>East</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="postal-input">Postal code</label>
-            <input id="postal-input" type="text" />
-          </div>
-        </form>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      visible: true,
-      enabled: true,
-    },
-    usageSpec: {
-      method: "getByLabel",
-      argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
-  },
-  {
-    id: "e7ac2f4b-32c6-4971-84f1-a23571412c28",
-    title: "Find priority select by label",
-    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    difficulty: "beginner",
-    description: "Use getByLabel to locate the Priority select.",
-    html: `
-      <section class="support-panel">
-        <header class="panel-header">
-          <h3>Support request</h3>
-          <p class="panel-subtitle">Give us details so we can help.</p>
-        </header>
-        <form class="support-form">
-          <div class="field">
-            <label for="subject">Subject</label>
-            <input id="subject" type="text" />
-          </div>
-          <div class="field">
-            <label for="message">Message</label>
-            <textarea id="message" rows="4"></textarea>
-            <p class="hint">Include steps to reproduce.</p>
-          </div>
-          <div class="field">
-            <label for="priority">Priority</label>
-            <select id="priority">
-              <option>Normal</option>
-              <option>High</option>
-            </select>
-          </div>
-        </form>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      visible: true,
-      enabled: true,
-    },
-    usageSpec: {
-      method: "getByLabel",
-      argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
-  },
-  {
-    id: "8dfb2b95-b3f2-40ba-805c-abd251cf659b",
-    title: "Find file upload by label",
-    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    difficulty: "beginner",
-    description: "Use getByLabel to find the file upload input.",
-    html: `
-      <section class="upload-panel">
-        <header class="panel-header">
-          <h3>Application files</h3>
-          <p class="panel-subtitle">Attach documents in PDF or DOCX format.</p>
-        </header>
-        <form class="upload-form">
-          <div class="field">
-            <label for="resume-upload">Upload resume</label>
-            <input id="resume-upload" type="file" />
-          </div>
-          <div class="field">
-            <label for="cover-upload">Cover letter</label>
-            <input id="cover-upload" type="file" />
-          </div>
-        </form>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      visible: true,
-      enabled: true,
-    },
-    usageSpec: {
-      method: "getByLabel",
-      argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
-  },
-  {
-    id: "fb24f6fb-1a8f-478f-bdce-65a476c49e34",
-    title: "Find checkbox by label text",
-    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    difficulty: "beginner",
-    description: "Use getByLabel to locate a checked checkbox by its label.",
-    html: `
-      <section class="consent-panel">
-        <header class="panel-header">
-          <h3>Agreements</h3>
-          <p class="panel-subtitle">Choose what you accept.</p>
-        </header>
-        <form class="consent-form">
-          <fieldset class="consent-list">
-            <legend>Terms</legend>
-            <label>
-              <input type="checkbox" name="terms" checked />
-              I agree to terms
-            </label>
-            <label>
-              <input type="checkbox" name="privacy" />
-              I accept the privacy policy
-            </label>
-            <label>
-              <input type="checkbox" name="updates" />
-              Send product updates
-            </label>
-          </fieldset>
-        </form>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      visible: true,
-      checked: true,
-    },
-    usageSpec: {
-      method: "getByLabel",
-      argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
-  },
-  {
-    id: "8ec105d5-2739-4a90-b1db-3eb5e825f457",
-    title: "Find radio button by label text",
-    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    difficulty: "beginner",
-    description: "Use getByLabel to locate the selected plan radio button.",
-    html: `
-      <section class="plan-panel">
-        <header class="panel-header">
-          <h3>Choose a plan</h3>
-          <p class="panel-subtitle">Pick the option that fits your team.</p>
-        </header>
-        <form class="plan-form">
-          <fieldset class="plan-group">
-            <legend>Monthly plans</legend>
-            <label>
-              <input type="radio" name="plan" />
-              Basic plan
-            </label>
-            <label>
-              <input type="radio" name="plan" checked />
-              Pro plan
-            </label>
-            <label>
-              <input type="radio" name="plan" />
-              Team plan
-            </label>
-          </fieldset>
-          <fieldset class="plan-group">
-            <legend>Annual plans</legend>
-            <label>
-              <input type="radio" name="annual-plan" />
-              Starter annual
-            </label>
-            <label>
-              <input type="radio" name="annual-plan" />
-              Enterprise annual
-            </label>
-          </fieldset>
-        </form>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      checked: true,
-    },
-    usageSpec: {
-      method: "getByLabel",
-      argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
-  },
-  {
-    id: "ebb4bffe-ac4b-4a6b-aa29-dc95559b6348",
-    title: "Find input by aria-labelledby",
-    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    difficulty: "beginner",
-    description:
-      'Use getByLabel to locate the input whose accessible name comes from the text "Billing company" via aria-labelledby.',
-    html: `
-      <section class="billing-panel">
-        <header class="panel-header">
-          <h3>Billing details</h3>
-          <p class="panel-subtitle">Use the name that appears on your invoice.</p>
-        </header>
-        <form class="billing-form">
-          <div class="field">
-            <span id="billing-name-label">Billing name</span>
-            <input type="text" aria-labelledby="billing-name-label" />
-          </div>
-          <div class="field">
-            <span id="billing-company-label">Billing company</span>
-            <input type="text" aria-labelledby="billing-company-label" />
-          </div>
-          <div class="field">
-            <label for="billing-email">Billing email</label>
-            <input id="billing-email" type="email" />
-          </div>
-        </form>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      visible: true,
-      editable: true,
-    },
-    usageSpec: {
-      method: "getByLabel",
-      argument: {
-        type: "string",
+        type: "regex",
       },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByLabel],
   },
   {
     id: "8e96ecc1-4344-4b3d-889f-37324c920db8",
-    title: "Find exact label match",
+    title: "Find exact label match (exact: true)",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
     description:
-      "Use getByLabel with the exact option to match 'Email' when similar labels like 'Email address' and 'Email notifications' are present.",
+      "Use getByLabel with exact: true when multiple labels share words; it enforces a whole-string match. Here it selects only 'Email'.",
     html: `
       <section class="emails-panel">
         <header class="panel-header">
@@ -729,88 +419,12 @@ export const tasks: Task[] = [
     studyMaterials: [studyMaterials.locatorMethods.getByLabel],
   },
   {
-    id: "2c4f6b0e-0d2f-4f3a-bc9c-4a22b3f1a2d1",
-    title: "Find billing city input by label",
-    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    difficulty: "beginner",
-    description: "Use getByLabel to locate the Billing city input.",
-    html: `
-      <form class="address-form">
-        <div class="field">
-          <label for="shipping-city">Shipping city</label>
-          <input id="shipping-city" type="text" />
-        </div>
-
-        <div class="field">
-          <label for="billing-city">Billing city</label>
-          <input id="billing-city" type="text" />
-        </div>
-
-        <div class="field">
-          <label for="postal-code">Postal code</label>
-          <input id="postal-code" type="text" />
-        </div>
-      </form>
-    `,
-    expectations: {
-      count: 1,
-    },
-    usageSpec: {
-      method: "getByLabel",
-      argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
-  },
-  {
-    id: "6b7b2a1f-1c8b-4dcb-8d6a-5d7e9b3c11a4",
-    title: "Match phone extension label with regex",
-    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    difficulty: "beginner",
-    description:
-      'Use getByLabel with a RegExp to match the "Phone extension" label.',
-    html: `
-      <form class="phones-form">
-        <div class="field">
-          <label for="phone-us">Phone +1</label>
-          <input id="phone-us" type="tel" />
-        </div>
-
-        <div class="field">
-          <label for="phone-uk">Phone +44</label>
-          <input id="phone-uk" type="tel" />
-        </div>
-
-        <div class="field">
-          <label for="phone-de">Phone +49</label>
-          <input id="phone-de" type="tel" />
-        </div>
-
-        <div class="field">
-          <label for="phone-ext">Phone extension</label>
-          <input id="phone-ext" type="text" />
-        </div>
-      </form>
-    `,
-    expectations: {
-      count: 1,
-    },
-    usageSpec: {
-      method: "getByLabel",
-      argument: {
-        type: "regex",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
-  },
-  {
     id: "4c657c71-34e1-4618-9f4d-f69a79c3f1d2",
-    title: "Find filter input by hidden label",
+    title: "Find label with extra text (exact: false)",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
     description:
-      'Use getByLabel to locate the "Filter by tag" input whose label is visually hidden in the HTML.',
+      "Use getByLabel with exact: false when the label has extra words or notes and you want a partial match. Prefer exact: true when the full label is stable.",
     html: `
       <section class="search-panel">
         <header class="panel-header">
@@ -823,7 +437,7 @@ export const tasks: Task[] = [
             <input id="site-search" type="search" />
           </div>
           <div class="field">
-            <label for="filter-tag" class="sr-only">Filter by tag</label>
+            <label for="filter-tag">Filter by tag (optional)</label>
             <input id="filter-tag" type="text" placeholder="Tag name" />
           </div>
           <div class="field">
@@ -847,7 +461,75 @@ export const tasks: Task[] = [
       argument: {
         type: "string",
       },
+      options: {
+        exact: false,
+      },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "7a1d34d2-6d71-45fd-9c53-6f08f5f2a8a9",
+    title: "Find element by test id (string)",
+    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
+    difficulty: "beginner",
+    description: "Use getByTestId to locate the Directions button by its data-testid.",
+    html: `
+      <section class="route-actions">
+        <header class="panel-header">
+          <h3>Trip planner</h3>
+          <p class="panel-subtitle">Pick the next step for your route.</p>
+        </header>
+        <div class="action-row">
+          <button type="button" data-testid="directions">Directions</button>
+          <button type="button" data-testid="route-map">Route map</button>
+          <button type="button" data-testid="schedule">Schedule</button>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "Directions",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByTestId",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByTestId],
+  },
+  {
+    id: "5194d811-7ceb-4f16-8e0f-e30aa4eefdad",
+    title: "Find element by test id with regex (exact match)",
+    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
+    difficulty: "beginner",
+    description:
+      "Use getByTestId with a RegExp when multiple ids share a prefix and you need to target one. Prefer role/text if available; here match only 'directions' among similar ids.",
+    html: `
+      <section class="route-panel">
+        <header class="panel-header">
+          <h3>Navigation tools</h3>
+          <p class="panel-subtitle">Quick access to turn-by-turn tools.</p>
+        </header>
+        <div class="tool-row">
+          <button type="button" data-testid="directions">Directions</button>
+          <button type="button" data-testid="directions-map">Map</button>
+          <button type="button" data-testid="directions-list">Stops</button>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "Directions",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByTestId",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByTestId],
   },
 ];
