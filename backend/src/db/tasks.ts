@@ -279,7 +279,7 @@ export const tasks: Task[] = [
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
     description:
-      "Use getByLabel when a control has an associated label; it is more stable than placeholders or CSS selectors. Here the label text is 'Email address'.",
+      "Use getByLabel when a control has an associated label; it is more stable than placeholders or CSS selectors. Here the label text is 'Email address' and the field contains 'primary@acme.com'.",
     html: `
       <section class="profile-card">
         <header class="card-header">
@@ -291,7 +291,7 @@ export const tasks: Task[] = [
             <legend>Contact info</legend>
             <div class="field">
               <label for="email-input">Email address</label>
-              <input id="email-input" type="email" placeholder="name@example.com" aria-describedby="email-hint" />
+              <textarea id="email-input" aria-describedby="email-hint">primary@acme.com</textarea>
               <p class="hint" id="email-hint">Receipts are sent here.</p>
             </div>
             <div class="field">
@@ -316,7 +316,7 @@ export const tasks: Task[] = [
     expectations: {
       count: 1,
       visible: true,
-      editable: true,
+      text: "primary@acme.com",
     },
     usageSpec: {
       method: "getByLabel",
@@ -332,7 +332,7 @@ export const tasks: Task[] = [
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
     description:
-      "Use getByLabel with a RegExp when labels follow a pattern or shared prefix. Prefer an exact string when possible; here the regex targets 'Phone extension'.",
+      "Use getByLabel with a RegExp when labels follow a pattern or shared prefix. Prefer an exact string when possible; here the regex targets 'Phone extension' and the field contains 'Ext 204'.",
     html: `
       <form class="phones-form">
         <div class="field">
@@ -352,14 +352,14 @@ export const tasks: Task[] = [
 
         <div class="field">
           <label for="phone-ext">Phone extension</label>
-          <input id="phone-ext" type="text" />
+          <textarea id="phone-ext">Ext 204</textarea>
         </div>
       </form>
     `,
     expectations: {
       count: 1,
       visible: true,
-      editable: true,
+      text: "Ext 204",
     },
     usageSpec: {
       method: "getByLabel",
@@ -375,7 +375,7 @@ export const tasks: Task[] = [
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
     description:
-      "Use getByLabel with exact: true when multiple labels share words; it enforces a whole-string match. Here it selects only 'Email'.",
+      "Use getByLabel with exact: true when multiple labels share words; it enforces a whole-string match. Here it selects only 'Email' and the field contains 'Primary inbox'.",
     html: `
       <section class="emails-panel">
         <header class="panel-header">
@@ -385,7 +385,7 @@ export const tasks: Task[] = [
         <form class="emails-form">
           <div class="field">
             <label for="email-short">Email</label>
-            <input id="email-short" type="email" />
+            <textarea id="email-short">Primary inbox</textarea>
           </div>
           <div class="field">
             <label for="email-opt-in">Email notifications</label>
@@ -405,7 +405,7 @@ export const tasks: Task[] = [
     expectations: {
       count: 1,
       visible: true,
-      editable: true,
+      text: "Primary inbox",
     },
     usageSpec: {
       method: "getByLabel",
@@ -424,7 +424,7 @@ export const tasks: Task[] = [
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
     description:
-      "Use getByLabel with exact: false when the label has extra words or notes and you want a partial match. Prefer exact: true when the full label is stable.",
+      "Use getByLabel with exact: false when the label has extra words or notes and you want a partial match. Prefer exact: true when the full label is stable; here it matches 'Filter by tag (optional)' and the field contains 'Priority'.",
     html: `
       <section class="search-panel">
         <header class="panel-header">
@@ -438,7 +438,7 @@ export const tasks: Task[] = [
           </div>
           <div class="field">
             <label for="filter-tag">Filter by tag (optional)</label>
-            <input id="filter-tag" type="text" placeholder="Tag name" />
+            <textarea id="filter-tag">Priority</textarea>
           </div>
           <div class="field">
             <label for="search-scope">Scope</label>
@@ -454,7 +454,7 @@ export const tasks: Task[] = [
     expectations: {
       count: 1,
       visible: true,
-      editable: true,
+      text: "Priority",
     },
     usageSpec: {
       method: "getByLabel",
