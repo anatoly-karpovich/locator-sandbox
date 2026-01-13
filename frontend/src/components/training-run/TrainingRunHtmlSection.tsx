@@ -9,7 +9,7 @@ export function TrainingRunHtmlSection({ html }: TrainingRunHtmlSectionProps) {
     <Box
       sx={{
         bgcolor: "background.paper",
-        borderRadius: 2,
+        borderRadius: "var(--radius-md)",
         padding: 2,
         minHeight: 320,
         maxHeight: 520,
@@ -28,7 +28,7 @@ export function TrainingRunHtmlSection({ html }: TrainingRunHtmlSectionProps) {
         sx={{
           background: (theme) => (theme.palette.mode === "dark" ? "#0f1116" : "#f3f5fa"),
           color: (theme) => (theme.palette.mode === "dark" ? "#e3e8ff" : "#1f2937"),
-          borderRadius: 1,
+          borderRadius: "var(--radius-sm)",
           padding: 2,
           fontFamily: "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace",
           whiteSpace: "pre-wrap",

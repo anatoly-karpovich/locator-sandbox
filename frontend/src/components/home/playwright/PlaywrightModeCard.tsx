@@ -28,7 +28,7 @@ export default function PlaywrightModeCard({
         display: "flex",
         flexDirection: "column",
         padding: 3,
-        borderRadius: 3,
+        borderRadius: "var(--radius-md)",
         backgroundColor: "background.default",
         border: "1px solid",
         borderColor: highlight ? "primary.main" : "divider",

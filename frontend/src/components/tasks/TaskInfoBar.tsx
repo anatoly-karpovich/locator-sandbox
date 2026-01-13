@@ -16,7 +16,7 @@ export function TaskInfoBar({ description, studyMaterials }: TaskInfoBarProps) {
       spacing={3}
       sx={{
         bgcolor: "background.paper",
-        borderRadius: 2,
+        borderRadius: "var(--radius-md)",
         padding: 2,
         border: 1,
         borderColor: "divider",

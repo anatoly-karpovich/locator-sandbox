@@ -5,7 +5,7 @@ export function FormsSection() {
     <Box
       id="forms"
       sx={{
-        borderRadius: 3,
+        borderRadius: "var(--radius-lg)",
         border: "1px solid",
         borderColor: "divider",
         backgroundColor: "background.paper",

@@ -47,7 +47,7 @@ export function ToolsPanel() {
   return (
     <Box
       sx={{
-        borderRadius: 3,
+        borderRadius: "var(--radius-lg)",
         border: "1px solid",
         borderColor: "divider",
         backgroundColor: "background.paper",
@@ -70,7 +70,7 @@ export function ToolsPanel() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 padding: "8px 10px",
-                borderRadius: 2,
+                borderRadius: "var(--radius-md)",
                 border: "1px solid transparent",
                 color: "text.secondary",
                 transition: "0.15s ease",
@@ -104,7 +104,7 @@ export function ToolsPanel() {
                 alignItems: "center",
                 gap: 1,
                 padding: "6px 6px",
-                borderRadius: 2,
+                borderRadius: "var(--radius-md)",
                 color: "text.secondary",
                 transition: "0.15s ease",
                 "&:hover": {
