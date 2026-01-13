@@ -653,11 +653,11 @@ export const tasks: Task[] = [
         <form class="billing-form">
           <div class="field">
             <span id="billing-name-label">Billing name</span>
-            <input type="text" aria-labelledby="billing-name-label" />
+            <input type="text" />
           </div>
           <div class="field">
             <span id="billing-company-label">Billing company</span>
-            <input type="text" aria-labelledby="billing-company-label" />
+            <input type="text"aria-label="billing-company-label"/>
           </div>
           <div class="field">
             <label for="billing-email">Billing email</label>
@@ -1022,10 +1022,7 @@ export const tasks: Task[] = [
             <span class="item-name">Item A</span>
             <span class="item-qty">1</span>
           </li>
-          <li data-testid="cart-item-featured">
-            <span class="item-name">Item B</span>
-            <span class="item-qty">2</span>
-          </li>
+          <li data-testid="cart-item-featured"><span class="item-name">Item B</span> <span class="item-qty">2</span></li>
           <li data-testid="cart-item">
             <span class="item-name">Item C</span>
             <span class="item-qty">1</span>
@@ -1039,7 +1036,7 @@ export const tasks: Task[] = [
     `,
     expectations: {
       count: 1,
-      text: "Item B",
+      text: "Item B 2",
     },
     usageSpec: {
       method: "getByTestId",
