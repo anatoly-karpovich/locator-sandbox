@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography, Chip } from "@mui/material";
+import { Box, Button, Stack, Typography, Chip, CircularProgress } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 
 type TrainingCardProps = {
@@ -11,6 +11,8 @@ type TrainingCardProps = {
   href: string;
   isAdvanced?: boolean;
   onStart?: (templateId: string) => void;
+  isStarting?: boolean;
+  isDisabled?: boolean;
 };
 
 export function TrainingCard({
@@ -23,11 +25,13 @@ export function TrainingCard({
   href,
   isAdvanced,
   onStart,
+  isStarting,
+  isDisabled,
 }: TrainingCardProps) {
   const theme = useTheme();
   const isLight = theme.palette.mode === "light";
   const handleClick = () => {
-    if (onStart) {
+    if (onStart && !isDisabled && !isStarting) {
       onStart(id);
     }
   };
@@ -38,7 +42,7 @@ export function TrainingCard({
         minWidth: 240,
         maxWidth: { xs: "100%", sm: 360 },
         width: { xs: "100%", sm: "auto" },
-        borderRadius: 3,
+        borderRadius: "var(--radius-md)",
         border: "1px solid",
         borderColor: "divider",
         p: 3,
@@ -112,8 +116,10 @@ export function TrainingCard({
           variant={isAdvanced ? "outlined" : "contained"}
           href={onStart ? undefined : href}
           onClick={handleClick}
+          disabled={Boolean(isDisabled || isStarting)}
+          startIcon={isStarting ? <CircularProgress size={16} color="inherit" /> : undefined}
         >
-          {isAdvanced ? "Enter" : "Start training"}
+          {isStarting ? "Starting..." : isAdvanced ? "Enter" : "Start training"}
         </Button>
       </Box>
     </Box>

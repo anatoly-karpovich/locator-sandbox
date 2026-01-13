@@ -9,7 +9,7 @@ export function TrainingRunExplanationPanel({ explanations }: TrainingRunExplana
     <Box
       sx={{
         bgcolor: "background.paper",
-        borderRadius: 2,
+        borderRadius: "var(--radius-md)",
         padding: 2,
         border: 1,
         borderColor: "divider",

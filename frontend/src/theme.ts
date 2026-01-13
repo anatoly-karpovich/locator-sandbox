@@ -23,9 +23,24 @@ export function createAppTheme(mode: PaletteMode) {
         paper: backgroundPaper,
       },
       divider,
+      code: {
+        background: isDark ? "#1e1e1e" : "#f8fafc",
+        border: isDark ? "#333333" : "#d3dbe7",
+        text: isDark ? "#d4d4d4" : "#1f2937",
+        placeholder: isDark ? "#7a7a7a" : "#94a3b8",
+        caret: isDark ? "#d4d4d4" : "#111827",
+        keyword: isDark ? "#c586c0" : "#7c3aed",
+        page: isDark ? "#569cd6" : "#2563eb",
+        method: isDark ? "#dcdcaa" : "#b45309",
+        string: isDark ? "#ce9178" : "#b91c1c",
+        regex: isDark ? "#d16969" : "#ef4444",
+        number: isDark ? "#b5cea8" : "#15803d",
+        comment: isDark ? "#6a9955" : "#64748b",
+        punctuation: isDark ? "#d4d4d4" : "#1f2937",
+      },
     },
     shape: {
-      borderRadius: 14,
+      borderRadius: 18,
     },
     typography: {
       fontFamily: '"Inter", "Segoe UI", Arial, sans-serif',
@@ -45,6 +60,11 @@ export function createAppTheme(mode: PaletteMode) {
     components: {
       MuiCssBaseline: {
         styleOverrides: {
+          ":root": {
+            "--radius-lg": "42px",
+            "--radius-md": "18px",
+            "--radius-sm": "16px",
+          },
           html: {
             height: "100%",
             backgroundColor: backgroundDefault,
@@ -80,7 +100,7 @@ export function createAppTheme(mode: PaletteMode) {
         styleOverrides: {
           root: {
             backgroundImage: "none",
-            borderRadius: 16,
+            borderRadius: "var(--radius-md)",
             boxShadow: isDark ? "none" : "0 10px 24px rgba(17, 24, 39, 0.06)",
           },
         },
@@ -89,7 +109,7 @@ export function createAppTheme(mode: PaletteMode) {
         styleOverrides: {
           root: {
             backgroundImage: "none",
-            borderRadius: 16,
+            borderRadius: "var(--radius-md)",
           },
         },
       },
@@ -97,7 +117,7 @@ export function createAppTheme(mode: PaletteMode) {
         styleOverrides: {
           root: {
             textTransform: "none",
-            borderRadius: 12,
+            borderRadius: "var(--radius-sm)",
             fontWeight: 600,
           },
           contained: {
@@ -121,6 +141,23 @@ export function createAppTheme(mode: PaletteMode) {
               height: 24,
             };
           },
+        },
+      },
+      MuiSnackbarContent: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            width: "100%",
+            maxWidth: "100%",
+            boxSizing: "border-box",
+            [theme.breakpoints.up("md")]: {
+              width: "70vw",
+              maxWidth: "70vw",
+            },
+            [theme.breakpoints.up("lg")]: {
+              width: "45vw",
+              maxWidth: "45vw",
+            },
+          }),
         },
       },
     },

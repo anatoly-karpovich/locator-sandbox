@@ -10,7 +10,7 @@ export function PlaywrightSection() {
         width: "100%",
         margin: 0,
         p: { xs: 3, md: 5 },
-        borderRadius: 3,
+        borderRadius: "var(--radius-lg)",
         border: "1px solid",
         borderColor: "divider",
         backgroundColor: "background.paper",
@@ -29,7 +29,7 @@ export function PlaywrightSection() {
 
         <Box
           sx={{
-            borderRadius: 3,
+            borderRadius: "var(--radius-md)",
             padding: 2,
             backgroundColor: "background.default",
             border: "1px solid",

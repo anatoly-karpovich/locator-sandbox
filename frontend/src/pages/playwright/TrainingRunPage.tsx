@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Box, Stack, Typography } from "@mui/material";
-import { HeaderBar } from "../../components/HeaderBar";
 import { TaskInfoBar } from "../../components/tasks/TaskInfoBar";
 import type {
-  BasePageProps,
   SolutionResponse,
   Task,
   TaskResultPayload,
@@ -13,7 +11,7 @@ import type {
   TrainingRunTopic,
   UsageSpec,
 } from "../../types";
-import { submitTrainingRunSolution, fetchTask, fetchTrainingRun } from "../../api";
+import { submitTrainingRunSolution, fetchTask, fetchTrainingRun, HttpError } from "../../api";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 import { CHECK_STATUS } from "../../components/training-run/types";
 import type { CheckState } from "../../components/training-run/types";
@@ -23,6 +21,7 @@ import { TrainingRunWorkspace } from "../../components/training-run/TrainingRunW
 import { LocatorInput } from "../../components/common/LocatorInput";
 import { TrainingRunChecksPanel } from "../../components/training-run/TrainingRunChecksPanel";
 import { TrainingRunExplanationPanel } from "../../components/training-run/TrainingRunExplanationPanel";
+import { APP_ROUTES } from "../../constants/routes";
 
 const DEFAULT_LOCATOR_PLACEHOLDER = "page.getByRole('heading', { name: 'Task 1' })";
 const LOCATOR_PLACEHOLDER_BY_METHOD: Record<UsageSpec["method"], string> = {
@@ -36,8 +35,9 @@ const LOCATOR_PLACEHOLDER_BY_METHOD: Record<UsageSpec["method"], string> = {
   getByTitle: "page.getByTitle('Title text')",
 };
 
-export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePageProps) {
+export default function TrainingRunPage() {
   const { trainingRunId } = useParams<{ trainingRunId: string }>();
+  const navigate = useNavigate();
   const { showError } = useApp();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -58,8 +58,9 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
   const [runLoadError, setRunLoadError] = useState<string | null>(null);
 
   const getExplanations = (result: SolutionResponse | null) =>
-    (result && "explanation" in result && Array.isArray((result as any).explanation) ? (result as any).explanation : []) ||
-    [];
+    (result && "explanation" in result && Array.isArray((result as any).explanation)
+      ? (result as any).explanation
+      : []) || [];
   const isPassedStatus = (status: TrainingRunTaskStatus) => status === "passed" || status === "passed_with_notes";
   const getRunTaskEntry = (taskId: string | null) => {
     if (!taskId) return null;
@@ -79,10 +80,12 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
       .then((data) => {
         setRun(data);
         setTopics(data.topics);
-        const orderedTaskIds = data.topics.flatMap((topic) => topic.tasks.map((t) => t.id));
+        const orderedTasks = data.topics.flatMap((topic) => topic.tasks);
+        const orderedTaskIds = orderedTasks.map((t) => t.id);
         setFlatTaskIds(orderedTaskIds);
         if (orderedTaskIds.length > 0) {
-          setCurrentTaskId(orderedTaskIds[0]);
+          const lastInProgress = [...orderedTasks].reverse().find((task) => task.result.status === "in_progress");
+          setCurrentTaskId(lastInProgress?.id ?? orderedTaskIds[0]);
         } else {
           setCurrentTaskId(null);
         }
@@ -95,14 +98,20 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
       })
       .catch((err: any) => {
         setRunLoadError(err?.message ?? "Failed to load training run");
-        showError(err, "Failed to load training run");
+        if (err instanceof HttpError && err.status === 404) {
+          showError(err, "Training run not found.");
+          navigate(APP_ROUTES.PLAYWRIGHT_TRAININGS);
+          return;
+        }
+        showError(err, "Server error. Please try again later.");
         setRun(null);
         setTopics([]);
         setFlatTaskIds([]);
         setCurrentTaskId(null);
+        navigate(APP_ROUTES.PLAYWRIGHT_TRAININGS);
       })
       .finally(() => setRunLoading(false));
-  }, [trainingRunId]);
+  }, [trainingRunId, navigate, showError]);
 
   const currentTaskIndex = useMemo(() => {
     if (!currentTaskId) return -1;
@@ -210,10 +219,10 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
 
   const handleRun = async () => {
     if (!currentTaskId || taskLoading || taskLoadError || !trainingRunId) return;
-    setSolutionResult(null);
     setIsRunning(true);
     try {
-      const result = await submitTrainingRunSolution(trainingRunId, { taskId: currentTaskId, payload: locatorInput });
+      const payload = locatorInput.replace(/;$/, "");
+      const result = await submitTrainingRunSolution(trainingRunId, { taskId: currentTaskId, payload });
       setSolutionResult(result);
       updateChecksFromResult(result);
 
@@ -234,11 +243,15 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
             return next;
           });
         }
-        refreshRun();
       }
+      await refreshRun();
     } catch (e: any) {
-      showError(e, "Failed to run locator");
-      markAllChecksFailed();
+      if (e instanceof HttpError && e.status === 404) {
+        showError(e, "Training run not found.");
+        navigate(APP_ROUTES.PLAYWRIGHT_TRAININGS);
+        return;
+      }
+      showError(e, "Failed to run locator. Please try again");
     } finally {
       setIsRunning(false);
     }
@@ -305,12 +318,16 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
 
   return (
     <Box minHeight="100vh">
-      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
-
       <Box display="grid" gridTemplateColumns="280px 1fr" height="calc(100vh - 64px)">
         <Box
           component="aside"
-          sx={{ borderRight: 1, borderColor: "divider", bgcolor: "background.paper", overflow: "auto" }}
+          sx={{
+            borderRight: 1,
+            borderColor: "divider",
+            bgcolor: "background.paper",
+            overflowY: "auto",
+            overflowX: "hidden",
+          }}
         >
           <TrainingRunSidebar
             runTitle={run?.title}
@@ -318,9 +335,6 @@ export default function TrainingRunPage({ themeMode, onToggleTheme }: BasePagePr
             hasNotes={tasksWithNotes.size > 0}
             topics={topics}
             currentTaskId={currentTaskId}
-            completedTasks={completedTasks}
-            tasksWithNotes={tasksWithNotes}
-            isRunning={isRunning}
             onSelectTask={handleSelectTask}
           />
         </Box>
