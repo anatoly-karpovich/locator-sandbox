@@ -3,16 +3,19 @@ import { Button } from "@mui/material";
 import { useSnackbar, type SnackbarKey } from "notistack";
 import { HttpError } from "../api";
 
+const DEFAULT_FALLBACK = "Oops! Something went wrong";
+
 export function useErrorSnackbar() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   return useCallback(
-    (err: unknown, fallback = "Something went wrong") => {
+    (err: unknown, fallback = DEFAULT_FALLBACK) => {
       let message = fallback;
       if (err instanceof HttpError) {
-        message = err.body || fallback;
         if (err.status >= 500) {
           message = "Server error. Please try again.";
+        } else if (fallback === DEFAULT_FALLBACK) {
+          message = err.body || fallback;
         }
       } else if (err instanceof Error && err.message) {
         message = err.message;

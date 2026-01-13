@@ -4,7 +4,7 @@ export function TrainingsIntro() {
   return (
     <Box
       sx={{
-        borderRadius: 3,
+        borderRadius: "var(--radius-lg)",
         border: "1px solid",
         borderColor: "divider",
         p: { xs: 3, md: 4 },
@@ -59,7 +59,7 @@ export function TrainingsIntro() {
             <Box
               key={item.title}
               sx={{
-                borderRadius: 2,
+                borderRadius: "var(--radius-md)",
                 border: "1px solid",
                 borderColor: "divider",
                 bgcolor: "background.default",

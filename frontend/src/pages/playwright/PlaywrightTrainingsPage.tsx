@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, CircularProgress, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { fetchTrainingsCatalog, startTrainingRun } from "../../api";
-import type { BasePageProps, TrainingCatalogResponse } from "../../types";
-import { HeaderBar } from "../../components/HeaderBar";
+import type { TrainingCatalogResponse } from "../../types";
 import { WhatsNextBlock } from "../../components/common/WhatsNextBlock";
 import { TrainingsIntro } from "../../components/trainings/TrainingsIntro";
 import { TrainingsGrid } from "../../components/trainings/TrainingsGrid";
@@ -11,44 +10,63 @@ import { CenteredLayout } from "../../components/layout/CenteredLayout";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 import { APP_ROUTES } from "../../constants/routes";
 
-export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProps) {
+export default function TrainingsPage() {
   const navigate = useNavigate();
-  const [catalog, setCatalog] = useState<TrainingCatalogResponse | null>(null);
+  const [catalogData, setCatalogData] = useState<TrainingCatalogResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [startingId, setStartingId] = useState<string | null>(null);
   const { showError } = useApp();
 
-  useEffect(() => {
-    fetchTrainingsCatalog()
-      .then(setCatalog)
+  const fetchCatalog = useCallback(() => {
+    setLoading(true);
+    return fetchTrainingsCatalog()
+      .then((data) => {
+        setCatalogData(data);
+        setCatalogError(null);
+      })
       .catch((e) => {
-        setError(e.message);
-        showError(e, "Failed to load trainings");
+        setCatalogError(e.message);
+        showError(e, "Failed to receive trainings. Please try again later.");
       })
       .finally(() => setLoading(false));
   }, [showError]);
 
+  useEffect(() => {
+    const timerId = window.setTimeout(() => {
+      fetchCatalog();
+    }, 0);
+    return () => window.clearTimeout(timerId);
+  }, [fetchCatalog]);
+
   const handleStart = async (templateId: string) => {
+    if (startingId) return;
+    setStartingId(templateId);
     try {
       const run = await startTrainingRun(templateId);
       navigate(APP_ROUTES.PLAYWRIGHT_TRAINING_RUN(run.id));
     } catch (e: any) {
-      setError(e?.message ?? "Failed to start training");
+      setStartingId(null);
       showError(e, "Failed to start training");
+      void fetchCatalog();
     }
   };
 
+  const sections = catalogData?.catalog ?? [];
+  const showEmptyState = useMemo(
+    () => loading || Boolean(catalogError) || sections.length === 0,
+    [loading, catalogError, sections]
+  );
+
   return (
     <Box minHeight="100vh">
-      <HeaderBar themeMode={themeMode} onToggleTheme={onToggleTheme} />
-
       <CenteredLayout
         sidebarWidth={240}
         contentWidth={1200}
         sidebar={
           <Box
             sx={{
-              borderRadius: 3,
+              borderRadius: "var(--radius-lg)",
               border: "1px solid",
               borderColor: "divider",
               bgcolor: "background.paper",
@@ -59,8 +77,12 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
               BEGINNER PATH
             </Typography>
             <Stack spacing={1} sx={{ mt: 1 }}>
-              {catalog?.modules.flatMap((module) =>
-                module.sections.map((section) => (
+              {showEmptyState ? (
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  No trainings available.
+                </Typography>
+              ) : (
+                sections.map((section) => (
                   <Box
                     key={section.id}
                     component="a"
@@ -68,7 +90,7 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
                     sx={{
                       display: "block",
                       padding: "8px 10px",
-                      borderRadius: 2,
+                      borderRadius: "var(--radius-md)",
                       border: "1px solid transparent",
                       color: "text.secondary",
                       transition: "0.15s ease",
@@ -79,15 +101,9 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
                       },
                     }}
                   >
-                    <Typography variant="body2">
-                      {module.title} / {section.title}
-                    </Typography>
+                    <Typography variant="body2">{section.title}</Typography>
                   </Box>
                 ))
-              ) ?? (
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  Loading sections...
-                </Typography>
               )}
             </Stack>
           </Box>
@@ -95,15 +111,27 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
       >
         <Stack spacing={4}>
           <TrainingsIntro />
-          {loading && <CircularProgress />}
-          {error && <Typography color="error">{error}</Typography>}
 
-          {catalog?.modules.map((module) =>
-            module.sections.map((section) => (
+          {showEmptyState ? (
+            <Box
+              sx={{
+                borderRadius: "var(--radius-lg)",
+                border: "1px solid",
+                borderColor: "divider",
+                bgcolor: "background.paper",
+                p: { xs: 2, md: 3 },
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                No trainings available.
+              </Typography>
+            </Box>
+          ) : (
+            sections.map((section) => (
               <Box key={section.id} id={`section-${section.id}`} sx={{ mb: 2, scrollMarginTop: 96 }}>
                 <Box
                   sx={{
-                    borderRadius: 3,
+                    borderRadius: "var(--radius-lg)",
                     border: "1px solid",
                     borderColor: "divider",
                     bgcolor: "background.paper",
@@ -111,9 +139,14 @@ export default function TrainingsPage({ themeMode, onToggleTheme }: BasePageProp
                   }}
                 >
                   <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
-                    {module.title} / {section.title}
+                    {section.title}
                   </Typography>
-                  <TrainingsGrid trainings={section.trainings} onStart={handleStart} />
+                <TrainingsGrid
+                  trainings={section.trainings}
+                  onStart={handleStart}
+                  startingId={startingId}
+                  isStarting={Boolean(startingId)}
+                />
                 </Box>
               </Box>
             ))

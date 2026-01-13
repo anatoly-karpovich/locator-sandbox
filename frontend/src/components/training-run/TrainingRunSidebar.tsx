@@ -15,6 +15,8 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
+import type { TrainingRunTaskStatus } from "../../types";
 import type { TrainingRunTopic } from "../../types";
 
 type TrainingRunSidebarProps = {
@@ -23,9 +25,6 @@ type TrainingRunSidebarProps = {
   hasNotes: boolean;
   topics: TrainingRunTopic[];
   currentTaskId: string | null;
-  completedTasks: Set<string>;
-  tasksWithNotes: Set<string>;
-  isRunning: boolean;
   onSelectTask: (taskId: string) => void;
 };
 
@@ -35,13 +34,10 @@ export function TrainingRunSidebar({
   hasNotes,
   topics,
   currentTaskId,
-  completedTasks,
-  tasksWithNotes,
-  isRunning,
   onSelectTask,
 }: TrainingRunSidebarProps) {
   return (
-    <Box sx={{ width: 280, padding: 2 }}>
+    <Box sx={{ width: 280, padding: 2, overflowX: "hidden" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginBottom: 2 }}>
         <Typography fontWeight={700} variant="subtitle1">
           {runTitle || "Training Run"}
@@ -72,10 +68,11 @@ export function TrainingRunSidebar({
             <AccordionDetails>
               <List dense>
                 {(topic.tasks || []).map((task) => {
-                  const isDone = completedTasks.has(task.id);
-                  const hasNotes = tasksWithNotes.has(task.id);
+                  const status: TrainingRunTaskStatus = task.result.status;
+                  const isDone = status === "passed" || status === "passed_with_notes";
+                  const hasNotes = status === "passed_with_notes";
                   const isActive = task.id === currentTaskId;
-                  const isPending = isActive && isRunning;
+                  const isPending = status === "in_progress";
                   const statusLabel = isPending
                     ? "Pending"
                     : isDone
@@ -85,12 +82,16 @@ export function TrainingRunSidebar({
                     : "Not passed";
                   return (
                     <ListItem key={task.id} disablePadding>
-                      <ListItemButton selected={isActive} onClick={() => onSelectTask(task.id)} sx={{ borderRadius: 1 }}>
+                      <ListItemButton
+                        selected={isActive}
+                        onClick={() => onSelectTask(task.id)}
+                        sx={{ borderRadius: "var(--radius-sm)" }}
+                      >
                         <ListItemIcon sx={{ minWidth: 32 }}>
                           <Tooltip title={statusLabel} placement="right" arrow disableInteractive>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                               {isPending ? (
-                                <CheckCircleIcon sx={{ color: "text.disabled" }} fontSize="small" />
+                                <RadioButtonCheckedIcon sx={{ color: "text.disabled" }} fontSize="small" />
                               ) : isDone ? (
                                 <CheckCircleIcon color={hasNotes ? "warning" : "success"} fontSize="small" />
                               ) : (
@@ -99,7 +100,12 @@ export function TrainingRunSidebar({
                             </Box>
                           </Tooltip>
                         </ListItemIcon>
-                        <ListItemText primary={task.title} />
+                        <ListItemText
+                          primary={task.title}
+                          primaryTypographyProps={{
+                            noWrap: true,
+                          }}
+                        />
                       </ListItemButton>
                     </ListItem>
                   );
