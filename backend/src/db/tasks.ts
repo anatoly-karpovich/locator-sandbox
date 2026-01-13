@@ -852,29 +852,27 @@ export const tasks: Task[] = [
   },
   {
     id: "7a1d34d2-6d71-45fd-9c53-6f08f5f2a8a9",
-    title: "Find element by test id",
+    title: "Find element by test id (string)",
     topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
     difficulty: "beginner",
-    description: "Use getByTestId to locate the stats card by its data-testid.",
+    description:
+      "Use getByTestId as a fallback when role/text locators are not reliable; data-testid is a stable, test-only hook. Here the stable id is 'directions'.",
     html: `
-      <section class="dashboard">
+      <section class="route-actions">
         <header class="panel-header">
-          <h3>Usage overview</h3>
-          <p class="panel-subtitle">Last 30 days snapshot.</p>
+          <h3>Trip planner</h3>
+          <p class="panel-subtitle">Pick the next step for your route.</p>
         </header>
-        <div class="stat-grid">
-          <div class="stat" data-testid="active-users">Active users</div>
-          <div class="stat" data-testid="total-sales">Total sales</div>
-          <div class="stat" data-testid="trial-users">Trial users</div>
-        </div>
-        <div class="dashboard-footer">
-          <button type="button">Download report</button>
+        <div class="action-row">
+          <button type="button" data-testid="directions">Directions</button>
+          <button type="button" data-testid="route-map">Route map</button>
+          <button type="button" data-testid="schedule">Schedule</button>
         </div>
       </section>
     `,
     expectations: {
       count: 1,
-      text: "Active users",
+      text: "Directions",
       visible: true,
     },
     usageSpec: {
@@ -887,226 +885,33 @@ export const tasks: Task[] = [
   },
   {
     id: "5194d811-7ceb-4f16-8e0f-e30aa4eefdad",
-    title: "Find submit button by test id",
+    title: "Find element by test id with regex (exact match)",
     topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
     difficulty: "beginner",
-    description: "Use getByTestId to locate the order submit button.",
+    description:
+      "Use getByTestId with a RegExp when multiple ids share a prefix and you need to target one. Prefer role/text if available; here match only 'directions' among similar ids.",
     html: `
-      <section class="checkout">
+      <section class="route-panel">
         <header class="panel-header">
-          <h3>Order summary</h3>
-          <p class="panel-subtitle">Review your items before placing the order.</p>
+          <h3>Navigation tools</h3>
+          <p class="panel-subtitle">Quick access to turn-by-turn tools.</p>
         </header>
-        <div class="summary-list">
-          <div class="summary-row">
-            <span>Items</span>
-            <span>3</span>
-          </div>
-          <div class="summary-row">
-            <span>Total</span>
-            <span>$128.00</span>
-          </div>
-        </div>
-        <div class="checkout-actions">
-          <button data-testid="apply-coupon">Apply coupon</button>
-          <button data-testid="submit-order">Place order</button>
-          <button type="button">Save for later</button>
+        <div class="tool-row">
+          <button type="button" data-testid="directions">Directions</button>
+          <button type="button" data-testid="directions-map">Map</button>
+          <button type="button" data-testid="directions-list">Stops</button>
         </div>
       </section>
     `,
     expectations: {
       count: 1,
-      text: "Place order",
+      text: "Directions",
       visible: true,
     },
     usageSpec: {
       method: "getByTestId",
       argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByTestId],
-  },
-  {
-    id: "a1ea336f-5119-4371-a44b-336dab66fe89",
-    title: "Find specific table row by test id",
-    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
-    difficulty: "beginner",
-    description: "Use getByTestId to locate the Beta row.",
-    html: `
-      <section class="plans-panel">
-        <header class="panel-header">
-          <h3>Plan comparison</h3>
-          <p class="panel-subtitle">Choose a tier that fits.</p>
-        </header>
-        <table class="plans">
-          <thead>
-            <tr>
-              <th>Plan</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr data-testid="plan-row-basic"><td>Basic</td></tr>
-            <tr data-testid="plan-row-beta"><td>Beta</td></tr>
-            <tr data-testid="plan-row-pro"><td>Pro</td></tr>
-            <tr data-testid="plan-row-enterprise"><td>Enterprise</td></tr>
-          </tbody>
-        </table>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      text: "Beta",
-    },
-    usageSpec: {
-      method: "getByTestId",
-      argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByTestId],
-  },
-  {
-    id: "dbf54bce-8951-4ce0-ad3e-24a410c1aa48",
-    title: "Find editable input by test id",
-    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
-    difficulty: "beginner",
-    description: "Use getByTestId to locate the promo code input.",
-    html: `
-      <section class="promo-panel">
-        <header class="panel-header">
-          <h3>Apply discounts</h3>
-          <p class="panel-subtitle">Enter any codes before checkout.</p>
-        </header>
-        <form class="promo-form">
-          <div class="field">
-            <label for="promo-code">Promo code</label>
-            <input id="promo-code" type="text" data-testid="promo-code" />
-          </div>
-          <div class="field">
-            <label for="gift-code">Gift code</label>
-            <input id="gift-code" type="text" data-testid="gift-code" disabled />
-          </div>
-          <div class="form-actions">
-            <button type="button">Apply</button>
-          </div>
-        </form>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      editable: true,
-    },
-    usageSpec: {
-      method: "getByTestId",
-      argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByTestId],
-  },
-  {
-    id: "d09205ba-9493-4584-8821-d1317ad69f87",
-    title: "Find featured cart item by test id",
-    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
-    difficulty: "beginner",
-    description: "Use getByTestId to locate the featured cart item row.",
-    html: `
-      <section class="cart">
-        <header class="panel-header">
-          <h3>Your cart</h3>
-          <p class="panel-subtitle">Items ready for checkout.</p>
-        </header>
-        <ul class="cart-list">
-          <li data-testid="cart-item">
-            <span class="item-name">Item A</span>
-            <span class="item-qty">1</span>
-          </li>
-          <li data-testid="cart-item-featured"><span class="item-name">Item B</span> <span class="item-qty">2</span></li>
-          <li data-testid="cart-item">
-            <span class="item-name">Item C</span>
-            <span class="item-qty">1</span>
-          </li>
-        </ul>
-        <div class="cart-summary">
-          <span>Subtotal</span>
-          <span>$84.00</span>
-        </div>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      text: "Item B 2",
-    },
-    usageSpec: {
-      method: "getByTestId",
-      argument: {
-        type: "string",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByTestId],
-  },
-  {
-    id: "0daf6c04-4326-4aea-900f-2e2052e8c21d",
-    title: "Match help nav test id with regex",
-    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
-    difficulty: "intermediate",
-    description: "Use getByTestId with a RegExp to match the Help nav link.",
-    html: `
-      <nav class="main-nav" aria-label="Main">
-        <div class="nav-brand">
-          <a href="/" class="logo">Acme</a>
-        </div>
-        <div class="nav-links">
-          <a href="/" data-testid="nav-home">Home</a>
-          <a href="/settings" data-testid="nav-settings">Settings</a>
-          <a href="/help" data-testid="nav-help">Help</a>
-          <a href="/contact" data-testid="footer-contact">Contact</a>
-          <a href="/blog" data-testid="link-blog">Blog</a>
-        </div>
-        <div class="nav-actions">
-          <button type="button" data-testid="user-menu">Account</button>
-        </div>
-      </nav>
-    `,
-    expectations: {
-      count: 1,
-      text: "Help",
-    },
-    usageSpec: {
-      method: "getByTestId",
-      argument: {
         type: "regex",
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByTestId],
-  },
-  {
-    id: "b44f5cce-ac37-46e8-be13-602b3d018e75",
-    title: "Find hidden toast by test id",
-    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
-    difficulty: "intermediate",
-    description: "Use getByTestId to locate a hidden success toast.",
-    html: `
-      <section class="toast-area">
-        <div class="toasts">
-          <div class="toast-stack">
-            <div data-testid="toast-success" style="display: none;">Saved</div>
-            <div data-testid="toast-error">Failed</div>
-            <div data-testid="toast-warning">Pending</div>
-          </div>
-          <button type="button">Clear all</button>
-        </div>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      hidden: true,
-    },
-    usageSpec: {
-      method: "getByTestId",
-      argument: {
-        type: "string",
       },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByTestId],
