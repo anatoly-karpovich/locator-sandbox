@@ -5,7 +5,7 @@ export function HeroSection() {
     <Box
       sx={{
         p: { xs: 3, md: 5 },
-        borderRadius: 3,
+        borderRadius: "var(--radius-lg)",
         bgcolor: "background.paper",
         border: "1px solid",
         borderColor: "divider",
@@ -53,7 +53,7 @@ export function HeroSection() {
               sx={{
                 flex: "1 1 220px",
                 p: 2,
-                borderRadius: 2,
+                borderRadius: "var(--radius-md)",
                 bgcolor: "background.default",
                 border: "1px solid",
                 borderColor: "divider",

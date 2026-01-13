@@ -94,15 +94,9 @@ export type SolutionResponse =
       explanation?: string[];
     };
 
-// Trainings catalog (templates grouped by module/section)
+// Trainings catalog (templates grouped by section)
 export type TrainingCatalogResponse = {
-  modules: TrainingCatalogModule[];
-};
-
-export type TrainingCatalogModule = {
-  id: string;
-  title: string;
-  sections: TrainingCatalogSection[];
+  catalog: TrainingCatalogSection[];
 };
 
 export type TrainingCatalogSection = {
@@ -177,4 +171,3 @@ export type BasePageProps = {
   themeMode: PaletteMode;
   onToggleTheme: () => void;
 };
-

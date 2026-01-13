@@ -39,7 +39,7 @@ function ExampleCard({ title, badge, code }: ExampleCardProps) {
   return (
     <Box
       sx={{
-        borderRadius: 3,
+        borderRadius: "var(--radius-md)",
         border: "1px solid",
         borderColor: "divider",
         backgroundColor: "background.paper",
@@ -60,7 +60,7 @@ function ExampleCard({ title, badge, code }: ExampleCardProps) {
         sx={{
           margin: 0,
           padding: 2,
-          borderRadius: 2,
+          borderRadius: "var(--radius-sm)",
           backgroundColor: "rgba(10, 14, 20, 0.75)",
           border: "1px solid",
           borderColor: "divider",

@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { ITrainingTemplate } from "@core/training/types.js";
 import { ITaskService } from "@services/types.js";
-import { IModuleRepository, ISectionRepository, ITrainingTemplateRepository } from "@repositories/index.js";
+import { ISectionRepository, ITrainingTemplateRepository } from "@repositories/index.js";
 import { TrainingCatalogResponseDTO } from "@dto/trainings.dto.js";
 import { TYPES } from "../../container/types.js";
 import { ITrainingTemplateService } from "@services/types.js";
@@ -11,7 +11,6 @@ export class TrainingTemplateService implements ITrainingTemplateService {
   constructor(
     @inject(TYPES.TaskService) private taskService: ITaskService,
     @inject(TYPES.TrainingTemplateRepository) private trainingTemplatesRepository: ITrainingTemplateRepository,
-    @inject(TYPES.ModuleRepository) private modulesRepository: IModuleRepository,
     @inject(TYPES.SectionRepository) private sectionsRepository: ISectionRepository
   ) {}
 
@@ -34,33 +33,23 @@ export class TrainingTemplateService implements ITrainingTemplateService {
   }
 
   getCatalogView(): TrainingCatalogResponseDTO {
-    const modules = this.modulesRepository.getAll();
+    const sections = this.sectionsRepository.getAll();
     const templates = this.trainingTemplatesRepository.getAll();
 
     return {
-      modules: modules.map((module) => {
-        const sections = this.sectionsRepository.getByModuleId(module.id);
+      catalog: sections.map((section) => {
+        const sectionTemplates = templates.filter((t) => t.sectionId === section.id);
 
         return {
-          id: module.id,
-          title: module.title,
-          sections: sections.map((section) => {
-            const sectionTemplates = templates.filter(
-              (t) => t.moduleId === module.id && t.sectionId === section.id // ¥?Ñ¬. Ñ¨¥?Ñ÷Ñ¬Ñæ¥ÎÑøÑ«Ñ÷Ñæ Ñ«Ñ÷ÑôÑæ
-            );
-
-            return {
-              id: section.id,
-              title: section.title,
-              trainings: sectionTemplates.map((t) => ({
-                id: t.id,
-                title: t.title,
-                description: t.description,
-                difficulty: t.difficulty,
-                taskCount: t.taskIds.length,
-              })),
-            };
-          }),
+          id: section.id,
+          title: section.title,
+          trainings: sectionTemplates.map((t) => ({
+            id: t.id,
+            title: t.title,
+            description: t.description,
+            difficulty: t.difficulty,
+            taskCount: t.taskIds.length,
+          })),
         };
       }),
     };
