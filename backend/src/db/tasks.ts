@@ -851,6 +851,115 @@ export const tasks: Task[] = [
     studyMaterials: [studyMaterials.locatorMethods.getByLabel],
   },
   {
+    id: "9f2b8c14-4e7a-4d2a-b9a3-3b7e4f1c8a12",
+    title: "Find image by alt text (string)",
+    topicId: "9063b40b-07af-4be9-abf8-e7b6a5fe5e5a",
+    difficulty: "beginner",
+    description:
+      "Use getByAltText when the element is an image or image button and the alt text is the accessible name. Here the alt text is 'City map'.",
+    html: `
+      <section class="gallery">
+        <img src="/img/city.png" alt="City map" />
+        <img src="/img/park.png" alt="Park aerial" />
+        <img src="/img/river.png" alt="River route" />
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByAltText",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByAltText],
+  },
+  {
+    id: "1a6c3d9f-2b4e-4f91-8e2d-5c7a3b6d8f10",
+    title: "Find image by alt text with regex",
+    topicId: "9063b40b-07af-4be9-abf8-e7b6a5fe5e5a",
+    difficulty: "beginner",
+    description:
+      "Use getByAltText with a RegExp when alt texts share a naming pattern. Prefer a string when you know the exact alt text; here the regex targets 'icon-user'.",
+    html: `
+      <div class="icon-row">
+        <img src="/icons/user.svg" alt="icon-user" />
+        <img src="/icons/settings.svg" alt="icon-settings" />
+        <img src="/icons/help.svg" alt="icon-help" />
+      </div>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByAltText",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByAltText],
+  },
+  {
+    id: "6b1f3c8d-5a2e-4f70-9c13-8d5f2a6b4e91",
+    title: "Find exact alt text match (exact: true)",
+    topicId: "9063b40b-07af-4be9-abf8-e7b6a5fe5e5a",
+    difficulty: "beginner",
+    description:
+      "Use getByAltText with exact: true when similar alt texts exist; it enforces a whole-string match. Here it selects only 'Brand logo'.",
+    html: `
+      <section class="brand-panel">
+        <img src="/brand/logo.png" alt="Brand logo" />
+        <img src="/brand/logo-dark.png" alt="Brand logo dark" />
+        <img src="/brand/logo-small.png" alt="Brand logo small" />
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByAltText",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByAltText],
+  },
+  {
+    id: "3e7a1b9c-6d2f-4a58-8c21-7b5d3a9f1e04",
+    title: "Find alt text with extra words (exact: false)",
+    topicId: "9063b40b-07af-4be9-abf8-e7b6a5fe5e5a",
+    difficulty: "beginner",
+    description:
+      "Use getByAltText with exact: false when the alt text includes extra words and you want a partial match. Here 'Billing banner' matches 'Billing banner (beta)'.",
+    html: `
+      <section class="billing-hero">
+        <img src="/img/billing-beta.png" alt="Billing banner (beta)" />
+        <img src="/img/billing-summary.png" alt="Billing summary graphic" />
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByAltText",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: false,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByAltText],
+  },
+  {
     id: "7a1d34d2-6d71-45fd-9c53-6f08f5f2a8a9",
     title: "Find element by test id",
     topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
