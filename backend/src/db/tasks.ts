@@ -265,5 +265,148 @@ export const tasks: Task[] = [
       }
     },
     studyMaterials: [studyMaterials.locatorMethods.getByRole],
+  },
+  {
+    id: "4a173978-8e26-4fc3-9cea-9c6a1710e25f",
+    title: "Find input by placeholder text",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description: "Use getByPlaceholder when the field has no visible label and the placeholder is the most stable hint. Here the email input is identified by the placeholder 'name@example.com'.",
+    html: `
+      <section class="newsletter-panel">
+        <header class="panel-header">
+          <h3>Newsletter signup</h3>
+          <p class="panel-subtitle">Get weekly updates.</p>
+        </header>
+        <form class="newsletter-form">
+          <div class="field">
+            <input type="text" placeholder="Full name" />
+          </div>
+          <div class="field">
+            <input type="email" placeholder="name@example.com" />
+          </div>
+          <button type="submit">Subscribe</button>
+        </form>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "string",
+      }
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "76472bf8-9b69-4878-9872-235bb9cd0b1f",
+    title: "Match placeholder with regex",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description: "Use getByPlaceholder with a RegExp when part of the placeholder is dynamic, such as an order number. Here the pattern targets the input for order 2048.",
+    html: `
+      <section class="orders-panel">
+        <header class="panel-header">
+          <h3>Order lookup</h3>
+          <p class="panel-subtitle">Enter the order number.</p>
+        </header>
+        <form class="orders-form">
+          <div class="field">
+            <label for="order-a">Order A</label>
+            <input id="order-a" type="text" placeholder="Order #1024" />
+          </div>
+          <div class="field">
+            <label for="order-b">Order B</label>
+            <input id="order-b" type="text" placeholder="Order #2048" />
+          </div>
+          <div class="field">
+            <label for="order-c">Order C</label>
+            <input id="order-c" type="text" placeholder="Order #4096" />
+          </div>
+        </form>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "regex",
+      }
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "04087c58-91f7-4c09-8946-c62b6e49fe76",
+    title: "Find input by exact placeholder match",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description: "Use getByPlaceholder with exact: true when a short placeholder is also a prefix of longer ones. Here it selects only the input labeled 'Search'.",
+    html: `
+      <section class="search-panel">
+        <header class="panel-header">
+          <h3>Search</h3>
+          <p class="panel-subtitle">Find content quickly.</p>
+        </header>
+        <div class="search-fields">
+          <input type="search" placeholder="Search" />
+          <input type="search" placeholder="Search docs" />
+          <input type="search" placeholder="Search tickets" />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: true,
+      }
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "35f43500-6a2a-47be-a7f7-9c173c57e107",
+    title: "Find input by partial placeholder match",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description: "Use getByPlaceholder with exact: false when the placeholder includes extra words you do not want to type. Here 'Billing city' matches the longer placeholder.",
+    html: `
+      <section class="address-panel">
+        <header class="panel-header">
+          <h3>Address</h3>
+          <p class="panel-subtitle">Confirm billing details.</p>
+        </header>
+        <div class="address-fields">
+          <input type="text" placeholder="Shipping city" />
+          <input type="text" placeholder="Billing city (optional)" />
+          <input type="text" placeholder="Postal code" />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: false,
+      }
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
   }
 ];
