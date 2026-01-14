@@ -51,6 +51,9 @@ export class LocatorBuilder {
       case "getByPlaceholder":
         return receiver.getByPlaceholder(step.args[0], step.args[1]);
 
+      case "getByTitle":
+        return receiver.getByTitle(step.args[0], step.args[1]);
+
       case "getByTestId":
         return receiver.getByTestId(step.args[0]);
 

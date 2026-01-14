@@ -12,6 +12,7 @@ export type Step =
   | { receiver: ReceiverKind; method: "getByAltText"; args: [string | RegExp, GetByAltTextOptions?] }
   | { receiver: ReceiverKind; method: "getByLabel"; args: [string | RegExp, GetByLabelOptions?] }
   | { receiver: ReceiverKind; method: "getByPlaceholder"; args: [string | RegExp, GetByPlaceholderOptions?] }
+  | { receiver: ReceiverKind; method: "getByTitle"; args: [string | RegExp, GetByTitleOptions?] }
   | { receiver: ReceiverKind; method: "getByTestId"; args: [string | RegExp] }
 
 export type ParsedPlan = {
@@ -29,6 +30,8 @@ export interface GetByAltTextOptions extends ExactMatchOption {}
 export interface GetByLabelOptions extends ExactMatchOption {}
 
 export interface GetByPlaceholderOptions extends ExactMatchOption {}
+
+export interface GetByTitleOptions extends ExactMatchOption {}
 
 export interface GetByTextOptions extends ExactMatchOption {}
 

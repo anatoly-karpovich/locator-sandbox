@@ -5,6 +5,24 @@ export type Expectations = {
   text?: string | null;
 };
 
+export type UsageSpec = {
+  method:
+    | "getByText"
+    | "getByRole"
+    | "getByAltText"
+    | "getByLabel"
+    | "getByPlaceholder"
+    | "getByTestId"
+    | "getByTitle"
+    | "locator";
+  argument?: {
+    type: "string" | "regex";
+    match?: "exact" | "partial";
+    value?: string;
+  };
+  options?: Record<string, unknown>;
+};
+
 export type Task = {
   module: string;
   id: string;
@@ -16,6 +34,7 @@ export type Task = {
   }[];
   html: string;
   expectations: Expectations;
+  usageSpec?: UsageSpec;
   heuristics?: string[];
 };
 
