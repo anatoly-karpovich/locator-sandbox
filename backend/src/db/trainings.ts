@@ -15,6 +15,10 @@ export const trainings: ITrainingTemplate[] = [
       "b2c3d4e5-f6g7-4h8i-9j0k-l1m2n3o4p5q6r",
       "c3d4e5f6-g7h8-4i9j-0k1l-m2n3o4p5q6r7s",
       "d4e5f6g7-h8i9-4j0k-1l2m-n3o4p5q6r7s8t",
+      "4a173978-8e26-4fc3-9cea-9c6a1710e25f",
+      "76472bf8-9b69-4878-9872-235bb9cd0b1f",
+      "04087c58-91f7-4c09-8946-c62b6e49fe76",
+      "35f43500-6a2a-47be-a7f7-9c173c57e107",
     ],
 
     difficulty: "beginner",
