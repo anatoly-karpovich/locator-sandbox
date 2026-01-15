@@ -17,6 +17,11 @@ export const topics: ITopic[] = [
     sectionId: "191fdd37-dcf3-4d88-bc2b-e2a5a7caf7e7",
   },
   {
+    id: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    title: "Filter",
+    sectionId: "191fdd37-dcf3-4d88-bc2b-e2a5a7caf7e7",
+  },
+  {
     id: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     title: "Get by text",
     sectionId: "191fdd37-dcf3-4d88-bc2b-e2a5a7caf7e7",
