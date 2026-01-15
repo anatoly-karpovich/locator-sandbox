@@ -24,5 +24,9 @@ export const studyMaterials: Record<'locatorMethods', Record<string, { title: st
             title: "Locator method - getByTitle()",
             url: "https://playwright.dev/docs/api/class-locator#locator-get-by-title",
         },
+        filter: {
+            title: "Locator method - filter()",
+            url: "https://playwright.dev/docs/api/class-locator#locator-filter",
+        },
     },
 };

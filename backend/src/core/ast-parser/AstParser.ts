@@ -33,6 +33,20 @@ import {
 } from "@core/ast-parser/validators.js";
 import { normalizeLocatorPayload } from "../../utils/normalizeLocatorPayload.js";
 
+type LocatorOptionKey = "has" | "hasNot" | "hasText" | "hasNotText" | "visible";
+
+const BASE_LOCATOR_OPTION_KEYS: ReadonlySet<LocatorOptionKey> = new Set([
+  "has",
+  "hasNot",
+  "hasText",
+  "hasNotText",
+]);
+
+const FILTER_OPTION_KEYS: ReadonlySet<LocatorOptionKey> = new Set([
+  ...BASE_LOCATOR_OPTION_KEYS,
+  "visible",
+]);
+
 export class AstParser {
   /**
    * Parse a Playwright locator string into a ParsedPlan
@@ -150,7 +164,8 @@ export class AstParser {
   private static readLocatorOptions(
     node: t.Expression,
     parseFromAst: (node: t.Expression) => ParsedPlan,
-    ctx: string
+    ctx: string,
+    allowedKeys: ReadonlySet<LocatorOptionKey> = BASE_LOCATOR_OPTION_KEYS
   ): LocatorOptions {
     const unwrapped = AstParser.unwrap(node);
 
@@ -180,6 +195,10 @@ export class AstParser {
 
       if (!t.isExpression(prop.value))
         throw new AstError(`${ctx}: unsupported value`);
+
+      if (!allowedKeys.has(key as LocatorOptionKey)) {
+        throw new AstError(`${ctx}: unsupported key: ${key}`);
+      }
 
       switch (key) {
         case "has":
@@ -211,6 +230,14 @@ export class AstParser {
             `${ctx}.hasNotText`
           );
           break;
+
+        case "visible": {
+          const value = AstParser.unwrap(prop.value);
+          if (!t.isBooleanLiteral(value))
+            throw new AstError(`${ctx}.visible must be a boolean literal`);
+          out.visible = value.value;
+          break;
+        }
 
         default:
           throw new AstError(`${ctx}: unsupported key: ${key}`);
@@ -279,6 +306,25 @@ export class AstParser {
           : undefined;
 
         return { receiver, method: "locator", args: [selector, options] };
+      },
+    },
+
+    filter: {
+      allowedReceivers: ["locator"],
+      nextReceiver: "locator",
+      buildStep: (receiver, args, parseFromAst): Step => {
+        assertArgCount("filter", args, [0, 1]);
+
+        const options = args[0]
+          ? AstParser.readLocatorOptions(
+              args[0],
+              parseFromAst,
+              "filter(options)",
+              FILTER_OPTION_KEYS
+            )
+          : undefined;
+
+        return { receiver, method: "filter", args: [options] };
       },
     },
 

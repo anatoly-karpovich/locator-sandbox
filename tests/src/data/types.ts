@@ -61,7 +61,7 @@ export type TaskStudyMaterial = {
 
 export type TaskUsageSpec = {
   method: string;
-  argument: {
+  argument?: {
     type: "string" | "regex";
   };
   options?: Record<string, unknown>;
