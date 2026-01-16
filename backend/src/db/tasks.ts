@@ -265,5 +265,113 @@ export const tasks: Task[] = [
       }
     },
     studyMaterials: [studyMaterials.locatorMethods.getByRole],
+  },
+  {
+    id: "81f1d3a2-1f2a-4f6c-9b1f-1e8c5a4b3d2f",
+    title: "Filter cards with hasText and hasNotText",
+    topicId: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    difficulty: "intermediate",
+    description: "We use locator.filter() with hasText and hasNotText when the base locator is easy (like a card class), but we need to keep only items that mention the right text and exclude misleading labels.\n\nTask: target the Pro plan card that is Recommended and not Deprecated. This task expects both parameters together.",
+    html: `
+      <section class="pricing">
+        <article class="plan-card">
+          <h3>Starter</h3>
+          <p>Great for learning</p>
+        </article>
+        <article class="plan-card plan-card--pro"><h3>Pro</h3> <p>Best for teams</p> <span class="badge">Recommended</span></article>
+        <article class="plan-card"><h3>Pro</h3> <p>Recommended for legacy users</p> <span class="badge badge--muted">Deprecated</span></article>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "Pro Best for teams Recommended",
+      visible: true,
+    },
+    usageSpec: {
+      method: "filter",
+      options: {
+        hasText: "Recommended",
+        hasNotText: "Deprecated",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.filter],
+  },
+  {
+    id: "3a7f0a91-2b0b-4cdd-8c88-7f5a3d2c1b0a",
+    title: "Filter cards with has",
+    topicId: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    difficulty: "intermediate",
+    description: "We use locator.filter() with has when the base locator is easy but the distinguishing clue is a nested element like a button.\n\nTask: target the order card that contains the Ship now button.",
+    html: `
+      <section class="orders">
+        <article class="order-card"><div class="order-meta"><h3>Order #103</h3> <p>Ready to ship</p></div> <button class="action" type="button">Ship now</button></article>
+        <article class="order-card"><div class="order-meta"><h3>Order #104</h3> <p>Ready to ship</p></div></article>
+        <article class="order-card"><div class="order-meta"><h3>Order #105</h3> <p>Ready to ship</p></div></article>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "Order #103 Ready to ship Ship now",
+      visible: true,
+    },
+    usageSpec: {
+      method: "filter",
+      options: {
+        has: "locator",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.filter],
+  },
+  {
+    id: "7a6c2c1e-9b4a-4f2d-8e6b-5d4c3b2a1f0e",
+    title: "Filter cards with hasNot",
+    topicId: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    difficulty: "intermediate",
+    description: "We use locator.filter() with hasNot when the base locator is easy but we need to exclude cards that contain a specific nested element, like a cancelled badge.\n\nTask: target the order card that does not include a cancelled badge.",
+    html: `
+      <section class="orders">
+        <article class="order-card"><h3>Order #201</h3> <span class="status status--cancelled" aria-label="Cancelled"></span> <p>Refunded</p></article>
+        <article class="order-card"><h3>Order #202</h3> <span class="status status--hold">Refunded</span></article>
+        <article class="order-card"><h3>Order #203</h3> <span class="status status--cancelled" aria-label="Cancelled"></span> <p>Refunded</p></article>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "Order #202 On hold",
+      visible: true,
+    },
+    usageSpec: {
+      method: "filter",
+      options: {
+        hasNot: "locator",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.filter],
+  },
+  {
+    id: "6c2f1b0e-4c9d-4a7f-8e6d-2b1c0a9f8e7d",
+    title: "Filter visible notice",
+    topicId: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    difficulty: "intermediate",
+    description: "We use locator.filter({ visible }) when the base locator matches both visible and hidden elements, and we want to keep only the visible ones.\n\nTask: target the visible Maintenance window notice using filter({ visible: true }).",
+    html: `
+      <section class="alerts">
+        <div class="alert">Maintenance window</div>
+        <div class="alert" style="display: none;">Maintenance window</div>
+        <div class="alert">Backup completed</div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "Maintenance window",
+      visible: true,
+    },
+    usageSpec: {
+      method: "filter",
+      options: {
+        visible: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.filter],
   }
 ];

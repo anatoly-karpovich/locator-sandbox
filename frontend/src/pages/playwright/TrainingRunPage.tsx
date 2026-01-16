@@ -39,6 +39,7 @@ const LOCATOR_PLACEHOLDER_BY_METHOD: Record<UsageSpec["method"], string> = {
   getByPlaceholder: "page.getByPlaceholder('Placeholder text')",
   getByTestId: "page.getByTestId('example-id')",
   getByTitle: "page.getByTitle('Title text')",
+  filter: "page.locator('.card').filter({ hasText: 'Label' })",
 };
 
 export default function TrainingRunPage() {

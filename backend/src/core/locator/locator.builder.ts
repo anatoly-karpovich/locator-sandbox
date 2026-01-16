@@ -24,6 +24,10 @@ export class LocatorBuilder {
       case "locator":
         return receiver.locator(step.args[0], this.buildLocatorOptions(step.args[1]));
 
+      case "filter":
+        this.assertLocator(receiver, "filter");
+        return receiver.filter(this.buildLocatorOptions(step.args[0]));
+
       case "first":
         this.assertLocator(receiver, "first");
         return receiver.first();
@@ -72,6 +76,7 @@ export class LocatorBuilder {
       ...(options.hasNot && { hasNot: this.build(options.hasNot) }),
       ...(options.hasText && { hasText: options.hasText }),
       ...(options.hasNotText && { hasNotText: options.hasNotText }),
+      ...(options.visible !== undefined && { visible: options.visible }),
     };
   }
 
@@ -85,4 +90,3 @@ export class LocatorBuilder {
     return typeof (obj as Locator).first === "function";
   }
 }
-
