@@ -2,6 +2,7 @@ import { chromium } from "playwright";
 import { injectable } from "inversify";
 import { IBrowserManager, BrowserEntry, ContextLease } from "./types.js";
 import { BrowserManagerError } from "@errors/index.js";
+import { logger } from "@core/logger/logger.js";
 
 @injectable()
 export class BrowserManager implements IBrowserManager {
@@ -17,6 +18,7 @@ export class BrowserManager implements IBrowserManager {
 
   async init() {
     if (this.initialized) {
+      logger.debug({ message: "BrowserManager already initialized" });
       return;
     }
 
@@ -24,6 +26,12 @@ export class BrowserManager implements IBrowserManager {
     this.shuttingDown = false;
 
     try {
+      logger.info({
+        message: "BrowserManager init started",
+        maxBrowsers: this.maxBrowsers,
+        maxContextsPerBrowser: this.maxContextsPerBrowser,
+      });
+
       for (let i = 0; i < this.maxBrowsers; i++) {
         const browser = await chromium.launch();
         this.browsers.push({
@@ -31,27 +39,33 @@ export class BrowserManager implements IBrowserManager {
           activeContexts: 0,
         });
       }
+      logger.info({ message: "BrowserManager init completed", browsers: this.browsers.length });
     } catch (err) {
       this.initialized = false;
+      logger.error({ message: "BrowserManager init failed", err });
       throw err;
     }
   }
 
   async acquireContext(): Promise<ContextLease> {
     if (!this.initialized) {
+      logger.warn({ message: "BrowserManager acquireContext before init" });
       throw new BrowserManagerError("BrowserManager is not initialized");
     }
 
     if (this.shuttingDown) {
+      logger.warn({ message: "BrowserManager acquireContext during shutdown" });
       throw new BrowserManagerError("BrowserManager is shutting down");
     }
 
     const entry = this.findAvailableBrowser();
 
     if (entry) {
+      logger.debug({ message: "BrowserManager lease granted", activeContexts: entry.activeContexts + 1 });
       return this.createLease(entry);
     }
 
+    logger.debug({ message: "BrowserManager queued lease request", queueLength: this.queue.length + 1 });
     return new Promise<ContextLease>((resolve, reject) => {
       this.queue.push({ resolve, reject });
     });
@@ -64,13 +78,21 @@ export class BrowserManager implements IBrowserManager {
   private async createLease(entry: BrowserEntry): Promise<ContextLease> {
     entry.activeContexts++;
 
-    const context = await entry.browser.newContext();
+    let context: Awaited<ReturnType<typeof entry.browser.newContext>>;
+    try {
+      context = await entry.browser.newContext();
+    } catch (err) {
+      entry.activeContexts--;
+      logger.error({ message: "BrowserManager failed to create context", err });
+      throw err;
+    }
     let released = false;
 
     return {
       context,
       release: async () => {
         if (released) {
+          logger.warn({ message: "BrowserManager lease released twice" });
           return;
         }
 
@@ -90,11 +112,15 @@ export class BrowserManager implements IBrowserManager {
 
     if (this.queue.length > 0) {
       const next = this.queue.shift()!;
+      logger.debug({ message: "BrowserManager dequeued lease request", queueLength: this.queue.length });
       this.createLease(entry).then(next.resolve).catch(next.reject);
+    } else {
+      logger.debug({ message: "BrowserManager lease released", activeContexts: entry.activeContexts });
     }
   }
 
   async shutdown() {
+    logger.info({ message: "BrowserManager shutdown started" });
     this.shuttingDown = true;
     for (const pending of this.queue) {
       pending.reject(new BrowserManagerError("BrowserManager is shutting down"));
@@ -104,5 +130,6 @@ export class BrowserManager implements IBrowserManager {
     this.browsers = [];
     this.queue = [];
     this.initialized = false;
+    logger.info({ message: "BrowserManager shutdown completed" });
   }
 }
