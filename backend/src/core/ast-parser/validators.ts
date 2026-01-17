@@ -29,6 +29,7 @@ export const MAP_ERROR_MESSAGE_TO_LOCATOR_BASED_METHOD = {
   getByTitle: "getByTitle(title, options?) expects 1 or 2 args",
   getByTestId: "getByTestId(testId) expects 1 argument",
   locator: "locator(selector, options?) expects 1 or 2 args",
+  filter: "filter(options?) expects 0 or 1 args",
   first: "first() expects 0 arguments",
   last: "last() expects 0 arguments",
   nth: "nth(index) expects 1 argument",

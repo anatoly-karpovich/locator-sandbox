@@ -26,28 +26,22 @@ export type TasksCatalogResponse = {
   modules: TaskCatalogModule[];
 };
 
-export type TrainingCatalogItem = {
-  id: string;
-  title: string;
-  description?: string;
-  difficulty: string;
-  taskCount: number;
+export type TrainingCatalogResponse = {
+  catalog: TrainingCatalogSection[];
 };
 
-export type TrainingsCatalogSection = {
+export type TrainingCatalogSection = {
   id: string;
   title: string;
   trainings: TrainingCatalogItem[];
 };
 
-export type TrainingsCatalogModule = {
+export type TrainingCatalogItem = {
   id: string;
   title: string;
-  sections: TrainingsCatalogSection[];
-};
-
-export type TrainingsCatalogResponse = {
-  modules: TrainingsCatalogModule[];
+  description?: string;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  taskCount: number;
 };
 
 export type Expectations = {
@@ -67,7 +61,7 @@ export type TaskStudyMaterial = {
 
 export type TaskUsageSpec = {
   method: string;
-  argument: {
+  argument?: {
     type: "string" | "regex";
   };
   options?: Record<string, unknown>;
