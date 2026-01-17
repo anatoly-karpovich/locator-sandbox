@@ -1,3 +1,4 @@
+import "dotenv/config";
 import "reflect-metadata";
 import express from "express";
 import expressWinston from "express-winston";
@@ -7,6 +8,7 @@ import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { logger, getLogFileInfo } from "./core/logger/logger.js";
 import { container, TYPES } from "./container/index.js";
 import { IBrowserManager } from "@core/playwright/types.js";
+import { readEnvNumber } from "@utils/env.js";
 
 const app = express();
 app.use(express.json());
@@ -41,18 +43,55 @@ app.use("/api", trainingsRouter);
 app.use("/api", playgroundRouter);
 app.use(errorMiddleware);
 
+let server: ReturnType<typeof app.listen> | null = null;
+let browserManager: IBrowserManager | null = null;
+
 async function startApp() {
   const PORT = 3333;
   try {
-    const browserManager = container.get<IBrowserManager>(TYPES.BrowserManager);
+    browserManager = container.get<IBrowserManager>(TYPES.BrowserManager);
     await browserManager.init();
 
-    app.listen(PORT, () => {
+    server = app.listen(PORT, () => {
       logger.info({ message: "Server started", port: PORT, ...getLogFileInfo() });
     });
   } catch (e) {
     logger.error({ message: "Failed to start server", err: e });
   }
 }
+
+async function shutdown(signal: string) {
+  const timeoutMs = readEnvNumber("PLAYWRIGHT_SHUTDOWN_TIMEOUT_MS", 10000);
+  logger.info({ message: "Shutdown started", signal });
+
+  const tasks: Array<Promise<void>> = [];
+
+  if (server) {
+    tasks.push(
+      new Promise((resolve) => {
+        server?.close(() => resolve());
+      })
+    );
+  }
+
+  if (browserManager) {
+    tasks.push(browserManager.shutdown());
+  }
+
+  try {
+    await Promise.race([
+      Promise.all(tasks),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Shutdown timeout exceeded")), timeoutMs)),
+    ]);
+    logger.info({ message: "Shutdown completed" });
+  } catch (err) {
+    logger.error({ message: "Shutdown failed", err });
+  } finally {
+    process.exit(0);
+  }
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
 
 startApp();

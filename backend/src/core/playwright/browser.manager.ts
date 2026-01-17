@@ -3,17 +3,29 @@ import { injectable } from "inversify";
 import { IBrowserManager, BrowserEntry, ContextLease } from "./types.js";
 import { BrowserManagerError } from "@errors/index.js";
 import { logger } from "@core/logger/logger.js";
+import { readEnvNumber } from "@utils/env.js";
+
+type QueueItem = {
+  id: number;
+  resolve: (lease: ContextLease) => void;
+  reject: (err: Error) => void;
+  timeoutId?: NodeJS.Timeout;
+};
 
 @injectable()
 export class BrowserManager implements IBrowserManager {
   private browsers: BrowserEntry[] = [];
-  private queue: Array<{ resolve: (lease: ContextLease) => void; reject: (err: Error) => void }> = [];
+  private queue: QueueItem[] = [];
   private initialized = false;
   private shuttingDown = false;
+  private queueCounter = 0;
 
   constructor(
-    private readonly maxBrowsers = 2,
-    private readonly maxContextsPerBrowser = 5
+    private readonly maxBrowsers = readEnvNumber("PLAYWRIGHT_MAX_BROWSERS", 2),
+    private readonly maxContextsPerBrowser = readEnvNumber("PLAYWRIGHT_MAX_CONTEXTS_PER_BROWSER", 5),
+    private readonly queueLimit = readEnvNumber("PLAYWRIGHT_QUEUE_LIMIT", 100),
+    private readonly queueTimeoutMs = readEnvNumber("PLAYWRIGHT_QUEUE_TIMEOUT_MS", 5000),
+    private readonly gracefulShutdownMs = readEnvNumber("PLAYWRIGHT_GRACEFUL_SHUTDOWN_MS", 5000)
   ) {}
 
   private getStats() {
@@ -73,13 +85,45 @@ export class BrowserManager implements IBrowserManager {
     const entry = this.findAvailableBrowser();
 
     if (entry) {
-      logger.info({ message: "BrowserManager lease granted", ...this.getStats() });
+      logger.debug({ message: "BrowserManager lease granted", ...this.getStats() });
       return this.createLease(entry);
     }
 
-    logger.info({ message: "BrowserManager queued lease request", ...this.getStats() });
+    if (this.queue.length >= this.queueLimit) {
+      logger.warn({ message: "BrowserManager queue limit reached", ...this.getStats() });
+      throw new BrowserManagerError("BrowserManager queue is full");
+    }
+
+    logger.debug({ message: "BrowserManager queued lease request", ...this.getStats() });
     return new Promise<ContextLease>((resolve, reject) => {
-      this.queue.push({ resolve, reject });
+      const item: QueueItem = {
+        id: ++this.queueCounter,
+        resolve: (lease) => {
+          if (item.timeoutId) {
+            clearTimeout(item.timeoutId);
+          }
+          resolve(lease);
+        },
+        reject: (err) => {
+          if (item.timeoutId) {
+            clearTimeout(item.timeoutId);
+          }
+          reject(err);
+        },
+      };
+
+      if (this.queueTimeoutMs > 0) {
+        item.timeoutId = setTimeout(() => {
+          const index = this.queue.findIndex((entry) => entry.id === item.id);
+          if (index >= 0) {
+            this.queue.splice(index, 1);
+            logger.warn({ message: "BrowserManager queue wait timeout", ...this.getStats() });
+            item.reject(new BrowserManagerError("BrowserManager queue wait timeout"));
+          }
+        }, this.queueTimeoutMs);
+      }
+
+      this.queue.push(item);
     });
   }
 
@@ -123,11 +167,24 @@ export class BrowserManager implements IBrowserManager {
     entry.activeContexts--;
 
     if (this.queue.length > 0) {
-      const next = this.queue.shift()!;
-      logger.info({ message: "BrowserManager dequeued lease request", ...this.getStats() });
-      this.createLease(entry).then(next.resolve).catch(next.reject);
+      this.fulfillQueue(entry);
     } else {
-      logger.info({ message: "BrowserManager lease released", ...this.getStats() });
+      logger.debug({ message: "BrowserManager lease released", ...this.getStats() });
+    }
+  }
+
+  private async fulfillQueue(entry: BrowserEntry) {
+    while (this.queue.length > 0 && !this.shuttingDown) {
+      const next = this.queue.shift()!;
+      logger.debug({ message: "BrowserManager dequeued lease request", ...this.getStats() });
+
+      try {
+        const lease = await this.createLease(entry);
+        next.resolve(lease);
+        return;
+      } catch (err) {
+        next.reject(err instanceof Error ? err : new Error("Failed to create browser context"));
+      }
     }
   }
 
@@ -136,6 +193,14 @@ export class BrowserManager implements IBrowserManager {
     this.shuttingDown = true;
     for (const pending of this.queue) {
       pending.reject(new BrowserManagerError("BrowserManager is shutting down"));
+      if (pending.timeoutId) {
+        clearTimeout(pending.timeoutId);
+      }
+    }
+
+    const waitResult = await this.waitForIdle(this.gracefulShutdownMs);
+    if (!waitResult) {
+      logger.warn({ message: "BrowserManager graceful shutdown timeout", ...this.getStats() });
     }
 
     await Promise.all(this.browsers.map((b) => b.browser.close().catch(() => {})));
@@ -143,5 +208,25 @@ export class BrowserManager implements IBrowserManager {
     this.queue = [];
     this.initialized = false;
     logger.info({ message: "BrowserManager shutdown completed" });
+  }
+
+  private async waitForIdle(timeoutMs: number) {
+    if (timeoutMs <= 0) {
+      return false;
+    }
+
+    const pollIntervalMs = 100;
+    const endAt = Date.now() + timeoutMs;
+
+    while (Date.now() < endAt) {
+      const totalActiveContexts = this.browsers.reduce((sum, b) => sum + b.activeContexts, 0);
+      if (totalActiveContexts === 0) {
+        return true;
+      }
+
+      await new Promise<void>((resolve) => setTimeout(resolve, pollIntervalMs));
+    }
+
+    return false;
   }
 }
