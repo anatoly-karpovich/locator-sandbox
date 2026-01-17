@@ -9,7 +9,7 @@ export class TrainingsService {
       throw new Error(`Unexpected status for trainings catalog: ${response.status}`);
     }
 
-    const training = response.body.modules[0]?.sections[0]?.trainings[0];
+    const training = response.body?.catalog[0]?.trainings[0];
     if (!training?.id) {
       throw new Error("No training templates available in catalog");
     }

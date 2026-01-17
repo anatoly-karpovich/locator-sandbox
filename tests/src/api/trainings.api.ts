@@ -1,6 +1,6 @@
 import { apiConfig } from "../config/api.config.js";
 import { IApiClient, IRequestOptions } from "../core/types.js";
-import type { TrainingsCatalogResponse } from "../data/types.js";
+import type { TrainingCatalogResponse } from "../data/types.js";
 
 export class TrainingsApi {
   constructor(private apiClient: IApiClient) {}
@@ -12,6 +12,6 @@ export class TrainingsApi {
       method: "get",
     };
 
-    return await this.apiClient.send<TrainingsCatalogResponse>(options);
+    return await this.apiClient.send<TrainingCatalogResponse>(options);
   }
 }

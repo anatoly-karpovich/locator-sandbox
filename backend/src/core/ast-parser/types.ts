@@ -4,6 +4,7 @@ export type ReceiverKind = "page" | "locator";
 
 export type Step =
   | { receiver: ReceiverKind; method: "locator"; args: [string, LocatorOptions?] }
+  | { receiver: ReceiverKind; method: "filter"; args: [LocatorOptions?] }
   | { receiver: ReceiverKind; method: "first"; args: [] }
   | { receiver: ReceiverKind; method: "last"; args: [] }
   | { receiver: ReceiverKind; method: "nth"; args: [number] }
@@ -94,4 +95,5 @@ export type LocatorOptions = {
   hasNot?: ParsedPlan;
   hasText?: LocatorText;
   hasNotText?: LocatorText;
+  visible?: boolean;
 };

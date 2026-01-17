@@ -13,34 +13,39 @@ export function CenteredLayout({
   children,
   contentWidth = 1200,
   sidebarWidth = 260,
-  minSidePadding = 16,
+  minSidePadding = 8,
 }: CenteredLayoutProps) {
-  const leftOffset = `max(${minSidePadding}px, calc(25% - ${contentWidth / 4}px - ${sidebarWidth / 2}px))`;
-
   return (
-    <Container maxWidth={false} sx={{ py: 6 }}>
-      <Box sx={{ position: "relative" }}>
+    <Container maxWidth={false} sx={{ py: 6, px: `${minSidePadding}px` }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          gap: 3,
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+        }}
+      >
         {sidebar && (
-          <>
-            <Box
-              component="aside"
-              sx={{
-                width: sidebarWidth,
-                display: { xs: "none", md: "block" },
-                position: "absolute",
-                top: 0,
-                left: leftOffset,
-              }}
-            >
-              {sidebar}
-            </Box>
-            <Box component="aside" sx={{ display: { xs: "block", md: "none" }, mb: 4 }}>
-              {sidebar}
-            </Box>
-          </>
+          <Box
+            component="aside"
+            sx={{
+              width: { xs: "100%", md: sidebarWidth },
+              flexShrink: 0,
+            }}
+          >
+            {sidebar}
+          </Box>
         )}
 
-        <Box component="main" sx={{ maxWidth: contentWidth, mx: "auto" }}>
+        <Box
+          component="main"
+          sx={{
+            width: "100%",
+            maxWidth: contentWidth,
+            minWidth: 0,
+          }}
+        >
           {children}
         </Box>
       </Box>
