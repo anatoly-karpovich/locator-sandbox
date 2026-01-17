@@ -36,7 +36,16 @@ export type CheckDetail = {
 };
 
 export type UsageSpec = {
-  method: "getByText" | "getByRole" | "locator" | "filter";
+  method:
+    | "getByText"
+    | "getByRole"
+    | "getByAltText"
+    | "getByLabel"
+    | "getByPlaceholder"
+    | "getByTestId"
+    | "getByTitle"
+    | "locator"
+    | "filter";
   argument?: {
     type: "string" | "regex";
     // match?: "exact" | "partial";
