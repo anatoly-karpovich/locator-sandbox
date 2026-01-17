@@ -23,4 +23,3 @@ export function validateHtmlContentMiddleware(
     return next(new ResponseError(HTTP_CODES.SERVER_ERROR, "Unexpected HTML validation error"));
   }
 }
-

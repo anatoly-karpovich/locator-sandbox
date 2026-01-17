@@ -24,4 +24,3 @@ export function validateLocatorPayloadMiddleware(
     return next(new ResponseError(HTTP_CODES.SERVER_ERROR, "Unexpected locator validation error"));
   }
 }
-
