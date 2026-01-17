@@ -39,6 +39,7 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.3.0",
     "prettier": "^3.4.2",
+    "@types/uuid": "^10.0.0",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",
     "typescript-eslint": "^8.20.0",
