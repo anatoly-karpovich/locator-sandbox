@@ -39,6 +39,8 @@ import {
   ILocatorStateHandler,
   ISolutionsHandler,
 } from "@core/types.js";
+import { BrowserManager } from "@core/playwright/browser.manager.js";
+import { IBrowserManager } from "@core/playwright/types.js";
 import {
   TasksController,
   TrainingsController,
@@ -60,6 +62,7 @@ container.bind<ITrainingRunsRepository>(TYPES.TrainingRunsRepository).to(Trainin
 
 // core helpers
 container.bind<IPlaywrightRunner>(TYPES.PlaywrightRunner).to(PlaywrightRunner);
+container.bind<IBrowserManager>(TYPES.BrowserManager).to(BrowserManager);
 container.bind<IUsageSpecification>(TYPES.UsageSpecification).to(UsageSpecification);
 container.bind<ILocatorStateHandler>(TYPES.LocatorStateHandler).to(LocatorStateHandler);
 container.bind<ISolutionsHandler>(TYPES.SolutionsHandler).to(SolutionsHandler);

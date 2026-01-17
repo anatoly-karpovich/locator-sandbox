@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from "uuid";
 import { tasksRouter, trainingsRouter, trainingsRunsRouter, playgroundRouter } from "./router/index.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { logger, getLogFileInfo } from "./core/logger/logger.js";
+import { container, TYPES } from "./container/index.js";
+import { IBrowserManager } from "@core/playwright/types.js";
 
 const app = express();
 app.use(express.json());
@@ -42,6 +44,9 @@ app.use(errorMiddleware);
 async function startApp() {
   const PORT = 3333;
   try {
+    const browserManager = container.get<IBrowserManager>(TYPES.BrowserManager);
+    await browserManager.init();
+
     app.listen(PORT, () => {
       logger.info({ message: "Server started", port: PORT, ...getLogFileInfo() });
     });
