@@ -16,6 +16,18 @@ export class BrowserManager implements IBrowserManager {
     private readonly maxContextsPerBrowser = 5
   ) {}
 
+  private getStats() {
+    const totalActiveContexts = this.browsers.reduce((sum, b) => sum + b.activeContexts, 0);
+
+    return {
+      browsers: this.browsers.length,
+      totalActiveContexts,
+      queueLength: this.queue.length,
+      maxBrowsers: this.maxBrowsers,
+      maxContextsPerBrowser: this.maxContextsPerBrowser,
+    };
+  }
+
   async init() {
     if (this.initialized) {
       logger.debug({ message: "BrowserManager already initialized" });
@@ -61,11 +73,11 @@ export class BrowserManager implements IBrowserManager {
     const entry = this.findAvailableBrowser();
 
     if (entry) {
-      logger.debug({ message: "BrowserManager lease granted", activeContexts: entry.activeContexts + 1 });
+      logger.info({ message: "BrowserManager lease granted", ...this.getStats() });
       return this.createLease(entry);
     }
 
-    logger.debug({ message: "BrowserManager queued lease request", queueLength: this.queue.length + 1 });
+    logger.info({ message: "BrowserManager queued lease request", ...this.getStats() });
     return new Promise<ContextLease>((resolve, reject) => {
       this.queue.push({ resolve, reject });
     });
@@ -112,10 +124,10 @@ export class BrowserManager implements IBrowserManager {
 
     if (this.queue.length > 0) {
       const next = this.queue.shift()!;
-      logger.debug({ message: "BrowserManager dequeued lease request", queueLength: this.queue.length });
+      logger.info({ message: "BrowserManager dequeued lease request", ...this.getStats() });
       this.createLease(entry).then(next.resolve).catch(next.reject);
     } else {
-      logger.debug({ message: "BrowserManager lease released", activeContexts: entry.activeContexts });
+      logger.info({ message: "BrowserManager lease released", ...this.getStats() });
     }
   }
 
