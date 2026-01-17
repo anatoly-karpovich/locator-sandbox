@@ -49,9 +49,16 @@ export class PlaywrightRunner implements IPlaywrightRunner {
         }
 
         const delay = Math.min(curr, maxDelayMs);
+        const jitterMs = Math.min(25, Math.floor(delay * 0.1));
+        const totalDelay = delay + (jitterMs > 0 ? Math.floor(Math.random() * (jitterMs + 1)) : 0);
         attempt += 1;
-        logger.warn({ message: "PlaywrightRunner acquire retry scheduled", attempt, delayMs: delay });
-        await sleep(delay);
+        logger.warn({
+          message: "PlaywrightRunner acquire retry scheduled",
+          attempt,
+          delayMs: totalDelay,
+          baseDelayMs: delay,
+        });
+        await sleep(totalDelay);
         const next = prev + curr;
         prev = curr;
         curr = next;
@@ -61,7 +68,7 @@ export class PlaywrightRunner implements IPlaywrightRunner {
 
   private isRetryableError(err: unknown) {
     if (err instanceof BrowserManagerError) {
-      return err.message !== "BrowserManager is shutting down";
+      return err.code === "QUEUE_TIMEOUT" || err.code === "CONTEXT_CREATE_FAILED";
     }
 
     return false;

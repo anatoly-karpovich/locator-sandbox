@@ -74,12 +74,12 @@ export class BrowserManager implements IBrowserManager {
   async acquireContext(): Promise<ContextLease> {
     if (!this.initialized) {
       logger.warn({ message: "BrowserManager acquireContext before init" });
-      throw new BrowserManagerError("BrowserManager is not initialized");
+      throw new BrowserManagerError("NOT_INITIALIZED", "BrowserManager is not initialized");
     }
 
     if (this.shuttingDown) {
       logger.warn({ message: "BrowserManager acquireContext during shutdown" });
-      throw new BrowserManagerError("BrowserManager is shutting down");
+      throw new BrowserManagerError("SHUTTING_DOWN", "BrowserManager is shutting down");
     }
 
     const entry = this.findAvailableBrowser();
@@ -91,7 +91,7 @@ export class BrowserManager implements IBrowserManager {
 
     if (this.queue.length >= this.queueLimit) {
       logger.warn({ message: "BrowserManager queue limit reached", ...this.getStats() });
-      throw new BrowserManagerError("BrowserManager queue is full");
+      throw new BrowserManagerError("QUEUE_FULL", "BrowserManager queue is full");
     }
 
     logger.debug({ message: "BrowserManager queued lease request", ...this.getStats() });
@@ -118,7 +118,7 @@ export class BrowserManager implements IBrowserManager {
           if (index >= 0) {
             this.queue.splice(index, 1);
             logger.warn({ message: "BrowserManager queue wait timeout", ...this.getStats() });
-            item.reject(new BrowserManagerError("BrowserManager queue wait timeout"));
+            item.reject(new BrowserManagerError("QUEUE_TIMEOUT", "BrowserManager queue wait timeout"));
           }
         }, this.queueTimeoutMs);
       }
@@ -140,7 +140,7 @@ export class BrowserManager implements IBrowserManager {
     } catch (err) {
       entry.activeContexts--;
       logger.error({ message: "BrowserManager failed to create context", err });
-      throw err;
+      throw new BrowserManagerError("CONTEXT_CREATE_FAILED", "Failed to create browser context", err);
     }
     let released = false;
 
@@ -192,7 +192,7 @@ export class BrowserManager implements IBrowserManager {
     logger.info({ message: "BrowserManager shutdown started" });
     this.shuttingDown = true;
     for (const pending of this.queue) {
-      pending.reject(new BrowserManagerError("BrowserManager is shutting down"));
+      pending.reject(new BrowserManagerError("SHUTTING_DOWN", "BrowserManager is shutting down"));
       if (pending.timeoutId) {
         clearTimeout(pending.timeoutId);
       }

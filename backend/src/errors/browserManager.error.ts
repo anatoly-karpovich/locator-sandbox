@@ -1,6 +1,9 @@
 export class BrowserManagerError extends Error {
-  constructor(message: string) {
-    super(message);
+  code: string;
+
+  constructor(code: string, message: string, cause?: unknown) {
+    super(message, cause ? { cause } : undefined);
     this.name = "BrowserManagerError";
+    this.code = code;
   }
 }
