@@ -130,10 +130,10 @@ function readLiteral(node: t.Expression): Literal {
       const key = t.isIdentifier(prop.key)
         ? prop.key.name
         : t.isStringLiteral(prop.key)
-        ? prop.key.value
-        : (() => {
-            throw new AstError("Object key must be identifier or string literal");
-          })();
+          ? prop.key.value
+          : (() => {
+              throw new AstError("Object key must be identifier or string literal");
+            })();
 
       if (!t.isExpression(prop.value)) throw new AstError("Unsupported object value");
       obj[key] = readLiteral(prop.value);

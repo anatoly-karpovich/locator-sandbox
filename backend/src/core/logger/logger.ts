@@ -15,7 +15,7 @@ const LOG_TO_CONSOLE = (process.env.LOG_TO_CONSOLE ?? "true").toLowerCase() === 
 const jsonFormat = winston.format.combine(
   winston.format.timestamp(),
   winston.format.errors({ stack: true }),
-  winston.format.json(),
+  winston.format.json()
 );
 
 function ensureLogDir(dir: string) {

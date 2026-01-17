@@ -30,7 +30,7 @@ app.use(
       requestId: req.requestId,
     }),
     ignoredRoutes: ["/favicon.ico"],
-  }),
+  })
 );
 
 app.use("/api", tasksRouter);
