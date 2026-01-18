@@ -7,13 +7,24 @@ import { BrowserManagerError } from "@errors/index.js";
 import { logger } from "@core/logger/logger.js";
 import { readEnvNumber } from "@utils/env.js";
 import { sleep } from "@utils/sleep.js";
+import { ResponseError } from "@errors/index.js";
+import { HTTP_CODES } from "@core/httpCodes.js";
 
 @injectable()
 export class PlaywrightRunner implements IPlaywrightRunner {
   constructor(@inject(TYPES.BrowserManager) private readonly browserManager: IBrowserManager) {}
 
   async run<T>(fn: (page: Page) => Promise<T>): Promise<T> {
-    const lease = await this.acquireWithRetry();
+    let lease;
+    try {
+      lease = await this.acquireWithRetry();
+    } catch (err) {
+      if (err instanceof BrowserManagerError && (err.code === "QUEUE_FULL" || err.code === "SHUTTING_DOWN")) {
+        throw new ResponseError(HTTP_CODES.SERVICE_UNAVAILABLE, "Browser capacity is temporarily unavailable");
+      }
+
+      throw err;
+    }
     const page = await lease.context.newPage();
 
     try {
