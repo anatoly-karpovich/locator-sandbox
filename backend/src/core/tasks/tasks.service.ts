@@ -27,10 +27,13 @@ class TasksService {
   }
 
   getAllStructured() {
-    const result = this.tasks.reduce((res, task) => {
-      res[task.id] = task;
-      return res;
-    }, {} as Record<number, Task>);
+    const result = this.tasks.reduce(
+      (res, task) => {
+        res[task.id] = task;
+        return res;
+      },
+      {} as Record<number, Task>
+    );
     return result;
   }
 }

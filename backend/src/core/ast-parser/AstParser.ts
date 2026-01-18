@@ -33,6 +33,12 @@ import {
 } from "@core/ast-parser/validators.js";
 import { normalizeLocatorPayload } from "../../utils/normalizeLocatorPayload.js";
 
+type LocatorOptionKey = "has" | "hasNot" | "hasText" | "hasNotText" | "visible";
+
+const BASE_LOCATOR_OPTION_KEYS: ReadonlySet<LocatorOptionKey> = new Set(["has", "hasNot", "hasText", "hasNotText"]);
+
+const FILTER_OPTION_KEYS: ReadonlySet<LocatorOptionKey> = new Set([...BASE_LOCATOR_OPTION_KEYS, "visible"]);
+
 export class AstParser {
   /**
    * Parse a Playwright locator string into a ParsedPlan
@@ -46,9 +52,7 @@ export class AstParser {
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        throw new AstError(
-          "Syntax error. Please verify your expression is properly formatted."
-        );
+        throw new AstError("Syntax error. Please verify your expression is properly formatted.");
       }
     }
 
@@ -81,9 +85,7 @@ export class AstParser {
 
       // Ensure method allowed on current receiver kind
       if (!spec.allowedReceivers.includes(receiver)) {
-        throw new AstError(
-          `Method ${methodName} is not allowed on ${receiver}`
-        );
+        throw new AstError(`Method ${methodName} is not allowed on ${receiver}`);
       }
 
       const step = spec.buildStep(receiver, call.args, AstParser.parseFromAst);
@@ -117,8 +119,7 @@ export class AstParser {
     const method = callee.property.name;
 
     const args: t.Expression[] = node.arguments.map((a) => {
-      if (t.isSpreadElement(a))
-        throw new AstError("Spread arguments are not allowed");
+      if (t.isSpreadElement(a)) throw new AstError("Spread arguments are not allowed");
       if (!t.isExpression(a)) throw new AstError("Unsupported argument type");
       return a;
     });
@@ -126,9 +127,7 @@ export class AstParser {
     const base = callee.object;
     if (!t.isExpression(base)) throw new AstError("Unsupported callee base");
 
-    const prev = t.isCallExpression(base)
-      ? AstParser.extractCallChain(base)
-      : [];
+    const prev = t.isCallExpression(base) ? AstParser.extractCallChain(base) : [];
 
     return [...prev, { base, method, args }];
   }
@@ -139,8 +138,7 @@ export class AstParser {
   private static unwrap(node: t.Expression): t.Expression {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const n: any = node;
-    if (n && n.type === "ParenthesizedExpression")
-      return AstParser.unwrap(n.expression);
+    if (n && n.type === "ParenthesizedExpression") return AstParser.unwrap(n.expression);
     return node;
   }
 
@@ -150,7 +148,8 @@ export class AstParser {
   private static readLocatorOptions(
     node: t.Expression,
     parseFromAst: (node: t.Expression) => ParsedPlan,
-    ctx: string
+    ctx: string,
+    allowedKeys: ReadonlySet<LocatorOptionKey> = BASE_LOCATOR_OPTION_KEYS
   ): LocatorOptions {
     const unwrapped = AstParser.unwrap(node);
 
@@ -161,56 +160,47 @@ export class AstParser {
     const out: LocatorOptions = {};
 
     for (const prop of unwrapped.properties) {
-      if (!t.isObjectProperty(prop))
-        throw new AstError(`${ctx}: only plain properties are allowed`);
-      if (prop.computed)
-        throw new AstError(`${ctx}: computed keys are not allowed`);
-      if (t.isSpreadElement(prop))
-        throw new AstError(`${ctx}: object spread is not allowed`);
+      if (!t.isObjectProperty(prop)) throw new AstError(`${ctx}: only plain properties are allowed`);
+      if (prop.computed) throw new AstError(`${ctx}: computed keys are not allowed`);
+      if (t.isSpreadElement(prop)) throw new AstError(`${ctx}: object spread is not allowed`);
 
       const key = t.isIdentifier(prop.key)
         ? prop.key.name
         : t.isStringLiteral(prop.key)
-        ? prop.key.value
-        : (() => {
-            throw new AstError(
-              `${ctx}: key must be identifier or string literal`
-            );
-          })();
+          ? prop.key.value
+          : (() => {
+              throw new AstError(`${ctx}: key must be identifier or string literal`);
+            })();
 
-      if (!t.isExpression(prop.value))
-        throw new AstError(`${ctx}: unsupported value`);
+      if (!t.isExpression(prop.value)) throw new AstError(`${ctx}: unsupported value`);
+
+      if (!allowedKeys.has(key as LocatorOptionKey)) {
+        throw new AstError(`${ctx}: unsupported key: ${key}`);
+      }
 
       switch (key) {
         case "has":
-          out.has = AstParser.parseLocatorArg(
-            prop.value,
-            parseFromAst,
-            `${ctx}.has`
-          );
+          out.has = AstParser.parseLocatorArg(prop.value, parseFromAst, `${ctx}.has`);
           break;
 
         case "hasNot":
-          out.hasNot = AstParser.parseLocatorArg(
-            prop.value,
-            parseFromAst,
-            `${ctx}.hasNot`
-          );
+          out.hasNot = AstParser.parseLocatorArg(prop.value, parseFromAst, `${ctx}.hasNot`);
           break;
 
         case "hasText":
-          out.hasText = AstParser.readStringOrRegExpLocal(
-            prop.value,
-            `${ctx}.hasText`
-          );
+          out.hasText = AstParser.readStringOrRegExpLocal(prop.value, `${ctx}.hasText`);
           break;
 
         case "hasNotText":
-          out.hasNotText = AstParser.readStringOrRegExpLocal(
-            prop.value,
-            `${ctx}.hasNotText`
-          );
+          out.hasNotText = AstParser.readStringOrRegExpLocal(prop.value, `${ctx}.hasNotText`);
           break;
+
+        case "visible": {
+          const value = AstParser.unwrap(prop.value);
+          if (!t.isBooleanLiteral(value)) throw new AstError(`${ctx}.visible must be a boolean literal`);
+          out.visible = value.value;
+          break;
+        }
 
         default:
           throw new AstError(`${ctx}: unsupported key: ${key}`);
@@ -223,10 +213,7 @@ export class AstParser {
   /**
    * Read a string or RegExp from an AST node (local version with unwrap)
    */
-  private static readStringOrRegExpLocal(
-    node: t.Expression,
-    ctx: string
-  ): string | RegExp {
+  private static readStringOrRegExpLocal(node: t.Expression, ctx: string): string | RegExp {
     const n = AstParser.unwrap(node);
 
     if (t.isStringLiteral(n)) return n.value;
@@ -248,13 +235,10 @@ export class AstParser {
   ): ParsedPlan {
     const unwrapped = AstParser.unwrap(node);
     if (!t.isCallExpression(unwrapped))
-      throw new AstError(
-        `${ctx}: argument must be a locator expression like page.locator("...")`
-      );
+      throw new AstError(`${ctx}: argument must be a locator expression like page.locator("...")`);
 
     const plan = parseFromAst(unwrapped);
-    if (plan.steps.length === 0)
-      throw new AstError(`${ctx}: argument must produce a locator`);
+    if (plan.steps.length === 0) throw new AstError(`${ctx}: argument must produce a locator`);
 
     return plan;
   }
@@ -270,15 +254,23 @@ export class AstParser {
         assertArgCount("locator", args, [1, 2]);
 
         const selector = readString(args[0], "locator(selector)");
-        const options = args[1]
-          ? AstParser.readLocatorOptions(
-              args[1],
-              parseFromAst,
-              "locator(options)"
-            )
-          : undefined;
+        const options = args[1] ? AstParser.readLocatorOptions(args[1], parseFromAst, "locator(options)") : undefined;
 
         return { receiver, method: "locator", args: [selector, options] };
+      },
+    },
+
+    filter: {
+      allowedReceivers: ["locator"],
+      nextReceiver: "locator",
+      buildStep: (receiver, args, parseFromAst): Step => {
+        assertArgCount("filter", args, [0, 1]);
+
+        const options = args[0]
+          ? AstParser.readLocatorOptions(args[0], parseFromAst, "filter(options)", FILTER_OPTION_KEYS)
+          : undefined;
+
+        return { receiver, method: "filter", args: [options] };
       },
     },
 
@@ -317,9 +309,7 @@ export class AstParser {
         assertArgCount("getByText", args, [1, 2]);
 
         const text = readStringOrRegExp(args[0], "getByText(text)");
-        const options = args[1]
-          ? readObjectLiteral(args[1], GET_BY_TEXT_KEYS, "getByText(options)")
-          : undefined;
+        const options = args[1] ? readObjectLiteral(args[1], GET_BY_TEXT_KEYS, "getByText(options)") : undefined;
         return {
           receiver,
           method: "getByText",
@@ -333,13 +323,8 @@ export class AstParser {
       nextReceiver: "locator",
       buildStep: (receiver, args): Step => {
         assertArgCount("getByRole", args, [1, 2]);
-        const role = readString(
-          args[0],
-          "getByRole(role)"
-        ) as GetByRoleArgument;
-        const options = args[1]
-          ? readObjectLiteral(args[1], GET_BY_ROLE_KEYS, "getByRole(options)")
-          : undefined;
+        const role = readString(args[0], "getByRole(role)") as GetByRoleArgument;
+        const options = args[1] ? readObjectLiteral(args[1], GET_BY_ROLE_KEYS, "getByRole(options)") : undefined;
         return {
           receiver,
           method: "getByRole",
@@ -355,13 +340,7 @@ export class AstParser {
         assertArgCount("getByAltText", args, [1, 2]);
 
         const altText = readStringOrRegExp(args[0], "getByAltText(altText)");
-        const options = args[1]
-          ? readObjectLiteral(
-              args[1],
-              GET_BY_ALT_TEXT_KEYS,
-              "getByAltText(options)"
-            )
-          : undefined;
+        const options = args[1] ? readObjectLiteral(args[1], GET_BY_ALT_TEXT_KEYS, "getByAltText(options)") : undefined;
         return {
           receiver,
           method: "getByAltText",
@@ -377,9 +356,7 @@ export class AstParser {
         assertArgCount("getByLabel", args, [1, 2]);
 
         const label = readStringOrRegExp(args[0], "getByLabel(label)");
-        const options = args[1]
-          ? readObjectLiteral(args[1], GET_BY_LABEL_KEYS, "getByLabel(options)")
-          : undefined;
+        const options = args[1] ? readObjectLiteral(args[1], GET_BY_LABEL_KEYS, "getByLabel(options)") : undefined;
         return {
           receiver,
           method: "getByLabel",
@@ -394,24 +371,14 @@ export class AstParser {
       buildStep: (receiver, args): Step => {
         assertArgCount("getByPlaceholder", args, [1, 2]);
 
-        const placeholder = readStringOrRegExp(
-          args[0],
-          "getByPlaceholder(placeholder)"
-        );
+        const placeholder = readStringOrRegExp(args[0], "getByPlaceholder(placeholder)");
         const options = args[1]
-          ? readObjectLiteral(
-              args[1],
-              GET_BY_PLACEHOLDER_KEYS,
-              "getByPlaceholder(options)"
-            )
+          ? readObjectLiteral(args[1], GET_BY_PLACEHOLDER_KEYS, "getByPlaceholder(options)")
           : undefined;
         return {
           receiver,
           method: "getByPlaceholder",
-          args: [
-            placeholder as string | RegExp,
-            options as GetByPlaceholderOptions,
-          ],
+          args: [placeholder as string | RegExp, options as GetByPlaceholderOptions],
         };
       },
     },
@@ -423,9 +390,7 @@ export class AstParser {
         assertArgCount("getByTitle", args, [1, 2]);
 
         const title = readStringOrRegExp(args[0], "getByTitle(title)");
-        const options = args[1]
-          ? readObjectLiteral(args[1], GET_BY_TITLE_KEYS, "getByTitle(options)")
-          : undefined;
+        const options = args[1] ? readObjectLiteral(args[1], GET_BY_TITLE_KEYS, "getByTitle(options)") : undefined;
         return {
           receiver,
           method: "getByTitle",

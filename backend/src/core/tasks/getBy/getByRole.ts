@@ -39,7 +39,7 @@ export const getByRoleTasks: Task[] = [
       },
       options: {
         checked: true,
-      }
+      },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByRole],
   },
@@ -73,7 +73,7 @@ export const getByRoleTasks: Task[] = [
       },
       options: {
         disabled: true,
-      }
+      },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByRole],
   },
@@ -82,7 +82,8 @@ export const getByRoleTasks: Task[] = [
     title: "Find button by role with name option using RegExp",
     topicId: "3516b765-b3b9-42c1-bc6c-d67324b0d08c",
     difficulty: "intermediate",
-    description: "Use getByRole to find a button element by its accessible name using a regular expression. The 'name' option accepts a RegExp to match button names that contain 'submit' or 'save' (case-insensitive).",
+    description:
+      "Use getByRole to find a button element by its accessible name using a regular expression. The 'name' option accepts a RegExp to match button names that contain 'submit' or 'save' (case-insensitive).",
     html: `
       <div class="document-editor">
         <h3>Document Editor</h3>
@@ -110,7 +111,7 @@ export const getByRoleTasks: Task[] = [
       },
       options: {
         name: "/submit|save/i",
-      }
+      },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByRole],
   },
@@ -145,7 +146,7 @@ export const getByRoleTasks: Task[] = [
       },
       options: {
         pressed: true,
-      }
+      },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByRole],
   },
@@ -182,8 +183,8 @@ export const getByRoleTasks: Task[] = [
       },
       options: {
         selected: true,
-      }
+      },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByRole],
-  }
+  },
 ];

@@ -126,46 +126,34 @@ export const trainingsCatalogSchema = {
   $id: "trainingsCatalog",
   type: "object",
   properties: {
-    modules: {
+    catalog: {
       type: "array",
       items: {
         type: "object",
         properties: {
           id: { type: "string" },
           title: { type: "string" },
-          sections: {
+          trainings: {
             type: "array",
             items: {
               type: "object",
               properties: {
                 id: { type: "string" },
                 title: { type: "string" },
-                trainings: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      id: { type: "string" },
-                      title: { type: "string" },
-                      description: { type: "string" },
-                      difficulty: { type: "string", enum: difficultyEnum },
-                      taskCount: { type: "number" },
-                    },
-                    required: ["id", "title", "difficulty", "taskCount"],
-                    additionalProperties: false,
-                  },
-                },
+                description: { type: "string" },
+                difficulty: { type: "string", enum: difficultyEnum },
+                taskCount: { type: "number" },
               },
-              required: ["id", "title", "trainings"],
+              required: ["id", "title", "difficulty", "taskCount"],
               additionalProperties: false,
             },
           },
         },
-        required: ["id", "title", "sections"],
+        required: ["id", "title", "trainings"],
         additionalProperties: false,
       },
     },
   },
-  required: ["modules"],
+  required: ["catalog"],
   additionalProperties: false,
 } as const;

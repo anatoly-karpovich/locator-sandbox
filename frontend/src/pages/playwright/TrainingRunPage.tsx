@@ -11,7 +11,12 @@ import type {
   TrainingRunTopic,
   UsageSpec,
 } from "../../types";
-import { submitTrainingRunSolution, fetchTask, fetchTrainingRun, HttpError } from "../../api";
+import {
+  submitTrainingRunSolution,
+  fetchTask,
+  fetchTrainingRun,
+  HttpError,
+} from "../../api";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 import { CHECK_STATUS } from "../../components/training-run/types";
 import type { CheckState } from "../../components/training-run/types";
@@ -23,7 +28,8 @@ import { TrainingRunChecksPanel } from "../../components/training-run/TrainingRu
 import { TrainingRunExplanationPanel } from "../../components/training-run/TrainingRunExplanationPanel";
 import { APP_ROUTES } from "../../constants/routes";
 
-const DEFAULT_LOCATOR_PLACEHOLDER = "page.getByRole('heading', { name: 'Task 1' })";
+const DEFAULT_LOCATOR_PLACEHOLDER =
+  "page.getByRole('heading', { name: 'Task 1' })";
 const LOCATOR_PLACEHOLDER_BY_METHOD: Record<UsageSpec["method"], string> = {
   locator: "page.locator('css=...')",
   getByRole: "page.getByRole('heading', { name: 'Task 1' })",
@@ -33,6 +39,7 @@ const LOCATOR_PLACEHOLDER_BY_METHOD: Record<UsageSpec["method"], string> = {
   getByPlaceholder: "page.getByPlaceholder('Placeholder text')",
   getByTestId: "page.getByTestId('example-id')",
   getByTitle: "page.getByTitle('Title text')",
+  filter: "page.locator('.card').filter({ hasText: 'Label' })",
 };
 
 export default function TrainingRunPage() {
@@ -46,7 +53,9 @@ export default function TrainingRunPage() {
   const [flatTaskIds, setFlatTaskIds] = useState<string[]>([]);
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [locatorInput, setLocatorInput] = useState("");
-  const [solutionResult, setSolutionResult] = useState<SolutionResponse | null>(null);
+  const [solutionResult, setSolutionResult] = useState<SolutionResponse | null>(
+    null
+  );
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
   const [tasksWithNotes, setTasksWithNotes] = useState<Set<string>>(new Set());
   const [checksState, setChecksState] = useState<CheckState[]>([]);
@@ -58,10 +67,13 @@ export default function TrainingRunPage() {
   const [runLoadError, setRunLoadError] = useState<string | null>(null);
 
   const getExplanations = (result: SolutionResponse | null) =>
-    (result && "explanation" in result && Array.isArray((result as any).explanation)
+    (result &&
+    "explanation" in result &&
+    Array.isArray((result as any).explanation)
       ? (result as any).explanation
       : []) || [];
-  const isPassedStatus = (status: TrainingRunTaskStatus) => status === "passed" || status === "passed_with_notes";
+  const isPassedStatus = (status: TrainingRunTaskStatus) =>
+    status === "passed" || status === "passed_with_notes";
   const getRunTaskEntry = (taskId: string | null) => {
     if (!taskId) return null;
     for (const topic of topics) {
@@ -84,14 +96,20 @@ export default function TrainingRunPage() {
         const orderedTaskIds = orderedTasks.map((t) => t.id);
         setFlatTaskIds(orderedTaskIds);
         if (orderedTaskIds.length > 0) {
-          const lastInProgress = [...orderedTasks].reverse().find((task) => task.result.status === "in_progress");
+          const lastInProgress = [...orderedTasks]
+            .reverse()
+            .find((task) => task.result.status === "in_progress");
           setCurrentTaskId(lastInProgress?.id ?? orderedTaskIds[0]);
         } else {
           setCurrentTaskId(null);
         }
         const tasks = data.topics.flatMap((t) => t.tasks);
-        const passed = tasks.filter((t) => isPassedStatus(t.result.status)).map((t) => t.id);
-        const withNotes = tasks.filter((t) => t.result.status === "passed_with_notes").map((t) => t.id);
+        const passed = tasks
+          .filter((t) => isPassedStatus(t.result.status))
+          .map((t) => t.id);
+        const withNotes = tasks
+          .filter((t) => t.result.status === "passed_with_notes")
+          .map((t) => t.id);
         setCompletedTasks(new Set(passed));
         setTasksWithNotes(new Set(withNotes));
         setRunLoadError(null);
@@ -118,9 +136,12 @@ export default function TrainingRunPage() {
     return flatTaskIds.indexOf(currentTaskId);
   }, [flatTaskIds, currentTaskId]);
 
-  const prevTaskId = currentTaskIndex > 0 ? flatTaskIds[currentTaskIndex - 1] : null;
+  const prevTaskId =
+    currentTaskIndex > 0 ? flatTaskIds[currentTaskIndex - 1] : null;
   const nextTaskId =
-    currentTaskIndex >= 0 && currentTaskIndex + 1 < flatTaskIds.length ? flatTaskIds[currentTaskIndex + 1] : null;
+    currentTaskIndex >= 0 && currentTaskIndex + 1 < flatTaskIds.length
+      ? flatTaskIds[currentTaskIndex + 1]
+      : null;
 
   // Load task lazily
   useEffect(() => {
@@ -152,7 +173,10 @@ export default function TrainingRunPage() {
     };
   }, [currentTaskId]);
 
-  const currentRunTask = useMemo(() => getRunTaskEntry(currentTaskId), [topics, currentTaskId]);
+  const currentRunTask = useMemo(
+    () => getRunTaskEntry(currentTaskId),
+    [topics, currentTaskId]
+  );
 
   // Initialize checks and hydrate from lastAttempt if present
   useEffect(() => {
@@ -161,7 +185,9 @@ export default function TrainingRunPage() {
       return;
     }
 
-    const baseChecks: CheckState[] = Object.entries(currentTaskData.expectations).map(([key, expected]) => ({
+    const baseChecks: CheckState[] = Object.entries(
+      currentTaskData.expectations
+    ).map(([key, expected]) => ({
       key,
       expected,
       actual: null,
@@ -173,7 +199,8 @@ export default function TrainingRunPage() {
       const checksPayload = lastAttempt.result?.checks ?? [];
       const mergedChecks = baseChecks.map((check) => {
         const found = checksPayload.find((c) => c.key === check.key);
-        if (!found) return { ...check, status: CHECK_STATUS.Fail, actual: null };
+        if (!found)
+          return { ...check, status: CHECK_STATUS.Fail, actual: null };
         return {
           ...check,
           actual: found.actual ?? null,
@@ -208,8 +235,12 @@ export default function TrainingRunPage() {
       setRun(updated);
       setTopics(updated.topics);
       const tasks = updated.topics.flatMap((t) => t.tasks);
-      const passed = tasks.filter((t) => isPassedStatus(t.result.status)).map((t) => t.id);
-      const withNotes = tasks.filter((t) => t.result.status === "passed_with_notes").map((t) => t.id);
+      const passed = tasks
+        .filter((t) => isPassedStatus(t.result.status))
+        .map((t) => t.id);
+      const withNotes = tasks
+        .filter((t) => t.result.status === "passed_with_notes")
+        .map((t) => t.id);
       setCompletedTasks(new Set(passed));
       setTasksWithNotes(new Set(withNotes));
     } catch {
@@ -218,16 +249,22 @@ export default function TrainingRunPage() {
   };
 
   const handleRun = async () => {
-    if (!currentTaskId || taskLoading || taskLoadError || !trainingRunId) return;
+    if (!currentTaskId || taskLoading || taskLoadError || !trainingRunId)
+      return;
     setIsRunning(true);
     try {
       const payload = locatorInput.replace(/;$/, "");
-      const result = await submitTrainingRunSolution(trainingRunId, { taskId: currentTaskId, payload });
+      const result = await submitTrainingRunSolution(trainingRunId, {
+        taskId: currentTaskId,
+        payload,
+      });
       setSolutionResult(result);
       updateChecksFromResult(result);
 
       const passed =
-        ("taskResult" in result && result.taskResult?.passed) || ("result" in result && result.result?.passed) || false;
+        ("taskResult" in result && result.taskResult?.passed) ||
+        ("result" in result && result.result?.passed) ||
+        false;
       const explanations = getExplanations(result);
       if (passed) {
         const alreadyPassed = completedTasks.has(currentTaskId);
@@ -258,15 +295,19 @@ export default function TrainingRunPage() {
   };
 
   const markAllChecksFailed = () => {
-    setChecksState((prev) => prev.map((c) => ({ ...c, status: CHECK_STATUS.Fail, actual: null })));
+    setChecksState((prev) =>
+      prev.map((c) => ({ ...c, status: CHECK_STATUS.Fail, actual: null }))
+    );
   };
 
   const updateChecksFromResult = (result: SolutionResponse) => {
     if (!currentTaskData) return;
 
     let checksPayload: TaskResultPayload["checks"] | undefined;
-    if ("taskResult" in result && result.taskResult) checksPayload = result.taskResult.checks;
-    if ("result" in result && result.result) checksPayload = result.result.checks;
+    if ("taskResult" in result && result.taskResult)
+      checksPayload = result.taskResult.checks;
+    if ("result" in result && result.result)
+      checksPayload = result.result.checks;
 
     if (!checksPayload || checksPayload.length === 0) {
       markAllChecksFailed();
@@ -276,7 +317,8 @@ export default function TrainingRunPage() {
     setChecksState((prev) =>
       prev.map((check) => {
         const found = checksPayload?.find((c) => c.key === check.key);
-        if (!found) return { ...check, status: CHECK_STATUS.Fail, actual: null };
+        if (!found)
+          return { ...check, status: CHECK_STATUS.Fail, actual: null };
         return {
           ...check,
           actual: found.actual ?? null,
@@ -307,7 +349,9 @@ export default function TrainingRunPage() {
       ("result" in solutionResult && solutionResult.result?.passed) ||
       false;
     if (!passed) return "Failed" as const;
-    return explanations.length > 0 ? ("Passed with notes" as const) : ("Passed" as const);
+    return explanations.length > 0
+      ? ("Passed with notes" as const)
+      : ("Passed" as const);
   })();
 
   const locatorPlaceholder = (() => {
@@ -318,7 +362,11 @@ export default function TrainingRunPage() {
 
   return (
     <Box minHeight="100vh">
-      <Box display="grid" gridTemplateColumns="280px 1fr" height="calc(100vh - 64px)">
+      <Box
+        display="grid"
+        gridTemplateColumns="280px 1fr"
+        height="calc(100vh - 64px)"
+      >
         <Box
           component="aside"
           sx={{
@@ -350,7 +398,9 @@ export default function TrainingRunPage() {
             onNext={handleNextTask}
           />
 
-          {(runLoading || taskLoading) && <Typography>Loading task...</Typography>}
+          {(runLoading || taskLoading) && (
+            <Typography>Loading task...</Typography>
+          )}
           {(taskLoadError || runLoadError) && (
             <Typography color="error" marginBottom={2}>
               {taskLoadError || runLoadError}
@@ -361,25 +411,39 @@ export default function TrainingRunPage() {
             <Stack spacing={3}>
               <TrainingRunWorkspace html={currentTaskData.html} />
 
-              <TaskInfoBar description={currentTaskData.description} studyMaterials={currentTaskData.studyMaterials} />
+              <TaskInfoBar
+                description={currentTaskData.description}
+                studyMaterials={currentTaskData.studyMaterials}
+              />
 
               <LocatorInput
                 value={locatorInput}
                 onChange={setLocatorInput}
                 onRun={handleRun}
                 isRunning={isRunning}
-                isDisabled={!locatorInput.trim() || isRunning || taskLoading || !currentTaskId}
+                isDisabled={
+                  !locatorInput.trim() ||
+                  isRunning ||
+                  taskLoading ||
+                  !currentTaskId
+                }
                 placeholder={locatorPlaceholder}
                 minRows={1}
               />
 
-              <TrainingRunChecksPanel checks={checksState} summaryStatus={summaryStatus} isRunning={isRunning} />
+              <TrainingRunChecksPanel
+                checks={checksState}
+                summaryStatus={summaryStatus}
+                isRunning={isRunning}
+              />
               <TrainingRunExplanationPanel explanations={explanations} />
             </Stack>
           )}
 
           {!runLoading && !currentTaskData && !taskLoading && (
-            <Typography color="text.secondary">No tasks to display. Check your training setup.</Typography>
+            <Typography color="text.secondary">
+              No tasks to display. Check your training setup.
+            </Typography>
           )}
         </Box>
       </Box>
