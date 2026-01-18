@@ -28,6 +28,8 @@ import { TrainingRunChecksPanel } from "../../components/training-run/TrainingRu
 import { TrainingRunExplanationPanel } from "../../components/training-run/TrainingRunExplanationPanel";
 import { APP_ROUTES } from "../../constants/routes";
 import { SNACKBAR_MESSAGES } from "../../constants/notifications";
+import { LOCATOR_PAYLOAD_MAX_LENGTH } from "../../constants/limits";
+import { useLimitedInput } from "../../hooks/useLimitedInput";
 
 const DEFAULT_LOCATOR_PLACEHOLDER =
   "page.getByRole('heading', { name: 'Task 1' })";
@@ -238,6 +240,12 @@ export default function TrainingRunPage() {
     setLocatorInput("");
   };
 
+  const handleLocatorChange = useLimitedInput({
+    maxLength: LOCATOR_PAYLOAD_MAX_LENGTH,
+    setValue: setLocatorInput,
+    onLimit: () => showError(new Error(SNACKBAR_MESSAGES.locatorPayloadTooLong)),
+  });
+
   const refreshRun = async () => {
     if (!trainingRunId) return;
     try {
@@ -261,6 +269,10 @@ export default function TrainingRunPage() {
   const handleRun = async () => {
     if (!currentTaskId || taskLoading || taskLoadError || !trainingRunId)
       return;
+    if (locatorInput.length > LOCATOR_PAYLOAD_MAX_LENGTH) {
+      showError(new Error(SNACKBAR_MESSAGES.locatorPayloadTooLong));
+      return;
+    }
     setIsRunning(true);
     try {
       const payload = locatorInput.replace(/;$/, "");
@@ -432,7 +444,7 @@ export default function TrainingRunPage() {
 
               <LocatorInput
                 value={locatorInput}
-                onChange={setLocatorInput}
+                onChange={handleLocatorChange}
                 onRun={handleRun}
                 isRunning={isRunning}
                 isDisabled={
