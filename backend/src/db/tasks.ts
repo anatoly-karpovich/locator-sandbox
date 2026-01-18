@@ -326,6 +326,54 @@ export const tasks: Task[] = [
     studyMaterials: [studyMaterials.locatorMethods.getByLabel],
   },
   {
+    id: "8e96ecc1-4344-4b3d-889f-37324c920db8",
+    title: "Find the primary email field",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description: "Email preferences include several similar fields. Target the one that shows 'Primary inbox'.",
+    html: `
+      <section class="emails-panel">
+        <header class="panel-header">
+          <h3>Email preferences</h3>
+          <p class="panel-subtitle">Manage how you hear from us.</p>
+        </header>
+        <form class="emails-form">
+          <div class="field">
+            <label for="email-short">Email</label>
+            <textarea id="email-short">Primary inbox</textarea>
+          </div>
+          <div class="field">
+            <label for="email-opt-in">Email notifications</label>
+            <input id="email-opt-in" type="checkbox" />
+          </div>
+          <div class="field">
+            <label for="email-long">Email address</label>
+            <input id="email-long" type="email" readonly />
+          </div>
+          <div class="field">
+            <label for="email-work">Work email</label>
+            <input id="email-work" type="email" />
+          </div>
+        </form>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "Primary inbox",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
     id: "6b7b2a1f-1c8b-4dcb-8d6a-5d7e9b3c11a4",
     title: "Find extension field by label using RegExp",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
@@ -378,59 +426,12 @@ export const tasks: Task[] = [
     studyMaterials: [studyMaterials.locatorMethods.getByLabel],
   },
   {
-    id: "8e96ecc1-4344-4b3d-889f-37324c920db8",
-    title: "Find the primary email field",
-    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
-    difficulty: "beginner",
-    description: "Email preferences include several similar fields. Target the one that shows 'Primary inbox'.",
-    html: `
-      <section class="emails-panel">
-        <header class="panel-header">
-          <h3>Email preferences</h3>
-          <p class="panel-subtitle">Manage how you hear from us.</p>
-        </header>
-        <form class="emails-form">
-          <div class="field">
-            <label for="email-short">Email</label>
-            <textarea id="email-short">Primary inbox</textarea>
-          </div>
-          <div class="field">
-            <label for="email-opt-in">Email notifications</label>
-            <input id="email-opt-in" type="checkbox" />
-          </div>
-          <div class="field">
-            <label for="email-long">Email address</label>
-            <input id="email-long" type="email" readonly />
-          </div>
-          <div class="field">
-            <label for="email-work">Work email</label>
-            <input id="email-work" type="email" />
-          </div>
-        </form>
-      </section>
-    `,
-    expectations: {
-      count: 1,
-      visible: true,
-      text: "Primary inbox",
-    },
-    usageSpec: {
-      method: "getByLabel",
-      argument: {
-        type: "string",
-      },
-      options: {
-        exact: true,
-      },
-    },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
-  },
-  {
     id: "4c657c71-34e1-4618-9f4d-f69a79c3f1d2",
     title: "Find the tag filter field",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
-    description: "In the site search panel, target the tag filter field that currently contains 'Priority'.",
+    description:
+      "In the site search panel, target the tag filter field that currently contains 'Priority'.",
     html: `
       <section class="search-panel">
         <header class="panel-header">
@@ -443,11 +444,11 @@ export const tasks: Task[] = [
             <input id="site-search" type="search" />
           </div>
           <div class="field">
-          <label for="filter-tag">
-            Filter by tag
-            <span class="helper">(optional)</span>
-            <span style="position: absolute; left: -9999px;">, max 3 tags</span>
-          </label>
+            <label for="filter-tag">
+              Filter by tag
+              <span class="helper">(optional)</span>
+              <span style="position: absolute; left: -9999px;">, max 3 tags</span>
+            </label>
             <textarea id="filter-tag">Priority</textarea>
           </div>
           <div class="field">
@@ -482,7 +483,8 @@ export const tasks: Task[] = [
     title: "Find element by test id (string)",
     topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
     difficulty: "beginner",
-    description: "Use getByTestId to locate the Directions button by its data-testid.",
+    description:
+      "Use getByTestId as a fallback when role/text locators are not reliable; data-testid is a stable, test-only hook. Here the stable id is 'directions'.",
     html: `
       <section class="route-actions">
         <header class="panel-header">
@@ -555,8 +557,16 @@ export const tasks: Task[] = [
           <h3>Starter</h3>
           <p>Great for learning</p>
         </article>
-        <article class="plan-card plan-card--pro"><h3>Pro</h3> <p>Best for teams</p> <span class="badge">Recommended</span></article>
-        <article class="plan-card"><h3>Pro</h3> <p>Recommended for legacy users</p> <span class="badge badge--muted">Deprecated</span></article>
+        <article class="plan-card plan-card--pro">
+          <h3>Pro</h3>
+          <p>Best for teams</p>
+          <span class="badge">Recommended</span>
+        </article>
+        <article class="plan-card">
+          <h3>Pro</h3>
+          <p>Recommended for legacy users</p>
+          <span class="badge badge--muted">Deprecated</span>
+        </article>
       </section>
     `,
     expectations: {
@@ -582,9 +592,25 @@ export const tasks: Task[] = [
       "We use locator.filter() with has when the base locator is easy but the distinguishing clue is a nested element like a button.\n\nTask: target the order card that contains the Ship now button.",
     html: `
       <section class="orders">
-        <article class="order-card"><div class="order-meta"><h3>Order #103</h3> <p>Ready to ship</p></div> <button class="action" type="button">Ship now</button></article>
-        <article class="order-card"><div class="order-meta"><h3>Order #104</h3> <p>Ready to ship</p></div></article>
-        <article class="order-card"><div class="order-meta"><h3>Order #105</h3> <p>Ready to ship</p></div></article>
+        <article class="order-card">
+          <div class="order-meta">
+            <h3>Order #103</h3>
+            <p>Ready to ship</p>
+          </div>
+          <button class="action" type="button">Ship now</button>
+        </article>
+        <article class="order-card">
+          <div class="order-meta">
+            <h3>Order #104</h3>
+            <p>Ready to ship</p>
+          </div>
+        </article>
+        <article class="order-card">
+          <div class="order-meta">
+            <h3>Order #105</h3>
+            <p>Ready to ship</p>
+          </div>
+        </article>
       </section>
     `,
     expectations: {
@@ -609,9 +635,20 @@ export const tasks: Task[] = [
       "We use locator.filter() with hasNot when the base locator is easy but we need to exclude cards that contain a specific nested element, like a cancelled badge.\n\nTask: target the order card that does not include a cancelled badge.",
     html: `
       <section class="orders">
-        <article class="order-card"><h3>Order #201</h3> <span class="status status--cancelled" aria-label="Cancelled"></span> <p>Refunded</p></article>
-        <article class="order-card"><h3>Order #202</h3> <span class="status status--hold">Refunded</span></article>
-        <article class="order-card"><h3>Order #203</h3> <span class="status status--cancelled" aria-label="Cancelled"></span> <p>Refunded</p></article>
+        <article class="order-card">
+          <h3>Order #201</h3>
+          <span class="status status--cancelled" aria-label="Cancelled"></span>
+          <p>Refunded</p>
+        </article>
+        <article class="order-card">
+          <h3>Order #202</h3>
+          <span class="status status--hold">Refunded</span>
+        </article>
+        <article class="order-card">
+          <h3>Order #203</h3>
+          <span class="status status--cancelled" aria-label="Cancelled"></span>
+          <p>Refunded</p>
+        </article>
       </section>
     `,
     expectations: {
