@@ -30,6 +30,22 @@ export const trainings: ITrainingTemplate[] = [
     updatedAt: "",
   },
   {
+    id: "fd7722dd-40cc-4025-a01b-27f4c4d924a1",
+    title: "Get by alt text",
+    description: "Locate images or image buttons by their alt text.",
+    moduleId: "58ffdfb0-0c23-4288-9323-92a2e366a589",
+    sectionId: "191fdd37-dcf3-4d88-bc2b-e2a5a7caf7e7",
+    taskIds: [
+      "9f2b8c14-4e7a-4d2a-b9a3-3b7e4f1c8a12",
+      "1a6c3d9f-2b4e-4f91-8e2d-5c7a3b6d8f10",
+      "6b1f3c8d-5a2e-4f70-9c13-8d5f2a6b4e91",
+      "3e7a1b9c-6d2f-4a58-8c21-7b5d3a9f1e04",
+    ],
+    difficulty: "beginner",
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
     id: "cd448ed8-b027-4881-8a97-3aeccb9d74bb",
     title: "Get by label",
     description: "Locate form controls by their associated label text.",
