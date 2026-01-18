@@ -1,5 +1,4 @@
 import { parseHTML } from "linkedom";
-import { PLAYGROUND_HTML_MAX_LENGTH } from "./limits.js";
 
 export class HtmlValidationError extends Error {
   constructor(message: string) {
@@ -9,10 +8,6 @@ export class HtmlValidationError extends Error {
 }
 
 export function validateHtmlContent(html: string): void {
-  if (html.length > PLAYGROUND_HTML_MAX_LENGTH) {
-    throw new HtmlValidationError(`HTML content exceeds ${PLAYGROUND_HTML_MAX_LENGTH} characters`);
-  }
-
   const { document } = parseHTML(html);
 
   // 1️⃣ Forbidden tags
