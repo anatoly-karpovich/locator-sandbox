@@ -27,6 +27,7 @@ import { LocatorInput } from "../../components/common/LocatorInput";
 import { TrainingRunChecksPanel } from "../../components/training-run/TrainingRunChecksPanel";
 import { TrainingRunExplanationPanel } from "../../components/training-run/TrainingRunExplanationPanel";
 import { APP_ROUTES } from "../../constants/routes";
+import { SNACKBAR_MESSAGES } from "../../constants/notifications";
 
 const DEFAULT_LOCATOR_PLACEHOLDER =
   "page.getByRole('heading', { name: 'Task 1' })";
@@ -115,18 +116,22 @@ export default function TrainingRunPage() {
         setRunLoadError(null);
       })
       .catch((err: any) => {
-        setRunLoadError(err?.message ?? "Failed to load training run");
         if (err instanceof HttpError && err.status === 404) {
-          showError(err, "Training run not found.");
+          showError(err, SNACKBAR_MESSAGES.trainingRunNotFound);
           navigate(APP_ROUTES.PLAYWRIGHT_TRAININGS);
           return;
         }
-        showError(err, "Server error. Please try again later.");
+        if (err instanceof HttpError && err.status === 503) {
+          setRunLoadError(SNACKBAR_MESSAGES.serverOverloaded);
+          showError(err, SNACKBAR_MESSAGES.serverOverloaded);
+          return;
+        }
+        setRunLoadError(err?.message ?? SNACKBAR_MESSAGES.failedLoadTrainingRun);
+        showError(err, SNACKBAR_MESSAGES.serverErrorRetryLater);
         setRun(null);
         setTopics([]);
         setFlatTaskIds([]);
         setCurrentTaskId(null);
-        navigate(APP_ROUTES.PLAYWRIGHT_TRAININGS);
       })
       .finally(() => setRunLoading(false));
   }, [trainingRunId, navigate, showError]);
@@ -160,8 +165,13 @@ export default function TrainingRunPage() {
       })
       .catch((err: any) => {
         if (!mounted) return;
-        setTaskLoadError(err?.message ?? "Failed to load task");
-        showError(err, "Failed to load task");
+        if (err instanceof HttpError && err.status === 503) {
+          setTaskLoadError(SNACKBAR_MESSAGES.serverOverloaded);
+          showError(err, SNACKBAR_MESSAGES.serverOverloaded);
+        } else {
+          setTaskLoadError(err?.message ?? SNACKBAR_MESSAGES.failedLoadTask);
+          showError(err, SNACKBAR_MESSAGES.failedLoadTask);
+        }
         setCurrentTaskData(null);
       })
       .finally(() => {
@@ -283,12 +293,16 @@ export default function TrainingRunPage() {
       }
       await refreshRun();
     } catch (e: any) {
-      if (e instanceof HttpError && e.status === 404) {
-        showError(e, "Training run not found.");
+        if (e instanceof HttpError && e.status === 404) {
+        showError(e, SNACKBAR_MESSAGES.trainingRunNotFound);
         navigate(APP_ROUTES.PLAYWRIGHT_TRAININGS);
         return;
       }
-      showError(e, "Failed to run locator. Please try again");
+      if (e instanceof HttpError && e.status === 503) {
+        showError(e, SNACKBAR_MESSAGES.serverOverloaded);
+        return;
+      }
+      showError(e, SNACKBAR_MESSAGES.failedRunLocatorRetry);
     } finally {
       setIsRunning(false);
     }
