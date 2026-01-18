@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Box, Paper, Stack, Typography } from "@mui/material";
-import { submitPlayground } from "../../api";
+import { submitPlayground, HttpError } from "../../api";
 import type { PlaygroundSubmitResponse } from "../../types";
 import { useApp } from "../../providers/AppProvider/AppProvider.hooks";
 import { ResultSection } from "../../components/playground/ResultSection";
 import { PlaygroundWorkspace } from "../../components/playground/PlaygroundWorkspace";
 import { LocatorInput } from "../../components/common/LocatorInput";
+import { SNACKBAR_MESSAGES } from "../../constants/notifications";
 
 export default function PlaygroundPage() {
   const { showError } = useApp();
@@ -23,7 +24,11 @@ export default function PlaygroundPage() {
       const data = await submitPlayground({ html, payload: normalizedPayload });
       setResult(data);
     } catch (err) {
-      showError(err, "Failed to run locator");
+      if (err instanceof HttpError && err.status === 503) {
+        showError(err, SNACKBAR_MESSAGES.serverOverloaded);
+      } else {
+        showError(err, SNACKBAR_MESSAGES.failedRunLocator);
+      }
     } finally {
       setIsRunning(false);
     }
