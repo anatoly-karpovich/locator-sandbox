@@ -1,5 +1,3 @@
 import { Task } from "@core/tasks/types.js";
 
-export const getByTitleTasks: Task[] = [
-];
-
+export const getByTitleTasks: Task[] = [];

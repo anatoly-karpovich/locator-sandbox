@@ -59,8 +59,7 @@ export const tasks: Task[] = [
     title: "Find element by exact text match",
     topicId: "d5c21800-ac27-42cd-82aa-bf680c1bcaa9",
     difficulty: "beginner",
-    description:
-      "We use getByText to find element by exact text match with option 'exact'",
+    description: "We use getByText to find element by exact text match with option 'exact'",
     html: `
       <ul class="menu">
         <li>Hello</li>
@@ -275,10 +274,11 @@ export const tasks: Task[] = [
   },
   {
     id: "f6c1b5c0-8c0d-4bd4-bf52-15a7f7b88c01",
-    title: "Find input by label text",
+    title: "Find input by label text (string)",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
-    description: "Use getByLabel to find the email input by its label text.",
+    description:
+      "Use getByLabel when a control has an associated label; it is more stable than placeholders or CSS selectors. Here the label text is 'Email address' and the field contains 'primary@acme.com'.",
     html: `
       <section class="profile-card">
         <header class="card-header">
@@ -290,7 +290,7 @@ export const tasks: Task[] = [
             <legend>Contact info</legend>
             <div class="field">
               <label for="email-input">Email address</label>
-              <input id="email-input" type="email" placeholder="name@example.com" aria-describedby="email-hint" />
+              <textarea id="email-input" aria-describedby="email-hint">primary@acme.com</textarea>
               <p class="hint" id="email-hint">Receipts are sent here.</p>
             </div>
             <div class="field">
@@ -315,7 +315,7 @@ export const tasks: Task[] = [
     expectations: {
       count: 1,
       visible: true,
-      editable: true,
+      text: "primary@acme.com",
     },
     usageSpec: {
       method: "getByLabel",
@@ -327,11 +327,10 @@ export const tasks: Task[] = [
   },
   {
     id: "8e96ecc1-4344-4b3d-889f-37324c920db8",
-    title: "Find exact label match",
+    title: "Find the primary email field",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
-    description:
-      "Use getByLabel with the exact option to match 'Email' when similar labels like 'Email address' and 'Email notifications' are present.",
+    description: "Email preferences include several similar fields. Target the one that shows 'Primary inbox'.",
     html: `
       <section class="emails-panel">
         <header class="panel-header">
@@ -341,7 +340,7 @@ export const tasks: Task[] = [
         <form class="emails-form">
           <div class="field">
             <label for="email-short">Email</label>
-            <input id="email-short" type="email" />
+            <textarea id="email-short">Primary inbox</textarea>
           </div>
           <div class="field">
             <label for="email-opt-in">Email notifications</label>
@@ -361,7 +360,7 @@ export const tasks: Task[] = [
     expectations: {
       count: 1,
       visible: true,
-      editable: true,
+      text: "Primary inbox",
     },
     usageSpec: {
       method: "getByLabel",
@@ -376,36 +375,47 @@ export const tasks: Task[] = [
   },
   {
     id: "6b7b2a1f-1c8b-4dcb-8d6a-5d7e9b3c11a4",
-    title: "Match phone extension label with regex",
+    title: "Find extension field by label using RegExp",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
     description:
-      'Use getByLabel with a RegExp to match the "Phone extension" label.',
+      "In this form there are two extension fields: 204 and 2045. Find the field for extension 204 using getByLabel with a RegExp. The label may contain mixed case ('eXt'), extra spaces, or punctuation, so match only the stable parts: the word 'ext' (case-insensitive) and the number 204 as a whole number (avoid matching 2045).",
     html: `
       <form class="phones-form">
-        <div class="field">
-          <label for="phone-us">Phone +1</label>
-          <input id="phone-us" type="tel" />
-        </div>
+        <fieldset class="group">
+          <legend>Contact numbers</legend>
 
-        <div class="field">
-          <label for="phone-uk">Phone +44</label>
-          <input id="phone-uk" type="tel" />
-        </div>
+          <div class="field">
+            <label for="phone-us">Phone +1</label>
+            <input id="phone-us" type="tel" placeholder="+1 (555) 123-4567" />
+          </div>
 
-        <div class="field">
-          <label for="phone-de">Phone +49</label>
-          <input id="phone-de" type="tel" />
-        </div>
+          <div class="field">
+            <label for="phone-uk">Phone +44</label>
+            <input id="phone-uk" type="tel" placeholder="+44 20 1234 5678" />
+          </div>
 
-        <div class="field">
-          <label for="phone-ext">Phone extension</label>
-          <input id="phone-ext" type="text" />
-        </div>
+          <div class="field">
+            <label for="phone-de">Phone +49</label>
+            <input id="phone-de" type="tel" placeholder="+49 30 123456" />
+          </div>
+
+          <div class="field">
+            <label for="phone-ext">Office eXt .  204</label>
+            <textarea id="phone-ext">Ext 204</textarea>
+          </div>
+
+          <div class="field">
+            <label for="phone-ext-legacy">Office EXT. 2045 (legacy)</label>
+            <textarea id="phone-ext-legacy">Ext 2045</textarea>
+          </div>
+        </fieldset>
       </form>
     `,
     expectations: {
       count: 1,
+      visible: true,
+      text: "Ext 204",
     },
     usageSpec: {
       method: "getByLabel",
@@ -417,11 +427,11 @@ export const tasks: Task[] = [
   },
   {
     id: "4c657c71-34e1-4618-9f4d-f69a79c3f1d2",
-    title: "Find filter input by hidden label",
+    title: "Find the tag filter field",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
     description:
-      'Use getByLabel to locate the "Filter by tag" input whose label is visually hidden in the HTML.',
+      "In the site search panel, target the tag filter field that currently contains 'Priority'.",
     html: `
       <section class="search-panel">
         <header class="panel-header">
@@ -434,8 +444,12 @@ export const tasks: Task[] = [
             <input id="site-search" type="search" />
           </div>
           <div class="field">
-            <label for="filter-tag" class="sr-only">Filter by tag</label>
-            <input id="filter-tag" type="text" placeholder="Tag name" />
+            <label for="filter-tag">
+              Filter by tag
+              <span class="helper">(optional)</span>
+              <span style="position: absolute; left: -9999px;">, max 3 tags</span>
+            </label>
+            <textarea id="filter-tag">Priority</textarea>
           </div>
           <div class="field">
             <label for="search-scope">Scope</label>
@@ -451,12 +465,15 @@ export const tasks: Task[] = [
     expectations: {
       count: 1,
       visible: true,
-      editable: true,
+      text: "Priority",
     },
     usageSpec: {
       method: "getByLabel",
       argument: {
         type: "string",
+      },
+      options: {
+        exact: false,
       },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByLabel],

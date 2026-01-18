@@ -43,7 +43,8 @@ export const getByTextTasks: Task[] = [
       visible: true,
     },
     studyMaterials: [studyMaterials.locatorMethods.getByText],
-    description: "We use getByText to find elements by partial text match. In this task we expect to find 1 element with text 'Welcome to the application'.",
+    description:
+      "We use getByText to find elements by partial text match. In this task we expect to find 1 element with text 'Welcome to the application'.",
     usageSpec: {
       method: "getByText",
       argument: {

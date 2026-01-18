@@ -4,11 +4,7 @@ import { getByTextTasks } from "@core/tasks/getBy/getByText.js";
 import { Difficulty, Module, Task, TaskId } from "@core/tasks/types.js";
 
 class TasksService {
-  private tasks: Task[] = [
-    ...getByTextTasks,
-    ...getByPlaceholderTasks,
-    ...getByRoleTasks,
-  ];
+  private tasks: Task[] = [...getByTextTasks, ...getByPlaceholderTasks, ...getByRoleTasks];
 
   getById(id: TaskId) {
     return this.tasks.find((t) => t.id === id);
@@ -27,10 +23,13 @@ class TasksService {
   }
 
   getAllStructured() {
-    const result = this.tasks.reduce((res, task) => {
-      res[task.id] = task;
-      return res;
-    }, {} as Record<number, Task>);
+    const result = this.tasks.reduce(
+      (res, task) => {
+        res[task.id] = task;
+        return res;
+      },
+      {} as Record<number, Task>
+    );
     return result;
   }
 }

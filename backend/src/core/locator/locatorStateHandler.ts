@@ -3,8 +3,10 @@ import { Locator } from "playwright";
 import { Expectations, ExpectationsValues } from "@core/tasks/types.js";
 import { ILocatorStateHandler } from "@core/types.js";
 
-interface LocatorState
-  extends Record<keyof Required<Expectations>, (locator: Locator) => Promise<ExpectationsValues>> {}
+interface LocatorState extends Record<
+  keyof Required<Expectations>,
+  (locator: Locator) => Promise<ExpectationsValues>
+> {}
 
 @injectable()
 export class LocatorStateHandler implements ILocatorStateHandler {
@@ -14,10 +16,13 @@ export class LocatorStateHandler implements ILocatorStateHandler {
   ): Promise<Record<keyof Expectations, ExpectationsValues>> {
     const keys = Object.keys(expectations) as (keyof Expectations)[];
     const state = await Promise.all(keys.map((key) => this[key](locator)));
-    const result = keys.reduce((acc, key, i) => {
-      acc[key] = state[i];
-      return acc;
-    }, {} as Record<keyof Expectations, ExpectationsValues>);
+    const result = keys.reduce(
+      (acc, key, i) => {
+        acc[key] = state[i];
+        return acc;
+      },
+      {} as Record<keyof Expectations, ExpectationsValues>
+    );
     keys.forEach((key, i) => (result[key] = state[i]));
     return result;
   }

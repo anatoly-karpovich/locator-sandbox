@@ -124,11 +124,14 @@ export class UsageSpecification implements IUsageSpecification {
     return {
       passed,
       expected: `{ ${Object.entries(expectedOptions)
-          .map(([key, value]) => `${key}: ${value}`)
-          .join(", ")} }`,
-      actual: opts && Object.entries(opts).length > 0
-        ? `{ ${Object.entries(opts ?? {}).map(([key, value]) => `${key}: ${value}`).join(", ")} }`
-        : "empty",
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(", ")} }`,
+      actual:
+        opts && Object.entries(opts).length > 0
+          ? `{ ${Object.entries(opts ?? {})
+              .map(([key, value]) => `${key}: ${value}`)
+              .join(", ")} }`
+          : "empty",
     };
   }
 
@@ -137,7 +140,8 @@ export class UsageSpecification implements IUsageSpecification {
   }
 
   private getStepInputs(step: Step): { inputArg: unknown; inputOptions: unknown } {
-    if (step.method === "filter") { // for filter we have only options
+    if (step.method === "filter") {
+      // for filter we have only options
       return { inputArg: undefined, inputOptions: step.args?.[0] };
     }
     const [inputArg, inputOptions] = step.args ?? [];
