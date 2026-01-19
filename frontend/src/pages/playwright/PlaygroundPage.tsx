@@ -7,6 +7,8 @@ import { ResultSection } from "../../components/playground/ResultSection";
 import { PlaygroundWorkspace } from "../../components/playground/PlaygroundWorkspace";
 import { LocatorInput } from "../../components/common/LocatorInput";
 import { SNACKBAR_MESSAGES } from "../../constants/notifications";
+import { LOCATOR_PAYLOAD_MAX_LENGTH, PLAYGROUND_HTML_MAX_LENGTH } from "../../constants/limits";
+import { useLimitedInput } from "../../hooks/useLimitedInput";
 
 export default function PlaygroundPage() {
   const { showError } = useApp();
@@ -14,9 +16,27 @@ export default function PlaygroundPage() {
   const [payload, setPayload] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [result, setResult] = useState<PlaygroundSubmitResponse | null>(null);
+  const handleHtmlChange = useLimitedInput({
+    maxLength: PLAYGROUND_HTML_MAX_LENGTH,
+    setValue: setHtml,
+    onLimit: () => showError(new Error(SNACKBAR_MESSAGES.playgroundHtmlTooLong)),
+  });
+  const handlePayloadChange = useLimitedInput({
+    maxLength: LOCATOR_PAYLOAD_MAX_LENGTH,
+    setValue: setPayload,
+    onLimit: () => showError(new Error(SNACKBAR_MESSAGES.locatorPayloadTooLong)),
+  });
 
   const handleRun = async () => {
     if (!html.trim() || !payload.trim()) return;
+    if (html.length > PLAYGROUND_HTML_MAX_LENGTH) {
+      showError(new Error(SNACKBAR_MESSAGES.playgroundHtmlTooLong));
+      return;
+    }
+    if (payload.length > LOCATOR_PAYLOAD_MAX_LENGTH) {
+      showError(new Error(SNACKBAR_MESSAGES.locatorPayloadTooLong));
+      return;
+    }
     setIsRunning(true);
     setResult(null);
     try {
@@ -47,7 +67,7 @@ export default function PlaygroundPage() {
         </Stack>
 
         <Stack spacing={3}>
-          <PlaygroundWorkspace html={html} onHtmlChange={setHtml} />
+          <PlaygroundWorkspace html={html} onHtmlChange={handleHtmlChange} />
 
           <Paper
             variant="outlined"
@@ -55,7 +75,7 @@ export default function PlaygroundPage() {
           >
             <LocatorInput
               value={payload}
-              onChange={setPayload}
+              onChange={handlePayloadChange}
               onRun={handleRun}
               isRunning={isRunning}
               isDisabled={!html.trim() || !payload.trim() || isRunning}

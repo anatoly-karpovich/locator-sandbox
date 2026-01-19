@@ -5,6 +5,7 @@ import { HTTP_CODES } from "@core/httpCodes.js";
 import { ITrainingSubmitSolutionRequestDTO } from "@dto/trainingRuns.dto.js";
 import { PlaygroundSubmitRequestDTO } from "@dto/playground.dto.js";
 import { ResponseError } from "@errors/index.js";
+import { LOCATOR_PAYLOAD_MAX_LENGTH } from "./limits.js";
 
 export function validateLocatorPayloadMiddleware(
   req: Request<{}, {}, PlaygroundSubmitRequestDTO | ITrainingSubmitSolutionRequestDTO>,
@@ -14,6 +15,12 @@ export function validateLocatorPayloadMiddleware(
   const { payload } = req.body ?? {};
 
   try {
+    if (payload.length > LOCATOR_PAYLOAD_MAX_LENGTH) {
+      return next(
+        new ResponseError(HTTP_CODES.BAD_REQUEST, `Locator payload exceeds ${LOCATOR_PAYLOAD_MAX_LENGTH} characters`)
+      );
+    }
+
     validateLocatorPayload(payload);
     next();
   } catch (err) {
