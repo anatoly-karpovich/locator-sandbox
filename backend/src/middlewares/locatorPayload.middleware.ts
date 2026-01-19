@@ -5,7 +5,7 @@ import { HTTP_CODES } from "@core/httpCodes.js";
 import { ITrainingSubmitSolutionRequestDTO } from "@dto/trainingRuns.dto.js";
 import { PlaygroundSubmitRequestDTO } from "@dto/playground.dto.js";
 import { ResponseError } from "@errors/index.js";
-import { LOCATOR_PAYLOAD_MAX_LENGTH } from "@core/validation/limits.js";
+import { LOCATOR_PAYLOAD_MAX_LENGTH } from "./limits.js";
 
 export function validateLocatorPayloadMiddleware(
   req: Request<{}, {}, PlaygroundSubmitRequestDTO | ITrainingSubmitSolutionRequestDTO>,

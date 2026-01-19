@@ -4,7 +4,7 @@ import { HTTP_CODES } from "@core/httpCodes.js";
 import { validateHtmlContent, HtmlValidationError } from "@core/validation/htmlValidator.js";
 import { PlaygroundSubmitRequestDTO } from "@dto/playground.dto.js";
 import { ResponseError } from "@errors/index.js";
-import { PLAYGROUND_HTML_MAX_LENGTH } from "@core/validation/limits.js";
+import { PLAYGROUND_HTML_MAX_LENGTH } from "./limits.js";
 
 export function validateHtmlContentMiddleware(
   req: Request<{}, {}, PlaygroundSubmitRequestDTO>,
