@@ -3,6 +3,7 @@ export const errorResponseSchema = {
   type: "object",
   properties: {
     error: { type: "string" },
+    details: { type: "string" },
   },
   required: ["error"],
   additionalProperties: false,

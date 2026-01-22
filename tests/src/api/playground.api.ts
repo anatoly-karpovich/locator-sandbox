@@ -1,6 +1,6 @@
 import { apiConfig } from "../config/api.config.js";
 import { IApiClient, IRequestOptions } from "../core/types.js";
-import type { PlaygroundSubmitResponse } from "../data/types.js";
+import type { ErrorResponse, PlaygroundSubmitResponse } from "../data/types.js";
 
 type PlaygroundBody = {
   html: string;
@@ -10,7 +10,7 @@ type PlaygroundBody = {
 export class PlaygroundApi {
   constructor(private apiClient: IApiClient) {}
 
-  async submit(body: PlaygroundBody) {
+  async submit<T extends PlaygroundSubmitResponse | ErrorResponse = PlaygroundSubmitResponse>(body: PlaygroundBody) {
     const options: IRequestOptions = {
       baseURL: apiConfig.baseUrl,
       url: apiConfig.endpoints.playgroundSubmit,
@@ -21,6 +21,6 @@ export class PlaygroundApi {
       data: body,
     };
 
-    return await this.apiClient.send<PlaygroundSubmitResponse>(options);
+    return await this.apiClient.send<T>(options);
   }
 }

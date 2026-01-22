@@ -1,5 +1,8 @@
+import { ErrorType } from "./errorTypeEnum.js";
+
 export type ErrorResponse = {
-  error: string;
+  error: ErrorType | string;
+  details?: string;
 };
 
 export type TaskCatalogTopic = {
