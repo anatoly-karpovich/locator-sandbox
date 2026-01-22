@@ -1,19 +1,13 @@
 import { AstParser } from "@core/ast-parser/index.js";
 import { ParsedPlan } from "@core/ast-parser/types.js";
-
-export class LocatorPayloadValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "LocatorPayloadValidationError";
-  }
-}
+import { AstError } from "../../errors/astError.js";
 
 export function validateLocatorPayload(payload: string): ParsedPlan {
   try {
     return AstParser.parse(payload);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Invalid locator expression";
+    if (err instanceof AstError) throw err;
 
-    throw new LocatorPayloadValidationError(message);
+    throw err;
   }
 }
