@@ -74,7 +74,7 @@ export async function fetchTrainingsCatalog(): Promise<TrainingCatalogResponse> 
 }
 
 export async function startTrainingRun(trainingTemplateId: string): Promise<TrainingRun> {
-  const res = await fetchApi("/api/training-runs/start", {
+  const res = await fetchApi("/api/training-runs/start-fixed", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ trainingTemplateId }),
