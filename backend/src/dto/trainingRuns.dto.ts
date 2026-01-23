@@ -6,12 +6,11 @@ import { z } from "zod";
 //   trainingTemplateId: TrainingTemplateId;
 // }
 
-export const StartFixedTrainingRequestSchema = z.object({
-  type: z.literal("fixed"),
+export const StartFixedTrainingRequestDTOSchema = z.object({
   trainingTemplateId: z.string(),
 })
 
-export type StartFixedTrainingRequest = z.infer<typeof StartFixedTrainingRequestSchema>;
+export type StartFixedTrainingRequestDTO = z.infer<typeof StartFixedTrainingRequestDTOSchema>;
 
 // export interface StartCustomTrainingRequest {
 //   difficulty?: Difficulty;
@@ -23,8 +22,7 @@ export type StartFixedTrainingRequest = z.infer<typeof StartFixedTrainingRequest
 //   limit: number;
 // }
 
-export const StartCustomTrainingRequestSchema = z.object({
-  type: z.literal("custom"),
+export const StartCustomTrainingRequestDTOSchema = z.object({
   difficulty: z.literal(["beginner", "intermediate", "advanced"]).optional(),
   scope: z.object({
     module: z.string().optional(),
@@ -34,14 +32,9 @@ export const StartCustomTrainingRequestSchema = z.object({
   limit: z.number(),
 })
 
-export type StartCustomTrainingRequest = z.infer<typeof StartCustomTrainingRequestSchema>
+export type StartCustomTrainingRequestDTO = z.infer<typeof StartCustomTrainingRequestDTOSchema>
 
 export type StartTrainingResponseDTO = ITrainingRun;
-
-//export type StartTrainingRequestDTO = StartFixedTrainingRequest | StartCustomTrainingRequest;
-export const StartTrainingRequestDTOSchema = z.discriminatedUnion("type", [StartFixedTrainingRequestSchema, StartCustomTrainingRequestSchema]);
-
-export type StartTrainingRequestDTO = z.infer<typeof StartTrainingRequestDTOSchema>
 
 export type GetTrainingRunResponseDTO = ITrainingRun;
 
