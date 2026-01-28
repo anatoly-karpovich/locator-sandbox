@@ -1,17 +1,28 @@
 import { test, expect } from "../../fixtures/api.fixture.js";
-import { validateJsonSchema, playgroundSubmitSchema, errorResponseSchema, TestTag, HTTP_CODES } from "../../data/index.js";
+import {
+  validateJsonSchema,
+  playgroundSubmitSchema,
+  errorResponseSchema,
+  TestTag,
+  HTTP_CODES,
+} from "../../data/index.js";
 import { forbiddenTagCases, externalResourceCases, invalidPayloadCases } from "../../data/cases/playgroundCases.js";
+import { ErrorResponse } from "../../data/types.js";
 
 test.describe("[API] [Playground]", () => {
-  test("POST /playground/submit valid html returns elements", { tag: [TestTag.POSITIVE, TestTag.SMOKE] }, async ({ playgroundApi }) => {
-    const response = await playgroundApi.submit({
-      html: "<main><h1>Title</h1><p>Hello</p></main>",
-      payload: "page.getByText('Title')",
-    });
+  test(
+    "POST /playground/submit valid html returns elements",
+    { tag: [TestTag.POSITIVE, TestTag.SMOKE] },
+    async ({ playgroundApi }) => {
+      const response = await playgroundApi.submit({
+        html: "<main><h1>Title</h1><p>Hello</p></main>",
+        payload: "page.getByText('Title')",
+      });
 
-    expect(response.status).toBe(HTTP_CODES.OK);
-    validateJsonSchema(response.body, playgroundSubmitSchema);
-  });
+      expect(response.status).toBe(HTTP_CODES.OK);
+      validateJsonSchema(response.body, playgroundSubmitSchema);
+    }
+  );
 
   for (const { name, html } of forbiddenTagCases) {
     test(
@@ -25,7 +36,7 @@ test.describe("[API] [Playground]", () => {
 
         expect(response.status).toBe(HTTP_CODES.BAD_REQUEST);
         validateJsonSchema(response.body, errorResponseSchema);
-      },
+      }
     );
   }
 
@@ -40,7 +51,7 @@ test.describe("[API] [Playground]", () => {
 
       expect(response.status).toBe(HTTP_CODES.BAD_REQUEST);
       validateJsonSchema(response.body, errorResponseSchema);
-    },
+    }
   );
 
   for (const { name, html } of externalResourceCases) {
@@ -55,23 +66,25 @@ test.describe("[API] [Playground]", () => {
 
         expect(response.status).toBe(HTTP_CODES.BAD_REQUEST);
         validateJsonSchema(response.body, errorResponseSchema);
-      },
+      }
     );
   }
 
-  for (const { name, payload } of invalidPayloadCases) {
+  for (const { name, payload, details, error } of invalidPayloadCases) {
     test(
-      `POST /playground/submit invalid payload - ${name} returns 400`,
+      `POST /playground/submit invalid payload - ${name} returns 200`,
       { tag: [TestTag.NEGATIVE, TestTag.REGRESS] },
       async ({ playgroundApi }) => {
-        const response = await playgroundApi.submit({
+        const response = await playgroundApi.submit<ErrorResponse>({
           html: "<main><h1>Title</h1></main>",
           payload,
         });
 
-        expect(response.status).toBe(HTTP_CODES.BAD_REQUEST);
+        expect(response.status).toBe(HTTP_CODES.OK);
+        expect(response.body.error).toBe(error);
+        expect(response.body.details).toBe(details);
         validateJsonSchema(response.body, errorResponseSchema);
-      },
+      }
     );
   }
 });

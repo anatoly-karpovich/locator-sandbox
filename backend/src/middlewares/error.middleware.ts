@@ -19,5 +19,9 @@ export function errorMiddleware(err: unknown, req: Request, res: Response<ErrorR
     err: err instanceof Error ? err : { raw: err },
   });
 
-  res.status(status).json({ error: message });
+  if (httpError?.errorType) {
+    res.status(status).json({ error: httpError.errorType, details: message });
+  } else {
+    res.status(status).json({ error: message });
+  }
 }

@@ -5,10 +5,7 @@ import { ITopicRepository, ITrainingRunsRepository } from "@repositories/index.j
 import { ITaskService, ITrainingTemplateService, ITrainingsRunService } from "@services/types.js";
 import { ILocatorExecutor } from "@core/types.js";
 import { TRAINING_RUN_STATUS, TRAINING_RUN_TASK_STATUS } from "@core/training/enums.js";
-import {
-  ITrainingSubmitSolutionRequestDTO,
-  ITrainingsRunSubmitSolutionResponseDTO,
-} from "@dto/trainingRuns.dto.js";
+import { ITrainingSubmitSolutionRequestDTO, ITrainingsRunSubmitSolutionResponseDTO } from "@dto/trainingRuns.dto.js";
 import { TYPES } from "../../container/types.js";
 
 @injectable()
@@ -99,9 +96,7 @@ export class TrainingsRunService implements ITrainingsRunService {
     };
 
     if (passed) {
-      const nextStatus = hasNotes
-        ? TRAINING_RUN_TASK_STATUS.PASSED_WITH_NOTES
-        : TRAINING_RUN_TASK_STATUS.PASSED;
+      const nextStatus = hasNotes ? TRAINING_RUN_TASK_STATUS.PASSED_WITH_NOTES : TRAINING_RUN_TASK_STATUS.PASSED;
       if (previousStatus !== TRAINING_RUN_TASK_STATUS.PASSED) {
         taskEntry.result.status = nextStatus;
       }

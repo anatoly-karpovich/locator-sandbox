@@ -14,14 +14,15 @@ import {
 import { ErrorResponseDTO } from "@dto/common.dto.js";
 import { TrainingCatalogResponseDTO } from "@dto/trainings.dto.js";
 import { TYPES } from "../container/types.js";
-import { ResponseError } from "@errors/index.js";
+import { AstError, ResponseError } from "@errors/index.js";
+import { ErrorType } from "../core/errorTypeEnum.js";
 
 @injectable()
 export class TrainingRunsController {
   constructor(
     @inject(TYPES.TrainingTemplateService) private trainingTemplateService: ITrainingTemplateService,
     @inject(TYPES.TrainingsRunService) private trainingsRunService: ITrainingsRunService
-  ) {}
+  ) { }
   async startTraining(
     req: Request<{}, {}, StartTrainingRequestDTO>,
     res: Response<StartTrainingResponseDTO | ErrorResponseDTO>,
@@ -53,6 +54,9 @@ export class TrainingRunsController {
       const result = await this.trainingsRunService.handleSolution(trainingRunId, dto);
       return res.status(HTTP_CODES.OK).json(result);
     } catch (err) {
+      if (err instanceof AstError) {
+        return next(new ResponseError(HTTP_CODES.OK, err.message, ErrorType.AST_ERROR));
+      }
       return next(new ResponseError(HTTP_CODES.BAD_REQUEST, (err as Error).message));
     }
   }

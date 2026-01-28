@@ -15,6 +15,7 @@ export const TYPES = {
   PlaygroundService: Symbol.for("PlaygroundService"),
   LocatorExecutor: Symbol.for("LocatorExecutor"),
   PlaywrightRunner: Symbol.for("PlaywrightRunner"),
+  BrowserManager: Symbol.for("BrowserManager"),
   UsageSpecification: Symbol.for("UsageSpecification"),
   SolutionsHandler: Symbol.for("SolutionsHandler"),
   LocatorStateHandler: Symbol.for("LocatorStateHandler"),

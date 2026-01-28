@@ -2,3 +2,4 @@
 **/dist
 **/logs
 **/trainingRuns.json
+.env

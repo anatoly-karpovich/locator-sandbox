@@ -41,7 +41,7 @@ export const usageSpecSchema = {
     },
     options: { type: "object" },
   },
-  required: ["method", "argument"],
+  required: ["method"],
   additionalProperties: false,
 } as const;
 

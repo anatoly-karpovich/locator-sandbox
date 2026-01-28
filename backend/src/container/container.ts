@@ -32,8 +32,21 @@ import { UsageSpecification } from "@core/usageSpec/usageSpecification.js";
 import { LocatorExecutor } from "@core/locator/locatorExecutor.js";
 import { LocatorStateHandler } from "@core/locator/locatorStateHandler.js";
 import { SolutionsHandler } from "@core/tasks/solutionsHandler.js";
-import { IPlaywrightRunner, IUsageSpecification, ILocatorExecutor, ILocatorStateHandler, ISolutionsHandler } from "@core/types.js";
-import { TasksController, TrainingsController, TrainingRunsController, PlaygroundController } from "@controllers/index.js";
+import {
+  IPlaywrightRunner,
+  IUsageSpecification,
+  ILocatorExecutor,
+  ILocatorStateHandler,
+  ISolutionsHandler,
+} from "@core/types.js";
+import { BrowserManager } from "@core/playwright/browser.manager.js";
+import { IBrowserManager } from "@core/playwright/types.js";
+import {
+  TasksController,
+  TrainingsController,
+  TrainingRunsController,
+  PlaygroundController,
+} from "@controllers/index.js";
 
 const container = new Container({
   defaultScope: "Singleton",
@@ -49,6 +62,7 @@ container.bind<ITrainingRunsRepository>(TYPES.TrainingRunsRepository).to(Trainin
 
 // core helpers
 container.bind<IPlaywrightRunner>(TYPES.PlaywrightRunner).to(PlaywrightRunner);
+container.bind<IBrowserManager>(TYPES.BrowserManager).to(BrowserManager);
 container.bind<IUsageSpecification>(TYPES.UsageSpecification).to(UsageSpecification);
 container.bind<ILocatorStateHandler>(TYPES.LocatorStateHandler).to(LocatorStateHandler);
 container.bind<ISolutionsHandler>(TYPES.SolutionsHandler).to(SolutionsHandler);

@@ -1,6 +1,6 @@
 import { apiConfig } from "../config/api.config.js";
 import { IApiClient, IRequestOptions } from "../core/types.js";
-import type { TrainingRunResponse, TrainingRunSubmitResponse } from "../data/types.js";
+import type { ErrorResponse, TrainingRunResponse, TrainingRunSubmitResponse } from "../data/types.js";
 
 type StartTrainingBody = {
   trainingTemplateId: string;
@@ -22,7 +22,7 @@ export class TrainingRunsApi {
       headers: {
         "content-type": "application/json",
       },
-      data: { trainingTemplateId }
+      data: { trainingTemplateId },
     };
 
     return await this.apiClient.send<TrainingRunResponse>(options);
@@ -52,7 +52,10 @@ export class TrainingRunsApi {
     return await this.apiClient.send<TrainingRunResponse>(options);
   }
 
-  async submitSolution(trainingRunId: string, body: SubmitSolutionBody) {
+  async submitSolution<T extends TrainingRunSubmitResponse | ErrorResponse = TrainingRunSubmitResponse>(
+    trainingRunId: string,
+    body: SubmitSolutionBody
+  ) {
     const options: IRequestOptions = {
       baseURL: apiConfig.baseUrl,
       url: `${apiConfig.endpoints.trainingRuns}/${trainingRunId}/submit`,
@@ -60,9 +63,9 @@ export class TrainingRunsApi {
       headers: {
         "content-type": "application/json",
       },
-      data: body
+      data: body,
     };
 
-    return await this.apiClient.send<TrainingRunSubmitResponse>(options);
+    return await this.apiClient.send<T>(options);
   }
 }

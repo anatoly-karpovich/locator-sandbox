@@ -4,6 +4,7 @@ export type ReceiverKind = "page" | "locator";
 
 export type Step =
   | { receiver: ReceiverKind; method: "locator"; args: [string, LocatorOptions?] }
+  | { receiver: ReceiverKind; method: "filter"; args: [LocatorOptions?] }
   | { receiver: ReceiverKind; method: "first"; args: [] }
   | { receiver: ReceiverKind; method: "last"; args: [] }
   | { receiver: ReceiverKind; method: "nth"; args: [number] }
@@ -13,7 +14,7 @@ export type Step =
   | { receiver: ReceiverKind; method: "getByLabel"; args: [string | RegExp, GetByLabelOptions?] }
   | { receiver: ReceiverKind; method: "getByPlaceholder"; args: [string | RegExp, GetByPlaceholderOptions?] }
   | { receiver: ReceiverKind; method: "getByTitle"; args: [string | RegExp, GetByTitleOptions?] }
-  | { receiver: ReceiverKind; method: "getByTestId"; args: [string | RegExp] }
+  | { receiver: ReceiverKind; method: "getByTestId"; args: [string | RegExp] };
 
 export type ParsedPlan = {
   root: "page";
@@ -44,9 +45,91 @@ export interface GetByRoleOptions extends ExactMatchOption {
   expanded?: boolean;
   includeHidden?: boolean;
   level?: number;
-};
+}
 
-export type GetByRoleArgument = "alert" | "alertdialog" | "application" | "article" | "banner" | "blockquote" | "button" | "caption" | "cell" | "checkbox" | "code" | "columnheader" | "combobox" | "complementary" | "contentinfo" | "definition" | "deletion" | "dialog" | "directory" | "document" | "emphasis" | "feed" | "figure" | "form" | "generic" | "grid" | "gridcell" | "group" | "heading" | "img" | "insertion" | "link" | "list" | "listbox" | "listitem" | "log" | "main" | "marquee" | "math" | "meter" | "menu" | "menubar" | "menuitem" | "menuitemcheckbox" | "menuitemradio" | "navigation" | "none" | "note" | "option" | "paragraph" | "presentation" | "progressbar" | "radio" | "radiogroup" | "region" | "row" | "rowgroup" | "rowheader" | "scrollbar" | "search" | "searchbox" | "separator" | "slider" | "spinbutton" | "status" | "strong" | "subscript" | "superscript" | "switch" | "tab" | "table" | "tablist" | "tabpanel" | "term" | "textbox" | "time" | "timer" | "toolbar" | "tooltip" | "tree" | "treegrid" | "treeitem";
+export type GetByRoleArgument =
+  | "alert"
+  | "alertdialog"
+  | "application"
+  | "article"
+  | "banner"
+  | "blockquote"
+  | "button"
+  | "caption"
+  | "cell"
+  | "checkbox"
+  | "code"
+  | "columnheader"
+  | "combobox"
+  | "complementary"
+  | "contentinfo"
+  | "definition"
+  | "deletion"
+  | "dialog"
+  | "directory"
+  | "document"
+  | "emphasis"
+  | "feed"
+  | "figure"
+  | "form"
+  | "generic"
+  | "grid"
+  | "gridcell"
+  | "group"
+  | "heading"
+  | "img"
+  | "insertion"
+  | "link"
+  | "list"
+  | "listbox"
+  | "listitem"
+  | "log"
+  | "main"
+  | "marquee"
+  | "math"
+  | "meter"
+  | "menu"
+  | "menubar"
+  | "menuitem"
+  | "menuitemcheckbox"
+  | "menuitemradio"
+  | "navigation"
+  | "none"
+  | "note"
+  | "option"
+  | "paragraph"
+  | "presentation"
+  | "progressbar"
+  | "radio"
+  | "radiogroup"
+  | "region"
+  | "row"
+  | "rowgroup"
+  | "rowheader"
+  | "scrollbar"
+  | "search"
+  | "searchbox"
+  | "separator"
+  | "slider"
+  | "spinbutton"
+  | "status"
+  | "strong"
+  | "subscript"
+  | "superscript"
+  | "switch"
+  | "tab"
+  | "table"
+  | "tablist"
+  | "tabpanel"
+  | "term"
+  | "textbox"
+  | "time"
+  | "timer"
+  | "toolbar"
+  | "tooltip"
+  | "tree"
+  | "treegrid"
+  | "treeitem";
 
 export type RawCall = {
   // Base expression the method is called on (identifier or nested call)
@@ -58,30 +141,12 @@ export type RawCall = {
 export type MethodSpec = {
   allowedReceivers: ReceiverKind[];
   nextReceiver: ReceiverKind; // receiver after applying this method
-  buildStep: (
-    receiver: ReceiverKind,
-    args: t.Expression[],
-    parseFromAst: (node: t.Expression) => ParsedPlan
-  ) => Step;
-}
+  buildStep: (receiver: ReceiverKind, args: t.Expression[], parseFromAst: (node: t.Expression) => ParsedPlan) => Step;
+};
 
-export type Literal =
-  | string
-  | number
-  | boolean
-  | null
-  | Literal[]
-  | RegExp
-  | { [k: string]: Literal };
+export type Literal = string | number | boolean | null | Literal[] | RegExp | { [k: string]: Literal };
 
-export type AllowedType =
-  | "string"
-  | "number"
-  | "boolean"
-  | "null"
-  | "array"
-  | "object"
-  | "string|regex";
+export type AllowedType = "string" | "number" | "boolean" | "null" | "array" | "object" | "string|regex";
 
 export type SchemaAtom = `${AllowedType}${"" | "?"}`; // e.g. "boolean?" means optional
 
@@ -94,4 +159,5 @@ export type LocatorOptions = {
   hasNot?: ParsedPlan;
   hasText?: LocatorText;
   hasNotText?: LocatorText;
+  visible?: boolean;
 };

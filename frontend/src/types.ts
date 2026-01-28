@@ -14,7 +14,8 @@ export type UsageSpec = {
     | "getByPlaceholder"
     | "getByTestId"
     | "getByTitle"
-    | "locator";
+    | "locator"
+    | "filter";
   argument?: {
     type: "string" | "regex";
     match?: "exact" | "partial";

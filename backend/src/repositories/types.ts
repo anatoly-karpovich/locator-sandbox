@@ -13,25 +13,25 @@ export interface ITaskRepository {
 }
 
 export interface IModuleRepository {
-  getById(id: ModuleId): typeof modules[number] | undefined;
+  getById(id: ModuleId): (typeof modules)[number] | undefined;
   getAll(): typeof modules;
 }
 
 export interface ISectionRepository {
-  getById(id: SectionId): typeof sections[number] | undefined;
+  getById(id: SectionId): (typeof sections)[number] | undefined;
   getByModuleId(moduleId: SectionId): typeof sections;
   getAll(): typeof sections;
 }
 
 export interface ITopicRepository {
-  getById(id: TopicId): typeof topics[number] | undefined;
+  getById(id: TopicId): (typeof topics)[number] | undefined;
   getBySectionId(sectionId: SectionId | SectionId[]): typeof topics;
   getAll(): typeof topics;
 }
 
 export interface ITrainingTemplateRepository {
   getAll(): typeof trainings;
-  getById(id: string): typeof trainings[number] | undefined;
+  getById(id: string): (typeof trainings)[number] | undefined;
 }
 
 export interface ITrainingRunsRepository {

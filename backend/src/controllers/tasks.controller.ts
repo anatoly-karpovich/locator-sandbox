@@ -34,4 +34,3 @@ export class TasksController {
     return res.status(HTTP_CODES.OK).json(tasks);
   }
 }
-

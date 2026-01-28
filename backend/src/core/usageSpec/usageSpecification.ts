@@ -23,15 +23,18 @@ export class UsageSpecification implements IUsageSpecification {
       actual: step.method,
     };
 
-    const [inputArg, inputOptions] = step.args!;
-    const actualArgType = getArgumentType(inputArg);
-    const isArgumentTypeMatch = actualArgType === specs.argument.type;
+    const { inputArg, inputOptions } = this.getStepInputs(step);
 
-    details.argument = {
-      passed: isArgumentTypeMatch,
-      expected: specs.argument.type,
-      actual: actualArgType,
-    };
+    if (specs.argument) {
+      const actualArgType = getArgumentType(inputArg);
+      const isArgumentTypeMatch = actualArgType === specs.argument.type;
+
+      details.argument = {
+        passed: isArgumentTypeMatch,
+        expected: specs.argument.type,
+        actual: actualArgType,
+      };
+    }
 
     // if (isArgumentTypeMatch) {
     //   if (specs.argument.match && specs.argument.value) {
@@ -111,16 +114,38 @@ export class UsageSpecification implements IUsageSpecification {
     expectedOptions: Record<string, unknown>
   ): UsageCheckResult["details"]["options"] {
     const opts = actualOptions as Record<string, unknown> | undefined;
-    const passed = Object.entries(expectedOptions).every(([key, value]) => opts?.[key]?.toString() === value?.toString());
+    const passed = Object.entries(expectedOptions).every(([key, value]) => {
+      const actual = opts?.[key];
+      if (value === "locator") {
+        return this.isParsedPlan(actual);
+      }
+      return actual?.toString() === value?.toString();
+    });
     return {
       passed,
       expected: `{ ${Object.entries(expectedOptions)
-          .map(([key, value]) => `${key}: ${value}`)
-          .join(", ")} }`,
-      actual: opts && Object.entries(opts).length > 0
-        ? `{ ${Object.entries(opts ?? {}).map(([key, value]) => `${key}: ${value}`).join(", ")} }`
-        : "empty",
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(", ")} }`,
+      actual:
+        opts && Object.entries(opts).length > 0
+          ? `{ ${Object.entries(opts ?? {})
+              .map(([key, value]) => `${key}: ${value}`)
+              .join(", ")} }`
+          : "empty",
     };
+  }
+
+  private isParsedPlan(value: unknown): boolean {
+    return Boolean(value) && typeof value === "object" && "steps" in (value as Record<string, unknown>);
+  }
+
+  private getStepInputs(step: Step): { inputArg: unknown; inputOptions: unknown } {
+    if (step.method === "filter") {
+      // for filter we have only options
+      return { inputArg: undefined, inputOptions: step.args?.[0] };
+    }
+    const [inputArg, inputOptions] = step.args ?? [];
+    return { inputArg, inputOptions };
   }
 
   private clearMessages() {

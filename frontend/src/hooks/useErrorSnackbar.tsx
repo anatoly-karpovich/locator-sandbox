@@ -13,7 +13,7 @@ export function useErrorSnackbar() {
       let message = fallback;
       if (err instanceof HttpError) {
         if (err.status >= 500) {
-          message = "Server error. Please try again.";
+          message = fallback !== DEFAULT_FALLBACK ? fallback : "Server error. Please try again.";
         } else if (fallback === DEFAULT_FALLBACK) {
           message = err.body || fallback;
         }

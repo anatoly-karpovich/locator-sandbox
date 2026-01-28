@@ -1,6 +1,13 @@
 import { Page, Locator } from "playwright";
 import { Step } from "@core/ast-parser/types.js";
-import { UsageCheckResult, UsageSpec, CompareResult, Expectations, ExpectationsValues, Task } from "@core/tasks/types.js";
+import {
+  UsageCheckResult,
+  UsageSpec,
+  CompareResult,
+  Expectations,
+  ExpectationsValues,
+  Task,
+} from "@core/tasks/types.js";
 import { ITrainingsRunSubmitSolutionResponseDTO } from "@dto/trainingRuns.dto.js";
 
 export interface IPlaywrightRunner {
@@ -12,8 +19,10 @@ export interface IUsageSpecification {
   buildExplanation(result: UsageCheckResult): string[];
 }
 
-export interface ILocatorStateHandler
-  extends Record<keyof Required<Expectations>, (locator: Locator) => Promise<ExpectationsValues>> {
+export interface ILocatorStateHandler extends Record<
+  keyof Required<Expectations>,
+  (locator: Locator) => Promise<ExpectationsValues>
+> {
   getActual(locator: Locator, expectations: Expectations): Promise<Record<keyof Expectations, ExpectationsValues>>;
 }
 
