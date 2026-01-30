@@ -30,6 +30,22 @@ export const trainings: ITrainingTemplate[] = [
     updatedAt: "",
   },
   {
+    id: "8e0b2d6a-3f2a-4a5e-9b5a-1c9b0c0e5f10",
+    title: "Get by placeholder",
+    description: "Locate inputs by their placeholder text, including exact, partial, and regex matches.",
+    moduleId: "58ffdfb0-0c23-4288-9323-92a2e366a589",
+    sectionId: "191fdd37-dcf3-4d88-bc2b-e2a5a7caf7e7",
+    taskIds: [
+      "4a173978-8e26-4fc3-9cea-9c6a1710e25f",
+      "76472bf8-9b69-4878-9872-235bb9cd0b1f",
+      "04087c58-91f7-4c09-8946-c62b6e49fe76",
+      "35f43500-6a2a-47be-a7f7-9c173c57e107",
+    ],
+    difficulty: "beginner",
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
     id: "fd7722dd-40cc-4025-a01b-27f4c4d924a1",
     title: "Get by alt text",
     description: "Locate images or image buttons by their alt text.",
