@@ -161,10 +161,17 @@ export type PlaygroundElement = {
   visible: boolean;
 };
 
-export type PlaygroundSubmitResponse = {
+export type PlaygroundSubmitSuccess = {
   explanation?: string[];
   elements: PlaygroundElement[];
 };
+
+export type PlaygroundSubmitError = {
+  error: string;
+  details?: string;
+};
+
+export type PlaygroundSubmitResponse = PlaygroundSubmitSuccess | PlaygroundSubmitError;
 
 export type PaletteMode = "light" | "dark";
 
