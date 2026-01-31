@@ -1,4 +1,14 @@
-export const studyMaterials: Record<"locatorMethods", Record<string, { title: string; url: string }>> = {
+export const studyMaterials: Record<"locatorMethods" | "general", Record<string, { title: string; url: string }>> = {
+  general: {
+    regexInLocators: {
+      title: "Using Regular Expressions in Playwright Locators",
+      url: "https://playwright.dev/docs/locators#matching-by-text",
+    },
+    javaScriptRegex: {
+      title: "JavaScript Regular Expressions (MDN)",
+      url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions",
+    },
+  },
   locatorMethods: {
     getByText: {
       title: "Locator method - getByText()",

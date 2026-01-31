@@ -675,7 +675,11 @@ export const tasks: Task[] = [
         type: "regex",
       },
     },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+    studyMaterials: [
+      studyMaterials.locatorMethods.getByLabel,
+      studyMaterials.general.regexInLocators,
+      studyMaterials.general.javaScriptRegex,
+    ],
   },
   {
     id: "4c657c71-34e1-4618-9f4d-f69a79c3f1d2",
@@ -825,7 +829,11 @@ export const tasks: Task[] = [
         type: "regex",
       },
     },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+    studyMaterials: [
+      studyMaterials.locatorMethods.getByLabel,
+      studyMaterials.general.regexInLocators,
+      studyMaterials.general.javaScriptRegex,
+    ],
   },
   {
     id: "c70e4a12-1e1a-4c3d-8f86-88c35b19a0b4",
@@ -925,6 +933,166 @@ export const tasks: Task[] = [
       count: 1,
       visible: true,
       text: "Captain Nemo",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "d2a9c8b7-6e5f-4d3c-a2b1-0c9d8e7f6a5b",
+    title: "Find select element by label",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "getByLabel works with any form control, including <select>. Here we target the dropdown labelled 'Country'.",
+    html: `
+      <section class="location-form">
+        <h3>Location settings</h3>
+        <div class="field">
+          <label for="region">Region</label>
+          <select id="region">
+            <option>North America</option>
+            <option>Europe</option>
+            <option>Asia</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="country">Country</label>
+          <select id="country">
+            <option>United States</option>
+            <option>Canada</option>
+            <option>Mexico</option>
+          </select>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "e3b0c9d8-7f6a-4e5d-b4c3-1d0e9f8a7b6c",
+    title: "Find checkbox by its label",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "Checkboxes are commonly targeted via their label. Use getByLabel to find the 'Remember me' checkbox.",
+    html: `
+      <section class="login-options">
+        <h3>Login options</h3>
+        <div class="field">
+          <label>
+            <input type="checkbox" name="remember" />
+            Remember me
+          </label>
+        </div>
+        <div class="field">
+          <label>
+            <input type="checkbox" name="newsletter" />
+            Subscribe to newsletter
+          </label>
+        </div>
+        <div class="field">
+          <label>
+            <input type="checkbox" name="terms" />
+            I agree to terms
+          </label>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "f4c1d0e9-8a7b-4f6e-c5d4-2e1f0a9b8c7d",
+    title: "Label with nested markup (text normalization)",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "intermediate",
+    description:
+      "Labels often contain nested elements like icons or helper text. Playwright normalizes whitespace when matching. Target the field labelled 'Card number'.",
+    html: `
+      <section class="payment-form">
+        <h3>Payment</h3>
+        <div class="field">
+          <label for="card-number">
+            <span class="icon">💳</span>
+            Card number
+            <span class="required">*</span>
+          </label>
+          <input id="card-number" type="text" value="4111 1111 1111 1111" />
+        </div>
+        <div class="field">
+          <label for="card-expiry">
+            <span class="icon">📅</span>
+            Expiry date
+            <span class="required">*</span>
+          </label>
+          <input id="card-expiry" type="text" value="12/28" />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "4111 1111 1111 1111",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "a5d2e1f0-9b8c-4a7d-d6e5-3f2a1b0c9d8e",
+    title: "Find multiple controls with same label (count > 1)",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "intermediate",
+    description:
+      "Sometimes multiple controls share the same label text. This task expects 2 matches—use nth() or other methods to disambiguate if needed in real tests.",
+    html: `
+      <section class="contact-form">
+        <h3>Contact details</h3>
+        <fieldset>
+          <legend>Primary contact</legend>
+          <div class="field">
+            <label for="phone-primary">Phone</label>
+            <input id="phone-primary" type="tel" value="+1 555-0100" />
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Secondary contact</legend>
+          <div class="field">
+            <label for="phone-secondary">Phone</label>
+            <input id="phone-secondary" type="tel" value="+1 555-0200" />
+          </div>
+        </fieldset>
+      </section>
+    `,
+    expectations: {
+      count: 2,
     },
     usageSpec: {
       method: "getByLabel",
