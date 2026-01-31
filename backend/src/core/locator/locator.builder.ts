@@ -40,6 +40,14 @@ export class LocatorBuilder {
         this.assertLocator(receiver, "nth");
         return receiver.nth(step.args[0]);
 
+      case "and":
+        this.assertLocator(receiver, "and");
+        return receiver.and(this.build(step.args[0]));
+
+      case "or":
+        this.assertLocator(receiver, "or");
+        return receiver.or(this.build(step.args[0]));
+
       case "getByText":
         return receiver.getByText(step.args[0], step.args[1]);
 

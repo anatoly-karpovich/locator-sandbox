@@ -302,6 +302,26 @@ export class AstParser {
       },
     },
 
+    and: {
+      allowedReceivers: ["locator"],
+      nextReceiver: "locator",
+      buildStep: (receiver, args, parseFromAst): Step => {
+        assertArgCount("and", args, 1);
+        const locatorPlan = AstParser.parseLocatorArg(args[0], parseFromAst, "and(locator)");
+        return { receiver, method: "and", args: [locatorPlan] };
+      },
+    },
+
+    or: {
+      allowedReceivers: ["locator"],
+      nextReceiver: "locator",
+      buildStep: (receiver, args, parseFromAst): Step => {
+        assertArgCount("or", args, 1);
+        const locatorPlan = AstParser.parseLocatorArg(args[0], parseFromAst, "or(locator)");
+        return { receiver, method: "or", args: [locatorPlan] };
+      },
+    },
+
     getByText: {
       allowedReceivers: ["page", "locator"],
       nextReceiver: "locator",

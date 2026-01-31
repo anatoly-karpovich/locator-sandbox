@@ -33,6 +33,8 @@ export const MAP_ERROR_MESSAGE_TO_LOCATOR_BASED_METHOD = {
   first: "first() expects 0 arguments",
   last: "last() expects 0 arguments",
   nth: "nth(index) expects 1 argument",
+  and: "and(locator) expects 1 argument",
+  or: "or(locator) expects 1 argument",
 };
 
 export function readString(node: t.Expression, ctx: string): string {

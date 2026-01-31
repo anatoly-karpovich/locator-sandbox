@@ -8,6 +8,8 @@ export type Step =
   | { receiver: ReceiverKind; method: "first"; args: [] }
   | { receiver: ReceiverKind; method: "last"; args: [] }
   | { receiver: ReceiverKind; method: "nth"; args: [number] }
+  | { receiver: ReceiverKind; method: "and"; args: [ParsedPlan] }
+  | { receiver: ReceiverKind; method: "or"; args: [ParsedPlan] }
   | { receiver: ReceiverKind; method: "getByText"; args: [string | RegExp, GetByTextOptions?] }
   | { receiver: ReceiverKind; method: "getByRole"; args: [GetByRoleArgument, GetByRoleOptions?] }
   | { receiver: ReceiverKind; method: "getByAltText"; args: [string | RegExp, GetByAltTextOptions?] }
