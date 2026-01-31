@@ -18,6 +18,7 @@ export const expectationsSchema = {
     count: { type: "number" },
     visible: { type: "boolean" },
     text: { type: "string" },
+    placeholder: { type: "string" },
     hidden: { type: "boolean" },
     enabled: { type: "boolean" },
     editable: { type: "boolean" },

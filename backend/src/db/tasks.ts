@@ -277,7 +277,7 @@ export const tasks: Task[] = [
     title: "Find input by placeholder text",
     topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
     difficulty: "beginner",
-    description: "Find the email input by its placeholder \"name@example.com\".",
+    description: 'Find the email input by its placeholder "name@example.com".',
     html: `
       <section class="newsletter-panel">
         <header class="panel-header">
@@ -297,13 +297,14 @@ export const tasks: Task[] = [
     `,
     expectations: {
       count: 1,
+      placeholder: "name@example.com",
       visible: true,
     },
     usageSpec: {
       method: "getByPlaceholder",
       argument: {
         type: "string",
-      }
+      },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
   },
@@ -337,13 +338,14 @@ export const tasks: Task[] = [
     `,
     expectations: {
       count: 1,
+      placeholder: "Order #2048",
       visible: true,
     },
     usageSpec: {
       method: "getByPlaceholder",
       argument: {
         type: "regex",
-      }
+      },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
   },
@@ -352,7 +354,7 @@ export const tasks: Task[] = [
     title: "Find input by exact placeholder match",
     topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
     difficulty: "beginner",
-    description: "Find the single input with the exact placeholder \"Search\" (no suffixes).",
+    description: 'Find the single input with the exact placeholder "Search".',
     html: `
       <section class="search-panel">
         <header class="panel-header">
@@ -368,6 +370,7 @@ export const tasks: Task[] = [
     `,
     expectations: {
       count: 1,
+      placeholder: "Search",
       visible: true,
     },
     usageSpec: {
@@ -377,7 +380,7 @@ export const tasks: Task[] = [
       },
       options: {
         exact: true,
-      }
+      },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
   },
@@ -386,22 +389,24 @@ export const tasks: Task[] = [
     title: "Find input by partial placeholder match",
     topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
     difficulty: "beginner",
-    description: "Find the input whose placeholder contains the phrase \"Billing city\" (partial match).",
+    description:
+      "Find the mobile phone input. The placeholder has some extra text, so match the part that clearly points to it.",
+
     html: `
-      <section class="address-panel">
-        <header class="panel-header">
-          <h3>Address</h3>
-          <p class="panel-subtitle">Confirm billing details.</p>
-        </header>
-        <div class="address-fields">
-          <input type="text" placeholder="Shipping city" />
-          <input type="text" placeholder="Billing city (optional)" />
-          <input type="text" placeholder="Postal code" />
-        </div>
-      </section>
-    `,
+  <section class="contact-form">
+  <h2>Contact Information</h2>
+  <p>Please provide your phone numbers so we can reach you if needed.</p>
+
+  <div class="phone-fields">
+    <input type="tel" placeholder="Phone number (home)" name="phone-home" />
+    <input type="tel" placeholder="Phone number (mobile)" name="phone-mobile" />
+    <input type="tel" placeholder="Phone number (work)" name="phone-work" />
+  </div>
+</section>
+`,
     expectations: {
       count: 1,
+      placeholder: "Phone number (mobile)",
       visible: true,
     },
     usageSpec: {
@@ -411,7 +416,357 @@ export const tasks: Task[] = [
       },
       options: {
         exact: false,
-      }
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+    {
+    id: "9baf3ec8-3a9b-4b62-8455-96b2c48fcd13",
+    title: "Find order input by dynamic placeholder",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description:
+      'Find the order number input. The placeholder starts with "Order #" but contains a changing number. Match it using a regular expression.',
+
+    html: `
+    <div class="container">
+      <header class="app-header">
+        <h1>Order Tracking</h1>
+      </header>
+
+      <main class="main-content">
+        <section class="track-form">
+          <h2>Track your order</h2>
+          <p>Please enter your order number below:</p>
+          <input type="text" name="orderId" placeholder="Order #84539" />
+          <button>Track</button>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <p>Need help? <a href="#">Contact support</a></p>
+      </footer>
+    </div>
+  `,
+
+    expectations: {
+      count: 1,
+      placeholder: "Order #84539",
+      visible: true,
+    },
+
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "7e1a1878-0ef4-49fc-a8b6-d34977d42937",
+    title: "Find 6-digit code input",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description:
+      "Find the input field for a 6-digit verification code. The digits change every time, so use a regular expression to match the pattern.",
+
+    html: `
+    <div class="container">
+      <header><h1>Two-Factor Authentication</h1></header>
+
+      <main>
+        <section class="code-entry">
+          <p>A 6-digit code was sent to your device.</p>
+          <input type="text" placeholder="Code: 123456" maxlength="6" />
+          <button>Submit</button>
+        </section>
+      </main>
+
+      <footer><p>Security powered by Acme Inc.</p></footer>
+    </div>
+  `,
+
+    expectations: {
+      count: 1,
+      placeholder: "Code: 123456",
+      visible: true,
+    },
+
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "regex",
+      },
+    },
+
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "8f2a5d9b-5391-4c94-88db-457b3fe97d5c",
+    title: "Find company name input with optional hint",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description:
+      'Find the company name input. The placeholder includes "(optional)", but that part might vary. Use a regular expression that matches both cases.',
+
+    html: `
+    <div class="container">
+      <header><h1>Organization Setup</h1></header>
+
+      <main>
+        <section class="company-form">
+          <p>Tell us about your company.</p>
+          <form>
+            <input type="text" name="companyName" placeholder="Company name (optional)" />
+            <input type="text" name="industry" placeholder="Industry" />
+          </form>
+        </section>
+      </main>
+
+      <footer><p>Step 1 of 3</p></footer>
+    </div>
+  `,
+
+    expectations: {
+      count: 1,
+      placeholder: "Company name (optional)",
+      visible: true,
+    },
+
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "regex",
+      },
+    },
+
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "d8d7a8ce-07f7-4456-bc5a-f53d1685f984",
+    title: "Find input with special character in placeholder",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description:
+      'Find the input for company and department. The placeholder includes a special character "&". Match it using a regular expression.',
+
+    html: `
+    <div class="container">
+      <header><h1>Employment Info</h1></header>
+
+      <main>
+        <section class="employment-form">
+          <form>
+            <label for="company-dept">Company and Department</label>
+            <input type="text" id="company-dept" placeholder="Company & department" />
+          </form>
+        </section>
+      </main>
+
+      <footer><p>Your data is encrypted and secure.</p></footer>
+    </div>
+  `,
+
+    expectations: {
+      count: 1,
+      placeholder: "Company & department",
+      visible: true,
+    },
+
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "regex",
+      },
+    },
+
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "d009eeb4-bb9b-4ff0-9ad5-32db5bc9e344",
+    title: "Find search input with optional label",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description:
+      'Find the search input. The placeholder may include "(optional)" depending on the page. Match the field regardless of that.',
+
+    html: `
+    <div class="container">
+      <header><h1>Keyword Search</h1></header>
+
+      <main>
+        <section class="search-panel">
+          <p>You can search using any relevant keyword.</p>
+          <input type="search" placeholder="Search keyword (optional)" />
+        </section>
+      </main>
+
+      <footer><p>Need help? Visit our <a href="#">FAQ</a>.</p></footer>
+    </div>
+  `,
+
+    expectations: {
+      count: 1,
+      placeholder: "Search keyword (optional)",
+      visible: true,
+    },
+
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "regex",
+      },
+    },
+
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "2c7c9f5a-fabc-4f3f-a41f-5cd01eae8fae",
+    title: "Exact placeholder among similar fields",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description:
+      'Find the input with placeholder "Name". It sits next to "Username", so match the placeholder exactly to avoid the second field.',
+    html: `
+      <h2>Create Your Profile</h2>
+      <p>Please enter your full name and choose a nickname for the community.</p>
+      <form>
+        <input type="text" placeholder="Name" /><br/>
+        <input type="text" placeholder="Username" /><br/>
+        <button>Submit</button>
+      </form>
+    `,
+    expectations: {
+      count: 1,
+      placeholder: "Name",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "3f6c1d7b-0f32-4e6e-b2b9-5b6e92d927b6",
+    title: "Pick the primary email field",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description:
+      'Target the field with placeholder "Email" and skip "Confirm Email". Both share the word "Email", so require an exact placeholder match before filling it.',
+    html: `
+      <h2>Sign Up</h2>
+      <p>Please enter your email address twice to confirm:</p>
+      <form>
+        <input type="email" placeholder="Email" /><br/>
+        <input type="email" placeholder="Confirm Email" /><br/>
+        <input type="password" placeholder="Password" /><br/>
+        <button>Sign Up</button>
+      </form>
+    `,
+    expectations: {
+      count: 1,
+      placeholder: "Email",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "5e0a7cbd-1d87-4c03-9f73-2c459e8ff2a9",
+    title: "Match ticket input with regex",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description:
+      'Find the ticket ID field. The placeholder ends with a changing number, so match the "Ticket ID: <digits>" pattern with a regular expression before submitting.',
+    html: `
+      <h3>Track Your Support Ticket</h3>
+      <p>Enter your support ticket ID to check its status:</p>
+      <form>
+        <input type="text" placeholder="Ticket ID: 39421" />
+        <button>Find Ticket</button>
+      </form>
+    `,
+    expectations: {
+      count: 1,
+      placeholder: "Ticket ID: 39421",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "7c5c4e0a-8b3b-4cce-9b1c-9c8a5f0c5f5e",
+    title: "Booking code placeholder with regex",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description:
+      'Find the booking code field. Its placeholder contains a mixed-code like "ABX-934", so match the "Booking code: AAA-999" pattern with a regex.',
+    html: `
+      <h3>Check Your Booking</h3>
+      <p>Enter your booking confirmation code to view details:</p>
+      <form>
+        <input type="text" placeholder="Booking code: ABX-934" />
+        <button>View Booking</button>
+      </form>
+    `,
+    expectations: {
+      count: 1,
+      placeholder: "Booking code: ABX-934",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
+  },
+  {
+    id: "0d7f0c43-1d89-4c32-92d3-f6ab4c1a8a31",
+    title: "Unique email placeholder",
+    topicId: "19981989-8407-48c7-bfc2-659aa098d4f5",
+    difficulty: "beginner",
+    description:
+      'Find the email input whose placeholder is "Enter your email". There are no similar placeholders nearby, so a direct match is enough.',
+    html: `
+      <h3>Newsletter Sign-Up</h3>
+      <p>Enter your email address to subscribe:</p>
+      <form>
+        <input type="email" placeholder="Enter your email" />
+        <button>Subscribe</button>
+      </form>
+    `,
+    expectations: {
+      count: 1,
+      placeholder: "Enter your email",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByPlaceholder",
+      argument: {
+        type: "string",
+      },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByPlaceholder],
   },
@@ -682,8 +1037,7 @@ export const tasks: Task[] = [
     title: "Find the tag filter field",
     topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
     difficulty: "beginner",
-    description:
-      "In the site search panel, target the tag filter field that currently contains 'Priority'.",
+    description: "In the site search panel, target the tag filter field that currently contains 'Priority'.",
     html: `
       <section class="search-panel">
         <header class="panel-header">

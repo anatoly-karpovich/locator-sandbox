@@ -3,6 +3,7 @@ export type Expectations = {
   visible?: boolean;
   enabled?: boolean;
   text?: string | null;
+  placeholder?: string | null;
 };
 
 export type UsageSpec = {

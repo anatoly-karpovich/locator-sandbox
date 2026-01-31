@@ -51,6 +51,7 @@ export type Expectations = {
   count?: number;
   visible?: boolean;
   text?: string;
+  placeholder?: string;
   hidden?: boolean;
   enabled?: boolean;
   editable?: boolean;

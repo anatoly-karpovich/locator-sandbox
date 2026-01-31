@@ -24,6 +24,10 @@ export function LocatorInput({
   minRows = 1,
 }: LocatorInputProps) {
   const highlighted = useMemo(() => highlightLocatorSyntax(value), [value]);
+  const handleShortcutRun = () => {
+    if (isDisabled || isRunning) return;
+    onRun();
+  };
 
   return (
     <Stack spacing={2}>
@@ -34,6 +38,7 @@ export function LocatorInput({
           highlightedHtml={highlighted}
           placeholder={placeholder}
           minRows={minRows}
+          onRunShortcut={handleShortcutRun}
         />
         <Stack spacing={1} alignItems="flex-start">
           <Button

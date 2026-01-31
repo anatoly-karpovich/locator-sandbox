@@ -2,6 +2,7 @@ export type Expectations = {
   count?: number;
   visible?: boolean;
   text?: string;
+  placeholder?: string;
   hidden?: boolean;
   enabled?: boolean;
   editable?: boolean;
@@ -87,6 +88,7 @@ export type ExecutionResult = {
   count: Expectations["count"];
   visible: Expectations["visible"];
   text: Expectations["text"];
+  placeholder: Expectations["placeholder"];
   hidden: Expectations["hidden"];
   enabled: Expectations["enabled"];
   editable: Expectations["editable"];
