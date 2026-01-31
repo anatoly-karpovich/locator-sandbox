@@ -731,6 +731,210 @@ export const tasks: Task[] = [
     studyMaterials: [studyMaterials.locatorMethods.getByLabel],
   },
   {
+    id: "0c0d5d7d-8c9e-4d1b-9c40-16c3ab7a7e11",
+    title: "Find input by aria-label",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "getByLabel also works when the control is labelled via aria-label (no separate <label> element). Here we find the input labelled 'Delivery address'.",
+    html: `
+      <section class="address-form">
+        <h3>Shipping details</h3>
+        <div class="field">
+          <input type="text" aria-label="Delivery address" value="221B Baker Street" />
+        </div>
+        <div class="field">
+          <input type="text" aria-label="Billing address" value="742 Evergreen Terrace" />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "221B Baker Street",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "b8c2e2b0-7a13-44d2-97ef-9c8d9b3e2a21",
+    title: "Find field by aria-labelledby",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "A control can be labelled by another element via aria-labelledby. This is common in custom UIs where the label isn't a <label> tag.",
+    html: `
+      <section class="security-panel">
+        <h3>Security</h3>
+        <div class="field">
+          <span id="api-token-label">API token</span>
+          <textarea aria-labelledby="api-token-label">token_123</textarea>
+        </div>
+        <div class="field">
+          <span id="backup-token-label">Backup token</span>
+          <textarea aria-labelledby="backup-token-label">token_456</textarea>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "token_123",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "8a3c0d67-d8c1-4c6a-9ff5-2ce5e6e2f1b3",
+    title: "Match label with regex (case-insensitive)",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "Use a RegExp when label text varies slightly. Here, 'Project ID' appears in mixed casing and punctuation, so we match robustly with a case-insensitive regex.",
+    html: `
+      <section class="project-panel">
+        <h3>Project</h3>
+        <div class="field">
+          <label for="project-id">Project ID:</label>
+          <input id="project-id" type="text" value="PRJ-7" />
+        </div>
+        <div class="field">
+          <label for="project-key">Project key</label>
+          <input id="project-key" type="text" value="ALPHA" />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "PRJ-7",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "c70e4a12-1e1a-4c3d-8f86-88c35b19a0b4",
+    title: "Exact label match avoids similarly prefixed labels",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "When multiple labels share a prefix, set exact: true to select only the whole-string label. Here we target 'Name' and not 'Name (public)'.",
+    html: `
+      <section class="account-panel">
+        <h3>Account</h3>
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" type="text" value="Alice" />
+        </div>
+        <div class="field">
+          <label for="name-public">Name (public)</label>
+          <input id="name-public" type="text" value="Alice A." />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "Alice",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "b0c85b0e-7cb3-4bb0-a6db-9c3b9c4e5b90",
+    title: "Include hidden labelled controls (includeHidden: true)",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "intermediate",
+    description:
+      "By default, hidden controls are not matched. Set includeHidden: true to locate a control even if it is visually hidden (useful for progressive disclosure UIs).",
+    html: `
+      <section class="two-factor">
+        <h3>Two-factor authentication</h3>
+        <div class="field">
+          <label for="otp">One-time code</label>
+          <input id="otp" type="text" value="123456" style="display: none;" />
+        </div>
+        <div class="field">
+          <label for="recovery">Recovery code</label>
+          <input id="recovery" type="text" value="recovery-xyz" />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+      options: {
+        includeHidden: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "f5b0d1a9-0f35-4f7e-bb78-3dfdfd6b7f21",
+    title: "Label wraps control (implicit association)",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "Labels can be associated implicitly by wrapping the control (no for/id). getByLabel should still work.",
+    html: `
+      <section class="preferences">
+        <h3>Preferences</h3>
+        <div class="field">
+          <label>
+            Display name
+            <input type="text" value="Captain Nemo" />
+          </label>
+        </div>
+        <div class="field">
+          <label>
+            Organization
+            <input type="text" value="Nautilus" />
+          </label>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "Captain Nemo",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
     id: "7a1d34d2-6d71-45fd-9c53-6f08f5f2a8a9",
     title: "Find element by test id (string)",
     topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
