@@ -1030,7 +1030,11 @@ export const tasks: Task[] = [
         type: "regex",
       },
     },
-    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+    studyMaterials: [
+      studyMaterials.locatorMethods.getByLabel,
+      studyMaterials.general.regexInLocators,
+      studyMaterials.general.javaScriptRegex,
+    ],
   },
   {
     id: "4c657c71-34e1-4618-9f4d-f69a79c3f1d2",
@@ -1080,6 +1084,374 @@ export const tasks: Task[] = [
       },
       options: {
         exact: false,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "0c0d5d7d-8c9e-4d1b-9c40-16c3ab7a7e11",
+    title: "Find input by aria-label",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "getByLabel also works when the control is labelled via aria-label (no separate <label> element). Here we find the input labelled 'Delivery address'.",
+    html: `
+      <section class="address-form">
+        <h3>Shipping details</h3>
+        <div class="field">
+          <input type="text" aria-label="Delivery address" value="221B Baker Street" />
+        </div>
+        <div class="field">
+          <input type="text" aria-label="Billing address" value="742 Evergreen Terrace" />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "221B Baker Street",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "b8c2e2b0-7a13-44d2-97ef-9c8d9b3e2a21",
+    title: "Find field by aria-labelledby",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "A control can be labelled by another element via aria-labelledby. This is common in custom UIs where the label isn't a <label> tag.",
+    html: `
+      <section class="security-panel">
+        <h3>Security</h3>
+        <div class="field">
+          <span id="api-token-label">API token</span>
+          <textarea aria-labelledby="api-token-label">token_123</textarea>
+        </div>
+        <div class="field">
+          <span id="backup-token-label">Backup token</span>
+          <textarea aria-labelledby="backup-token-label">token_456</textarea>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "token_123",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "8a3c0d67-d8c1-4c6a-9ff5-2ce5e6e2f1b3",
+    title: "Match label with regex (case-insensitive)",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "Use a RegExp when label text varies slightly. Here, 'Project ID' appears in mixed casing and punctuation, so we match robustly with a case-insensitive regex.",
+    html: `
+      <section class="project-panel">
+        <h3>Project</h3>
+        <div class="field">
+          <label for="project-id">Project ID:</label>
+          <input id="project-id" type="text" value="PRJ-7" />
+        </div>
+        <div class="field">
+          <label for="project-key">Project key</label>
+          <input id="project-key" type="text" value="ALPHA" />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "PRJ-7",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [
+      studyMaterials.locatorMethods.getByLabel,
+      studyMaterials.general.regexInLocators,
+      studyMaterials.general.javaScriptRegex,
+    ],
+  },
+  {
+    id: "c70e4a12-1e1a-4c3d-8f86-88c35b19a0b4",
+    title: "Exact label match avoids similarly prefixed labels",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "When multiple labels share a prefix, set exact: true to select only the whole-string label. Here we target 'Name' and not 'Name (public)'.",
+    html: `
+      <section class="account-panel">
+        <h3>Account</h3>
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" type="text" value="Alice" />
+        </div>
+        <div class="field">
+          <label for="name-public">Name (public)</label>
+          <input id="name-public" type="text" value="Alice A." />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "Alice",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "b0c85b0e-7cb3-4bb0-a6db-9c3b9c4e5b90",
+    title: "Include hidden labelled controls (includeHidden: true)",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "intermediate",
+    description:
+      "By default, hidden controls are not matched. Set includeHidden: true to locate a control even if it is visually hidden (useful for progressive disclosure UIs).",
+    html: `
+      <section class="two-factor">
+        <h3>Two-factor authentication</h3>
+        <div class="field">
+          <label for="otp">One-time code</label>
+          <input id="otp" type="text" value="123456" style="display: none;" />
+        </div>
+        <div class="field">
+          <label for="recovery">Recovery code</label>
+          <input id="recovery" type="text" value="recovery-xyz" />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+      options: {
+        includeHidden: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "f5b0d1a9-0f35-4f7e-bb78-3dfdfd6b7f21",
+    title: "Label wraps control (implicit association)",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "Labels can be associated implicitly by wrapping the control (no for/id). getByLabel should still work.",
+    html: `
+      <section class="preferences">
+        <h3>Preferences</h3>
+        <div class="field">
+          <label>
+            Display name
+            <input type="text" value="Captain Nemo" />
+          </label>
+        </div>
+        <div class="field">
+          <label>
+            Organization
+            <input type="text" value="Nautilus" />
+          </label>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "Captain Nemo",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "d2a9c8b7-6e5f-4d3c-a2b1-0c9d8e7f6a5b",
+    title: "Find select element by label",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "getByLabel works with any form control, including <select>. Here we target the dropdown labelled 'Country'.",
+    html: `
+      <section class="location-form">
+        <h3>Location settings</h3>
+        <div class="field">
+          <label for="region">Region</label>
+          <select id="region">
+            <option>North America</option>
+            <option>Europe</option>
+            <option>Asia</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="country">Country</label>
+          <select id="country">
+            <option>United States</option>
+            <option>Canada</option>
+            <option>Mexico</option>
+          </select>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "e3b0c9d8-7f6a-4e5d-b4c3-1d0e9f8a7b6c",
+    title: "Find checkbox by its label",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "beginner",
+    description:
+      "Checkboxes are commonly targeted via their label. Use getByLabel to find the 'Remember me' checkbox.",
+    html: `
+      <section class="login-options">
+        <h3>Login options</h3>
+        <div class="field">
+          <label>
+            <input type="checkbox" name="remember" />
+            Remember me
+          </label>
+        </div>
+        <div class="field">
+          <label>
+            <input type="checkbox" name="newsletter" />
+            Subscribe to newsletter
+          </label>
+        </div>
+        <div class="field">
+          <label>
+            <input type="checkbox" name="terms" />
+            I agree to terms
+          </label>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "f4c1d0e9-8a7b-4f6e-c5d4-2e1f0a9b8c7d",
+    title: "Label with nested markup (text normalization)",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "intermediate",
+    description:
+      "Labels often contain nested elements like icons or helper text. Playwright normalizes whitespace when matching. Target the field labelled 'Card number'.",
+    html: `
+      <section class="payment-form">
+        <h3>Payment</h3>
+        <div class="field">
+          <label for="card-number">
+            <span class="icon">💳</span>
+            Card number
+            <span class="required">*</span>
+          </label>
+          <input id="card-number" type="text" value="4111 1111 1111 1111" />
+        </div>
+        <div class="field">
+          <label for="card-expiry">
+            <span class="icon">📅</span>
+            Expiry date
+            <span class="required">*</span>
+          </label>
+          <input id="card-expiry" type="text" value="12/28" />
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "4111 1111 1111 1111",
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByLabel],
+  },
+  {
+    id: "a5d2e1f0-9b8c-4a7d-d6e5-3f2a1b0c9d8e",
+    title: "Find multiple controls with same label (count > 1)",
+    topicId: "ecf8d4e8-1afa-47ba-8867-b7c45603c7b8",
+    difficulty: "intermediate",
+    description:
+      "Sometimes multiple controls share the same label text. This task expects 2 matches—use nth() or other methods to disambiguate if needed in real tests.",
+    html: `
+      <section class="contact-form">
+        <h3>Contact details</h3>
+        <fieldset>
+          <legend>Primary contact</legend>
+          <div class="field">
+            <label for="phone-primary">Phone</label>
+            <input id="phone-primary" type="tel" value="+1 555-0100" />
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Secondary contact</legend>
+          <div class="field">
+            <label for="phone-secondary">Phone</label>
+            <input id="phone-secondary" type="tel" value="+1 555-0200" />
+          </div>
+        </fieldset>
+      </section>
+    `,
+    expectations: {
+      count: 2,
+    },
+    usageSpec: {
+      method: "getByLabel",
+      argument: {
+        type: "string",
       },
     },
     studyMaterials: [studyMaterials.locatorMethods.getByLabel],
@@ -1293,6 +1665,703 @@ export const tasks: Task[] = [
       method: "filter",
       options: {
         visible: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.filter],
+  },
+
+  // ============================================
+  // getByTestId Tasks
+  // ============================================
+  {
+    id: "b3a2c1d0-e4f5-4a6b-9c8d-7e6f5a4b3c2d",
+    title: "Find element by test id with multiple similar IDs",
+    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
+    difficulty: "beginner",
+    description:
+      "Use getByTestId when you have multiple elements with similar test IDs and need to target a specific one. Unlike role-based locators, test IDs provide a stable hook that doesn't change with UI refactoring.",
+    html: `
+      <section class="dashboard-widgets">
+        <header class="panel-header">
+          <h3>Dashboard</h3>
+          <p class="panel-subtitle">Your daily overview</p>
+        </header>
+        <div class="widget-grid">
+          <div class="widget" data-testid="widget-sales">
+            <h4>Sales</h4>
+            <p>$12,500</p>
+          </div>
+          <div class="widget" data-testid="widget-orders">
+            <h4>Orders</h4>
+            <p>156</p>
+          </div>
+          <div class="widget" data-testid="widget-visitors">
+            <h4>Visitors</h4>
+            <p>2,340</p>
+          </div>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "Orders 156",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByTestId",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByTestId],
+  },
+  {
+    id: "c4b3d2e1-f5a6-4b7c-0d9e-8f7a6b5c4d3e",
+    title: "Find element by test id using regex pattern",
+    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
+    difficulty: "intermediate",
+    description:
+      "Use getByTestId with a RegExp to match test IDs that follow a naming pattern. This is useful when test IDs contain dynamic parts or when you want to match multiple elements with similar prefixes.",
+    html: `
+      <section class="notification-center">
+        <header class="panel-header">
+          <h3>Notifications</h3>
+        </header>
+        <ul class="notification-list">
+          <li data-testid="notification-info-1">Info: System updated</li>
+          <li data-testid="notification-warning-1">Warning: Low storage</li>
+          <li data-testid="notification-error-1">Error: Connection failed</li>
+          <li data-testid="notification-info-2">Info: New feature available</li>
+        </ul>
+      </section>
+    `,
+    expectations: {
+      count: 2,
+    },
+    usageSpec: {
+      method: "getByTestId",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByTestId, studyMaterials.general.regexInLocators],
+  },
+  {
+    id: "d5c4e3f2-a6b7-4c8d-1e0f-9a8b7c6d5e4f",
+    title: "Find form element by test id",
+    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
+    difficulty: "beginner",
+    description:
+      "Use getByTestId to locate form elements when they lack accessible labels or when other locator strategies would be ambiguous. Test IDs are especially useful for complex form components.",
+    html: `
+      <section class="checkout-form">
+        <header class="form-header">
+          <h3>Checkout</h3>
+        </header>
+        <form class="payment-form">
+          <div class="form-row">
+            <input type="text" data-testid="card-number" placeholder="Card Number" />
+          </div>
+          <div class="form-row">
+            <input type="text" data-testid="card-expiry" placeholder="MM/YY" />
+            <input type="text" data-testid="card-cvv" placeholder="CVV" />
+          </div>
+          <button type="submit" data-testid="submit-payment">Pay Now</button>
+        </form>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByTestId",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByTestId],
+  },
+  {
+    id: "e6d5f4a3-b7c8-4d9e-2f1a-0b9c8d7e6f5a",
+    title: "Find hidden element by test id",
+    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
+    difficulty: "intermediate",
+    description:
+      "Use getByTestId to locate elements that may be hidden. This is useful for testing UI states like collapsed menus or modal dialogs that are present in the DOM but not visible.",
+    html: `
+      <section class="modal-container">
+        <div class="modal" data-testid="confirm-dialog" style="display: none;">
+          <h4>Confirm Action</h4>
+          <p>Are you sure you want to proceed?</p>
+          <button>Confirm</button>
+          <button>Cancel</button>
+        </div>
+        <div class="modal" data-testid="success-dialog">
+          <h4>Success</h4>
+          <p>Your action was completed successfully.</p>
+          <button>OK</button>
+        </div>
+        <div class="modal" data-testid="error-dialog" style="display: none;">
+          <h4>Error</h4>
+          <p>Something went wrong.</p>
+          <button>Retry</button>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+      text: "Success Your action was completed successfully. OK",
+    },
+    usageSpec: {
+      method: "getByTestId",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByTestId],
+  },
+  {
+    id: "f7e6a5b4-c8d9-4e0f-3a2b-1c0d9e8f7a6b",
+    title: "Find nested component by test id with regex anchors",
+    topicId: "33124b4e-123c-4716-8c5e-0e5c73904e4a",
+    difficulty: "intermediate",
+    description:
+      "Use getByTestId with a RegExp using anchors (^ and $) for exact matching when test IDs share common substrings. This prevents matching unintended elements like 'user-profile-avatar' when targeting 'user-profile'.",
+    html: `
+      <section class="user-section">
+        <header class="panel-header">
+          <h3>User Settings</h3>
+        </header>
+        <div class="user-cards">
+          <div data-testid="user-profile-avatar" class="avatar-card">
+            <img src="/avatar.png" alt="Avatar" />
+          </div>
+          <div data-testid="user-profile" class="profile-card">
+            <h4>John Doe</h4>
+            <p>john.doe@example.com</p>
+          </div>
+          <div data-testid="user-profile-settings" class="settings-card">
+            <h4>Settings</h4>
+            <p>Manage preferences</p>
+          </div>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "John Doe john.doe@example.com",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByTestId",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByTestId, studyMaterials.general.regexInLocators],
+  },
+
+  // ============================================
+  // getByText Tasks
+  // ============================================
+  {
+    id: "a8b7c6d5-e4f3-4a2b-1c0d-9e8f7a6b5c4d",
+    title: "Find element by text with case-insensitive regex",
+    topicId: "d5c21800-ac27-42cd-82aa-bf680c1bcaa9",
+    difficulty: "beginner",
+    description:
+      "Use getByText with a case-insensitive RegExp when the text casing might vary. The 'i' flag makes the match case-insensitive, useful for dynamically generated or user-facing text.",
+    html: `
+      <section class="alerts-panel">
+        <div class="alert alert-success">SUCCESS: Operation completed</div>
+        <div class="alert alert-warning">Warning: Low disk space</div>
+        <div class="alert alert-error">ERROR: Connection timeout</div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByText",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByText, studyMaterials.general.regexInLocators],
+  },
+  {
+    id: "b9c8d7e6-f5a4-4b3c-2d1e-0f9a8b7c6d5e",
+    title: "Find button by text (input type button)",
+    topicId: "d5c21800-ac27-42cd-82aa-bf680c1bcaa9",
+    difficulty: "beginner",
+    description:
+      "getByText matches input elements of type 'button' and 'submit' by their 'value' attribute instead of text content. This is a special case that allows consistent text-based location for all button types.",
+    html: `
+      <section class="action-panel">
+        <header class="panel-header">
+          <h3>Form Actions</h3>
+        </header>
+        <form class="action-form">
+          <div class="form-field">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter username" />
+          </div>
+          <div class="form-actions">
+            <input type="button" value="Reset Form" />
+            <input type="submit" value="Submit Form" />
+            <button type="button">Cancel</button>
+          </div>
+        </form>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByText",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByText],
+  },
+  {
+    id: "c0d9e8f7-a6b5-4c4d-3e2f-1a0b9c8d7e6f",
+    title: "Find element containing text with regex word boundary",
+    topicId: "d5c21800-ac27-42cd-82aa-bf680c1bcaa9",
+    difficulty: "intermediate",
+    description:
+      "Use getByText with RegExp word boundaries (\\b) to match whole words only. This prevents matching 'Download' when searching for 'load' and is useful for precise text targeting.",
+    html: `
+      <section class="file-manager">
+        <header class="panel-header">
+          <h3>File Actions</h3>
+        </header>
+        <div class="action-buttons">
+          <button type="button">Download File</button>
+          <button type="button">Upload File</button>
+          <button type="button">Load File</button>
+          <button type="button">Preload Cache</button>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "Load File",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByText",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByText, studyMaterials.general.javaScriptRegex],
+  },
+  {
+    id: "d1e0f9a8-b7c6-4d5e-4f3a-2b1c0d9e8f7a",
+    title: "Find element by exact text with whitespace normalization",
+    topicId: "d5c21800-ac27-42cd-82aa-bf680c1bcaa9",
+    difficulty: "beginner",
+    description:
+      "getByText with exact: true still normalizes whitespace - multiple spaces become one, line breaks become spaces, and leading/trailing whitespace is trimmed. This makes matching resilient to formatting changes.",
+    html: `
+      <section class="message-list">
+        <div class="message">
+          <span class="sender">   Hello   World   </span>
+        </div>
+        <div class="message">
+          <span class="sender">Hello World!</span>
+        </div>
+        <div class="message">
+          <span class="sender">Hello
+          World</span>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByText",
+      argument: {
+        type: "string",
+      },
+      options: {
+        exact: true,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByText],
+  },
+  {
+    id: "e2f1a0b9-c8d7-4e6f-5a4b-3c2d1e0f9a8b",
+    title: "Find multiple elements by text pattern",
+    topicId: "d5c21800-ac27-42cd-82aa-bf680c1bcaa9",
+    difficulty: "intermediate",
+    description:
+      "Use getByText with RegExp to match multiple elements that share a text pattern. This is useful for finding all items of a certain type, like all 'Step' labels in a wizard.",
+    html: `
+      <section class="wizard-steps">
+        <header class="wizard-header">
+          <h3>Setup Wizard</h3>
+        </header>
+        <ol class="steps-list">
+          <li class="step completed">Step 1: Account Info</li>
+          <li class="step active">Step 2: Preferences</li>
+          <li class="step pending">Step 3: Review</li>
+          <li class="step pending">Summary</li>
+        </ol>
+      </section>
+    `,
+    expectations: {
+      count: 3,
+    },
+    usageSpec: {
+      method: "getByText",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByText, studyMaterials.general.regexInLocators],
+  },
+  {
+    id: "f3a2b1c0-d9e8-4f7a-6b5c-4d3e2f1a0b9c",
+    title: "Find nested text element",
+    topicId: "d5c21800-ac27-42cd-82aa-bf680c1bcaa9",
+    difficulty: "beginner",
+    description:
+      "getByText matches the element that contains the text, including when text spans across nested elements. Use partial matching to find elements where text content includes child elements.",
+    html: `
+      <section class="product-card">
+        <h3>Premium Package</h3>
+        <p class="price">
+          <span class="currency">$</span>
+          <span class="amount">99</span>
+          <span class="period">/month</span>
+        </p>
+        <p class="description">Best value for teams</p>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "$ 99 /month",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByText",
+      argument: {
+        type: "string",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByText],
+  },
+  {
+    id: "a4b3c2d1-e0f9-4a8b-7c6d-5e4f3a2b1c0d",
+    title: "Find element by text with regex anchors",
+    topicId: "d5c21800-ac27-42cd-82aa-bf680c1bcaa9",
+    difficulty: "intermediate",
+    description:
+      "Use getByText with RegExp anchors (^ for start, $ for end) to match text that starts or ends with specific content. The 'm' (multiline) flag is not typically needed since text is normalized.",
+    html: `
+      <section class="status-panel">
+        <header class="panel-header">
+          <h3>System Status</h3>
+        </header>
+        <ul class="status-list">
+          <li class="status-item">API Status: Online</li>
+          <li class="status-item">Status: Maintenance</li>
+          <li class="status-item">Database Status: Offline</li>
+        </ul>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "Status: Maintenance",
+      visible: true,
+    },
+    usageSpec: {
+      method: "getByText",
+      argument: {
+        type: "regex",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.getByText, studyMaterials.general.regexInLocators],
+  },
+
+  // ============================================
+  // Filter Tasks
+  // ============================================
+  {
+    id: "b5c4d3e2-f1a0-4b9c-8d7e-6f5a4b3c2d1e",
+    title: "Filter by hasText with regex",
+    topicId: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    difficulty: "intermediate",
+    description:
+      "Use filter({ hasText: /regex/ }) when you need pattern matching instead of substring matching. The RegExp allows for case-insensitive or more complex text patterns within filtered elements.",
+    html: `
+      <section class="user-list">
+        <header class="panel-header">
+          <h3>Team Members</h3>
+        </header>
+        <div class="user-cards">
+          <article class="user-card">
+            <h4>Alice Johnson</h4>
+            <p>Role: admin</p>
+          </article>
+          <article class="user-card">
+            <h4>Bob Smith</h4>
+            <p>Role: ADMIN</p>
+          </article>
+          <article class="user-card">
+            <h4>Charlie Brown</h4>
+            <p>Role: user</p>
+          </article>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 2,
+    },
+    usageSpec: {
+      method: "filter",
+      options: {
+        hasText: "/admin/i",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.filter, studyMaterials.general.regexInLocators],
+  },
+  {
+    id: "c6d5e4f3-a2b1-4c0d-9e8f-7a6b5c4d3e2f",
+    title: "Filter by hasNotText with regex",
+    topicId: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    difficulty: "intermediate",
+    description:
+      "Use filter({ hasNotText: /regex/ }) to exclude elements matching a text pattern. This is useful when you want to filter out elements containing variations of a word or phrase.",
+    html: `
+      <section class="task-board">
+        <header class="panel-header">
+          <h3>Tasks</h3>
+        </header>
+        <div class="task-columns">
+          <article class="task-card">
+            <h4>Design Review</h4>
+            <span class="status">Status: completed</span>
+          </article>
+          <article class="task-card">
+            <h4>Code Review</h4>
+            <span class="status">Status: COMPLETED</span>
+          </article>
+          <article class="task-card">
+            <h4>Testing</h4>
+            <span class="status">Status: in-progress</span>
+          </article>
+          <article class="task-card">
+            <h4>Deployment</h4>
+            <span class="status">Status: pending</span>
+          </article>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 2,
+    },
+    usageSpec: {
+      method: "filter",
+      options: {
+        hasNotText: "/completed/i",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.filter, studyMaterials.general.regexInLocators],
+  },
+  {
+    id: "d7e6f5a4-b3c2-4d1e-0f9a-8b7c6d5e4f3a",
+    title: "Chain multiple filters",
+    topicId: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    difficulty: "advanced",
+    description:
+      "Chain multiple filter() calls to progressively narrow down your selection. Each filter further refines the results, allowing for complex selection criteria.",
+    html: `
+      <section class="inventory">
+        <header class="panel-header">
+          <h3>Inventory</h3>
+        </header>
+        <div class="item-grid">
+          <article class="item-card">
+            <h4>Laptop Pro</h4>
+            <p>Category: Electronics</p>
+            <span class="stock">In Stock</span>
+            <span class="price">$1200</span>
+          </article>
+          <article class="item-card">
+            <h4>Wireless Mouse</h4>
+            <p>Category: Electronics</p>
+            <span class="stock">Out of Stock</span>
+            <span class="price">$50</span>
+          </article>
+          <article class="item-card">
+            <h4>Office Chair</h4>
+            <p>Category: Furniture</p>
+            <span class="stock">In Stock</span>
+            <span class="price">$300</span>
+          </article>
+          <article class="item-card">
+            <h4>Monitor Stand</h4>
+            <p>Category: Electronics</p>
+            <span class="stock">In Stock</span>
+            <span class="price">$80</span>
+          </article>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 2,
+    },
+    usageSpec: {
+      method: "filter",
+      options: {
+        hasText: "Electronics",
+        hasNotText: "Out of Stock",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.filter],
+  },
+  {
+    id: "e8f7a6b5-c4d3-4e2f-1a0b-9c8d7e6f5a4b",
+    title: "Filter hidden elements with visible: false",
+    topicId: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    difficulty: "intermediate",
+    description:
+      "Use filter({ visible: false }) to select only hidden elements. This is useful for testing UI states like collapsed panels or validating that certain elements are properly hidden.",
+    html: `
+      <section class="notifications">
+        <header class="panel-header">
+          <h3>Notifications</h3>
+        </header>
+        <div class="notification-stack">
+          <div class="notification" style="display: none;">
+            <p>Hidden notification 1</p>
+          </div>
+          <div class="notification">
+            <p>Visible notification</p>
+          </div>
+          <div class="notification" style="display: none;">
+            <p>Hidden notification 2</p>
+          </div>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 2,
+      hidden: true,
+    },
+    usageSpec: {
+      method: "filter",
+      options: {
+        visible: false,
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.filter],
+  },
+  {
+    id: "f9a8b7c6-d5e4-4f3a-2b1c-0d9e8f7a6b5c",
+    title: "Filter with has and hasNot combined",
+    topicId: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    difficulty: "advanced",
+    description:
+      "Combine has and hasNot options to find elements that contain one nested element but not another. This is powerful for complex component structures with conditional child elements.",
+    html: `
+      <section class="product-catalog">
+        <header class="panel-header">
+          <h3>Products</h3>
+        </header>
+        <div class="product-grid">
+          <article class="product-card">
+            <h4>Basic Plan</h4>
+            <p>Essential features</p>
+            <button class="btn-buy">Buy Now</button>
+          </article>
+          <article class="product-card">
+            <h4>Pro Plan</h4>
+            <p>Advanced features</p>
+            <span class="badge badge-popular">Popular</span>
+            <button class="btn-buy">Buy Now</button>
+          </article>
+          <article class="product-card">
+            <h4>Enterprise Plan</h4>
+            <p>Full suite</p>
+            <span class="badge badge-popular">Popular</span>
+            <span class="badge badge-sold-out">Sold Out</span>
+            <button class="btn-buy" disabled>Unavailable</button>
+          </article>
+        </div>
+      </section>
+    `,
+    expectations: {
+      count: 1,
+      text: "Pro Plan Advanced features Popular Buy Now",
+      visible: true,
+    },
+    usageSpec: {
+      method: "filter",
+      options: {
+        has: "locator",
+        hasNot: "locator",
+      },
+    },
+    studyMaterials: [studyMaterials.locatorMethods.filter],
+  },
+  {
+    id: "a0b9c8d7-e6f5-4a4b-3c2d-1e0f9a8b7c6d",
+    title: "Filter table rows with has locator",
+    topicId: "1f0c2d3e-4b5a-4f6c-8d7e-9a0b1c2d3e4f",
+    difficulty: "intermediate",
+    description:
+      "Use filter({ has }) with a locator to find container elements based on their descendants. This is commonly used for table rows, list items, or cards that contain specific interactive elements.",
+    html: `
+      <section class="data-table">
+        <header class="panel-header">
+          <h3>User Management</h3>
+        </header>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="user-row">
+              <td>Alice</td>
+              <td>alice@example.com</td>
+              <td><button class="btn-edit">Edit</button></td>
+            </tr>
+            <tr class="user-row">
+              <td>Bob</td>
+              <td>bob@example.com</td>
+              <td><span class="no-actions">No actions</span></td>
+            </tr>
+            <tr class="user-row">
+              <td>Charlie</td>
+              <td>charlie@example.com</td>
+              <td><button class="btn-edit">Edit</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    `,
+    expectations: {
+      count: 2,
+    },
+    usageSpec: {
+      method: "filter",
+      options: {
+        has: "locator",
       },
     },
     studyMaterials: [studyMaterials.locatorMethods.filter],
