@@ -1,5 +1,5 @@
 import { Chip, Paper, Stack, Tooltip, Typography } from "@mui/material";
-import type { PlaygroundElement, PlaygroundSubmitResponse } from "../../types";
+import type { PlaygroundElement, PlaygroundSubmitError, PlaygroundSubmitResponse } from "../../types";
 
 type ResultSectionProps = {
   result: PlaygroundSubmitResponse | null;
@@ -39,6 +39,16 @@ const renderElements = (elements: PlaygroundElement[]) => {
   );
 };
 
+const renderError = (error: PlaygroundSubmitError) => (
+  <Stack spacing={0.5}>
+    {error.details && (
+      <Typography variant="body2" color="error">
+        {error.details}
+      </Typography>
+    )}
+  </Stack>
+);
+
 export function ResultSection({ result }: ResultSectionProps) {
   return (
     <Paper
@@ -48,13 +58,13 @@ export function ResultSection({ result }: ResultSectionProps) {
       <Stack direction="row" alignItems="center" spacing={1} marginBottom={1}>
         <Typography variant="h6">Matched elements</Typography>
       </Stack>
-      {result ? (
-        renderElements(result.elements)
-      ) : (
+      {!result && (
         <Typography variant="body2" color="text.secondary">
           Run a locator to see matched elements.
         </Typography>
       )}
+      {result && "error" in result && renderError(result)}
+      {result && "elements" in result && renderElements(result.elements)}
     </Paper>
   );
 }

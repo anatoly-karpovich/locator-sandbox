@@ -87,7 +87,7 @@ export default function PlaygroundPage() {
           <Stack spacing={2} marginBottom={4}>
             <ResultSection result={result} />
 
-            {result?.explanation && result.explanation.length > 0 && (
+            {result && "explanation" in result && result?.explanation &&result.explanation.length > 0 && (
               <Paper
                 variant="outlined"
                 sx={{
