@@ -4,12 +4,12 @@ import { NextFunction, Request, Response } from "express";
 import { ITrainingsRunService, ITrainingTemplateService } from "@services/index.js";
 import { HTTP_CODES } from "@core/httpCodes.js";
 import {
-  StartFixedTrainingRequest,
+  StartFixedTrainingRequestDTO,
   ITrainingSubmitSolutionRequestDTO,
-  StartTrainingRequestDTO,
   StartTrainingResponseDTO,
   ITrainingsRunSubmitSolutionResponseDTO,
   GetTrainingRunResponseDTO,
+  StartCustomTrainingRequestDTO,
 } from "@dto/trainingRuns.dto.js";
 import { ErrorResponseDTO } from "@dto/common.dto.js";
 import { TrainingCatalogResponseDTO } from "@dto/trainings.dto.js";
@@ -22,22 +22,30 @@ export class TrainingRunsController {
   constructor(
     @inject(TYPES.TrainingTemplateService) private trainingTemplateService: ITrainingTemplateService,
     @inject(TYPES.TrainingsRunService) private trainingsRunService: ITrainingsRunService
-  ) { }
-  async startTraining(
-    req: Request<{}, {}, StartTrainingRequestDTO>,
+  ) {}
+  async startFixedTraining(
+    req: Request<{}, {}, StartFixedTrainingRequestDTO>,
     res: Response<StartTrainingResponseDTO | ErrorResponseDTO>,
     next: NextFunction
   ) {
     const dto = req.body;
     try {
-      if (this.isFixedTrainingDTO(dto)) {
-        const result = this.trainingsRunService.startFixedTraining(dto.trainingTemplateId);
-        return res.status(HTTP_CODES.OK).json(result);
-      } else {
-        return next(new ResponseError(HTTP_CODES.BAD_REQUEST, "Not implemented"));
-      }
+      const result = this.trainingsRunService.startFixedTraining(dto.trainingTemplateId);
+      return res.status(HTTP_CODES.OK).json(result);
+    } catch (err) {
+      return next(new ResponseError(HTTP_CODES.BAD_REQUEST, (err as Error).message));
+    }
+  }
 
+  async startCustomTraining(
+    req: Request<{}, {}, StartCustomTrainingRequestDTO>,
+    res: Response<StartTrainingResponseDTO | ErrorResponseDTO>,
+    next: NextFunction
+  ) {
+    const dto = req.body;
+    try {
       // return this.trainingService.startCustomTraining(dto);
+      return next(new ResponseError(HTTP_CODES.BAD_REQUEST, "Not implemented"));
     } catch (err) {
       return next(new ResponseError(HTTP_CODES.BAD_REQUEST, (err as Error).message));
     }
@@ -82,9 +90,5 @@ export class TrainingRunsController {
     } catch (err) {
       return next(new ResponseError(HTTP_CODES.SERVER_ERROR, (err as Error).message));
     }
-  }
-
-  private isFixedTrainingDTO(dto: StartTrainingRequestDTO): dto is StartFixedTrainingRequest {
-    return "trainingTemplateId" in dto;
   }
 }
