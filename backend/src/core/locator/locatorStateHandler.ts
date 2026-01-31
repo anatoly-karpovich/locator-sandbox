@@ -39,6 +39,10 @@ export class LocatorStateHandler implements ILocatorStateHandler {
     return await locator.textContent();
   }
 
+  async placeholder(locator: Locator) {
+    return await locator.getAttribute("placeholder");
+  }
+
   async hidden(locator: Locator) {
     return await locator.isHidden();
   }
