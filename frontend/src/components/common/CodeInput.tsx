@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import type { KeyboardEvent } from "react";
 import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
@@ -8,6 +9,7 @@ type CodeInputProps = {
   highlightedHtml: string;
   placeholder?: string;
   minRows?: number;
+  onRunShortcut?: () => void;
 };
 
 export function CodeInput({
@@ -16,6 +18,7 @@ export function CodeInput({
   highlightedHtml,
   placeholder,
   minRows = 1,
+  onRunShortcut,
 }: CodeInputProps) {
   const theme = useTheme();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -27,6 +30,13 @@ export function CodeInput({
     if (!textareaRef.current || !preRef.current) return;
     preRef.current.scrollTop = textareaRef.current.scrollTop;
     preRef.current.scrollLeft = textareaRef.current.scrollLeft;
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    const isRunCombo = (event.ctrlKey || event.metaKey) && event.key === "Enter";
+    if (!isRunCombo) return;
+    event.preventDefault();
+    onRunShortcut?.();
   };
 
   return (
@@ -80,6 +90,7 @@ export function CodeInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onScroll={handleScroll}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         spellCheck={false}
         sx={{
